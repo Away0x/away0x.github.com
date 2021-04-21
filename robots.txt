@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: http://away0x.github.io/sitemap.xml
