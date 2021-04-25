@@ -1,0 +1,279 @@
+---
+layout: post
+title: "ObjectiveC - 基础"
+date: 2018-02-01 08:00:00 +0800
+comments: true
+categories: objectivec
+---
+
+<!-- more -->
+
+* [OC vs. C](#c)
+* [数据类型](#type)
+* [流程语句](#if-loop)
+* [函数](#function)
+* [面向对象](#oop)
+* [异常处理](#catch)
+* [import](#import)
+* [输入输出](#output)
+* [Hello World](#hello)
+
+# <h2 id="c">OC vs. C</h2>
+* Objective-C 是一门面向对象的计算机语言
+* 它在 C 语言的基础上增加了一层最小的面向对象语法
+* OC 完全兼容 C 语言，可在 OC 代码中混入 C/C++ 代码
+    * 并且可将 C 语言的源文件和 OC 的源文件组合在一起生成可执行文件
+
+源代码文件拓展名对比
+
+|  | 头文件 | 实现文件 |
+|--:|:--:|:--|
+| c | .h | .c |
+| c++ | .h | .cpp |
+| oc | .h | .m |
+| oc & c++ | .h | .mm |
+
+OC 与 C
+
+OC | C
+- | -
+面向对象 | 数据类型
+@property 与 @synthesize | 常量变量
+类方法与实例方法 | 运算符
+self 关键字 | 流程语句
+点语法、@selector | 函数
+category | 进制
+protocol | 一维/多维数组
+copy | 指针
+block | 结构体
+autoreleasepool | 预处理指令
+Foundation | 文件操作
+常用结构体 | ...
+KVC、KVO | /
+... | /
+
+关键字 (OC 中新增的关键字大部分都以 @ 符号开头)
+
+OC | C
+- | -
+@interface | auto
+@implementation | double
+@end | int
+@public | struct
+@protected | break
+@private | else
+@selector | long
+@try | switch
+@catch | case
+@throw | enum
+@finally | register
+@protocol | typedef
+@optional | char
+@required | extern
+@class | return
+@property | union
+@synthesize | const
+@dynamic | float
+BOOL | short
+Class | unsigned
+SEL | continue
+YES | for
+NO | signed
+id | void
+self | default
+super | goto
+nil | sizeof
+atomic | volatile
+nonatomic | do
+retain | if
+assign | while
+copy | static
+block | /
+_ | /
+
+
+
+# <h2 id="type">数据类型</h2>
+> 加粗为 OC 相对于 C 新增的
+
+## 基本数据类型
+- 整型 (short int long **BOOL**)
+    - 布尔型 BOOL: 取值为 YES(1)、NO(0)
+- 字符型 (char)
+- 浮点型 (float double)
+
+## Block 类型 (OC 新增)
+- **block** (代码块数据类型)
+
+## 构造类型
+数组、结构体、枚举、共用体
+
+## 指针类型
+- **class**
+- **id** (动态对象类型、万能指针)
+- **NSObject** (对象类型)
+
+## 空类型 void
+
+## 特殊类型 (OC 新增)
+- **SEL** (选择器类型)
+- **nil**
+
+
+
+# <h2 id="if-loop">流程语句</h2>
+* C 语言中使用的流程语句 OC 都可使用
+    * if switch while do-while for break continue ...
+
+新增语句
+
+```objectivec
+// 增强型 for 循环
+for (NSString *name in arr) {
+    NSLog(@"%@", name);
+}
+```
+
+
+
+# <h2 id="function">函数</h2>
+* C 语言中函数的声明与实现
+    * 声明: `int sum(int a, int b);`
+    * 实现: `int sum(int a, int b) { return a + b }`
+* OC 中函数的声明与实现
+    * 声明: `- (int)sum:(int)a andB:(int)b;`
+    * 实现: `- (int)sum:(int)a andB:(int)b { return a + b  }`
+* **注意:** 方法只能写在类里面，而函数可以写在任何地方
+
+
+
+# <h2 id="oop">面向对象</h2>
+> 仅介绍特殊语法
+
+## 属性生成器
+* @property
+* @synthesize
+
+```objectivec
+// 声明属性
+@property (nonatomic, strong)NSString *name;
+
+// 合成属性
+@synthesize name = _name;
+```
+
+## 分类
+- 分类是横向拓展、继承是竖向扩展
+- 使用分类拓展类，无需子类化
+
+```objectivec
+@interface NSString (MyNSString)
+- (NSString *)encryptWithMD5;
+@end
+```
+
+## 协议
+- 类似 C#、Java 中的接口
+
+```objectivec
+@protocol MyProtocol
+- (void)myProtocolMethod;
+@end
+```
+
+
+
+# <h2 id="import">异常处理</h2>
+```objectivec
+@try {
+    
+} @catch(NSException *e) {
+    
+} @finally {
+    
+}
+```
+
+
+
+# <h2 id="import">import</h2>
+```objectivec
+// C
+#include <stdio.h>
+
+// OC
+// 和 include 功能一样，将文件拷贝到 import 的位置
+// import 同一个文件多次也只会导入一次
+#import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
+```
+* import 功能和 include 一样，但 import 更强大
+* import 可防止重复导入，可不用像使用 C 的 include 一样，程序员得去写头文件卫士来预防这个问题
+* `#import` 导入的文件名需要加上双引号或尖括号
+    * 双引号: 编译器会先在项目目录下查找相应的头文件
+    * 尖括号: 编译器会先在预先设定好的标准目录下查找相应的头文件
+
+
+
+# <h2 id="output">输入输出</h2>
+## 输入
+```objectivec
+// 接收用户控制台的输入信息
+// 获取整型数据
+int userSelect = 0;
+scanf("%d",&userSelect);
+
+// 获取字符串类型
+char ans = 'a';
+rewind(stdin);
+scanf("%c",&ans);
+```
+
+## log
+* NSLog 支持 C 语言的字符串，但支持得不是很好
+    * 如打印中文的 C 语言字符串，可能输出乱码，或输出空白
+
+打印类型时可用如 NSStringFromCGPoint 这些函数辅助，CGRect 等类型同
+
+```objectivec
+CGPoint point = CGPointMake(0, 0);
+NSLog(@"%@", NSStringFromCGPoint(point));
+```
+
+在函数内打印时可使用 __func__ 打印出当前函数名
+
+```objectivec
+printf("Hello C!");
+NSLog(@"Hello OC!");
+
+// 输出 C 语言字符串
+char *content = "lalala"；
+NSLog(@"%s", content);
+```
+
+去除控制台输出运行的时间和项目名称
+
+```objectivec
+#define NSLog(FORMAT, ...) fprintf(stderr,"%s",[[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String])
+```
+
+
+
+# <h2 id="hello">Hello World</h2>
+```objectivec
+#include <stdio.h>
+#import <Foundation/Foundation.h>
+
+int main (int argc, const char * argv[]) {
+    // 可见 OC 是兼容 C 的
+    printf("Hello C!");
+    
+    // NSLog 会自动换行
+    // NSLog 在输出时会附加一些系统信息
+    // NSLog 和 printf 接收的参数不一样
+    NSLog(@"Hello OC!");
+    
+    return 0;
+}
+```

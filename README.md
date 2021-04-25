@@ -12,8 +12,8 @@ rake new_post["title"]
 
 ## deploy
 ```bash
-rake preview
-rake generate
-rake deploy
+bundle exce rake preview
+bundle exce rake generate
+bundle exce rake deploy
 git push origin source
 ```

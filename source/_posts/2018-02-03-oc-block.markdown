@@ -1,0 +1,316 @@
+---
+layout: post
+title: "ObjectiveC - block"
+date: 2018-02-03 08:00:00 +0800
+comments: true
+categories: objectivec
+---
+
+<!-- more -->
+
+* [函数指针与 block](#block-1)
+* [block 与 typedef](#block-2)
+* [应用场景](#block-3)
+* [注意事项](#block-4)
+* [内存管理](#block-5)
+* [循环引用](#block-6)
+* [传递变量](#block-7)
+
+* block 是 iOS 中一种比较特殊的数据类型
+* block 是苹果官方特别推荐使用的数据类型，应用场景比较广泛
+    * 动画、多线程、集合遍历、网络请求回调
+* block 的作用
+    * 用来保存某一段代码，可以在恰当的时间再取出来调用
+    * 功能类似于函数和方法
+
+```objectivec
+// block 的格式
+返回值类型 (^block变量名)(形参列表) = ^(形参列表) {
+};
+```
+
+# <h2 id="block-1">函数指针与 block</h2>
+```objectivec
+void printA() {
+    printf("a");
+}
+
+int main(int argc, const chjar * argv[]) {
+    // 1. 调用函数
+    printA(); // "a"
+    
+    // 2. 指向函数 printA 的指针
+    //    - void 表指向的函数没有返回值
+    //    - () 代表指向的函数没有形参
+    //    - (*ap) 代表 ap 是一个指向函数的指针
+    void (*ap) ();
+    ap = printA;
+    ap(); // "a"
+    
+    // ---------------------------------------------------
+    
+    // 3. 定义 block
+    //    - block 和函数一样，可以没有(有)返回值，也没有(有)
+    //    - void 代表这个 block 将来保存的代码没有返回值
+    //    - () 代表这个 block 将来保存的代码没有形参
+    //    - (^printB) 代表 printB 是一个 block 变量，可以用于保存一段 block 代码
+    void (^printB) (); // 定义
+    ap2 = ^{           // 保存 block 类型代码段
+        printf("b");
+    };
+    ap2(); // "b" 执行 block
+    
+    return 0;
+}
+```
+```objectivec
+int (^sum) (int, int) = ^(int a, int b) {
+    return a + b;
+};
+
+NSLog(@"sum = %i", sum(10, 50)); // "sum = 50"
+```
+
+
+
+# <h2 id="block-2">block 与 typedef</h2>
+使用 typedef 可简化 block 的声明
+
+## 函数指针使用 typedef
+```objectivec
+// 函数
+int sum(int a, int b) { return a + b; }
+int minus(int a, int b) { return a - b; } 
+
+int main(int argc, const chjar * argv[]) {
+    int (*sumP)(int, int); // 函数指针
+    sumP = sum;
+    NSLog(@"%i", sumP(1, 2)); // "3"
+    
+    int (*minusP)(int, int);
+    minusP = minus;
+    NSLog(@"%i", minusP(3, 2)); // "1"
+    
+    return 0;
+}
+```
+```objectivec
+int sum(int a, int b) { return a + b; }
+int minus(int a, int b) { return a - b; } 
+
+// 使用 typedef
+typedef int (*calculte)(int, int);
+
+int main(int argc, const chjar * argv[]) {
+    calculte sumP = sum;
+    NSLog(@"%i", sumP(1, 2)); // "3"
+    
+    calculte minusP = minus;
+    NSLog(@"%i", minusP(3, 2)); // "1"
+    
+    return 0;
+}
+```
+
+## block 使用 typedef
+不能在方法代码中使用 typedef，必须写在文件的顶部或头文件中
+
+```objectivec
+int main(int argc, const chjar * argv[]) {
+    int (^sum) (int, int);
+    sum = ^(int a, int b) { return a + b; };
+    NSLog(@"%i", sum(1, 2)); // "3"
+    
+    int (^minus) (int, int);
+    minus = ^(int a, int b) { return a - b };
+    NSLog(@"%i", minus(3, 2)); // "1"
+}
+```
+```objectivec
+// 使用 typedef
+typedef int (^calculte) (int, int);
+
+int main(int argc, const chjar * argv[]) {
+    calculte sum = ^(int a, int b) { return a + b; };
+    NSLog(@"%i", sum(1, 2)); // "3"
+    
+    calculte minus = ^(int a, int b) { return a - b };
+    NSLog(@"%i", minus(3, 2)); // "1"
+}
+```
+
+
+
+# <h2 id="block-3">应用场景</h2>
+1. 代码复用
+2. 高阶函数 (作为参数或返回值)
+
+```objectivec
+- (void) run:(void (^)())blockFunc {
+    // ...
+    blockFunc();
+}
+
+run(^{
+    NSLog(@"block...");
+});
+```
+
+3. 类之间的通信
+    1. 可替代代理委托
+    2. B 类中为 A 类的某个类型为 block 的属性赋值，A 类中会在某个事件中调用这个 block，从而实现跨类通信
+
+
+
+# <h2 id="block-4">注意事项</h2>
+```objectivec
+// 1. block 中可以访问外部的变量
+int a = 10;
+void (^myBlock)() = ^{ NSLog(@"%i", a); };
+myBlock(); // "10"
+
+// 2. block 中定义了和外部同名的变量，则 blick 内的优先
+int a = 10;
+void (^myBlock)() = ^{
+    int a = 20;
+    NSLog(@"%i", a);
+};
+myBlock(); // "20"
+
+// 3. 默认情况下，不可以在 block 中修改外界变量的值
+//    - 因为 block 中的变量和外界的变量不是用一个变量
+//    - 如果 block 中访问了外界的变量，block 会将外界的这个变量拷贝一份到堆内存中
+int a = 10;
+void (^myBlock)() = ^{
+    a = 20; // 修改了外部变量(实际上不是外部的变量)，报错
+    NSLog(@"%i", a);
+};
+myBlock(); // 报错
+
+// 4. block 会在定义时拷贝外界使用到的变量
+int a = 10;
+void (^myBlock)() = ^{
+    NSLog(@"%i", a); // 在这里就将 a 的值拷贝了一份，此时 a 值为 10
+};
+a = 20; // 不会影响到 block 中拷贝的值
+myBlock(); // "10"
+
+// 5.如想在 block 中修改外界变量的值，必须在外界变量前加上 __block
+//    - 这样如在 block 中修改了外界变量的值，会影响到外界变量的值
+//    - 因为加了 __block 就是地址传递，所以可修改
+__block int a = 10;
+void (^myBlock)() = ^{
+    a = 20;
+    NSLog(@"%i", a);
+};
+myBlock();       // "20"
+NSLog(@"%i", a); // "20"
+```
+* block 可存储于堆中也可存储在栈中，默认在栈中
+    * 如对 block 进行 copy 操作，block 会转移到堆中
+    * 如 block 在栈中，block 中访问了外界的对象，那么不会对对象进行 retain 操作
+    * 但是如果 block 在堆中，block 中访问了外界的对象，那么会对外界的对象进行一次 retain 操作
+
+```objectivec
+Person *p = [[Person alloc] init]; // p 引用计数为 1
+NSLog(@"%lu", [p retainCount]);    // "1"
+
+void (^myBlock)() = ^{
+  NSLog(@"%@", p); // 由于下面用了 Block_copy，所以这里是 retain，p 引用计数 +1，为 2
+  NSLog(@"%lu", [p retainCount]); // "2"
+};
+
+Block_copy(myBlock); // copy 操作使 block 转移到堆中，此时 block 中访问外部变量会造成 retain
+myBlock();
+
+[p release]; // p 引用计数 -1，此时为 1，释放不了
+```
+```objectivec
+// 如在 block 中访问了外界的对象，一定要给对象加上 __block，只要加上了
+// 哪怕 block 在堆中，也不会对外界的对象进行 retain
+
+__block Person *p = [[Person alloc] init]; // p 引用计数为 1
+NSLog(@"%lu", [p retainCount]);    // "1"
+
+void (^myBlock)() = ^{
+  NSLog(@"%@", p); // 由于 p 定义时加上了 __block，不会有 retain，p 引用计数不变为 1
+  NSLog(@"%lu", [p retainCount]); // "1"
+};
+
+Block_copy(myBlock);
+myBlock();
+
+[p release]; // p 引用计数 -1，此时为 0，释放了
+```
+
+
+
+# <h2 id="block-5">内存管理</h2>
+block 也是一个对象
+
+## MRC
+* 只要 block 没有引用外部局部变量，block 放在全局区
+* 只要 block 引用外部局部变量，block 则放在栈里
+* block 只能使用 copy，不能使用 retain，使用 retain，block 还是在栈中，使用 copy 才会到堆里
+
+## ARC
+* 只要 block 引用外部局部变量，block 则放在堆里
+* block 使用 strong，最好不要使用 copy
+
+
+# <h2 id="block-6">循环引用</h2>
+block 造成循环引用: block 会默认对里面用到的所有外部对象变量全部强引用
+
+```objectivec
+_block = ^{
+    NSLog(@"%@", self); // 强引用了 self，造成该实例不会销毁
+};
+
+// 解决: 使用弱引用
+__weak typeof(self) weakSelf = self;
+_block = ^{
+    NSLog(@"%@", weakSelf);
+    
+    // 由于 block 中可能要用到这个 weakSelf
+    // 而当用到时，可能这个弱指针被销毁了，所以可在定义一个强指针保存它
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    // 之后就可使用这个 strongSelf 啦
+};
+```
+
+
+
+# <h2 id="block-7">传递变量</h2>
+```objectivec
+// 如果是局部变量，block 是值传递
+int a = 3;
+void (^block)() = ^{ NSLog(@"%d", a); };
+a = 5;
+block(); // 3
+```
+```objectivec
+// 如是静态变量，block 是指针传递
+static int a = 3;
+void (^block)() = ^{ NSLog(@"%d", a); };
+a = 5;
+block(); // 5
+```
+```objectivec
+// 如是全局变量，block 是指针传递
+int a = 3;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    void (^block)() = ^{ NSLog(@"%d", a); };
+    a = 5;
+    block(); // 5
+}
+```
+```objectivec
+// 如是 __block 修饰的变量，block 是指针传递
+__block int a = 3;
+void (^block)() = ^{ NSLog(@"%d", a); };
+a = 5;
+block(); // 5
+```
