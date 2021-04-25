@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-21T12:37:24+08:00</updated>
+  <updated>2021-04-25T18:07:05+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -14,11 +14,2048 @@
 
   
   <entry>
-    <title type="html"><![CDATA[How-to-install-octopress]]></title>
-    <link href="http://away0x.github.io/blog/2021/04/21/how-to-install-octopress/"/>
-    <updated>2021-04-21T12:31:15+08:00</updated>
-    <id>http://away0x.github.io/blog/2021/04/21/how-to-install-octopress</id>
-    <content type="html"><![CDATA[
+    <title type="html"><![CDATA[ObjectiveC - 面向对象基础]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/03/oc-oop-basic/"/>
+    <updated>2018-02-03T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/03/oc-oop-basic</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">OC 多文件开发</a></li>
+<li><a href="#o2">isa 指针</a></li>
+<li><a href="#o3">实例变量(成员变量)</a></li>
+<li><a href="#o4">方法</a></li>
+<li><a href="#o5">私有变量和私有方法</a></li>
+<li><a href="#o6">self</a></li>
+<li><a href="#o7">NSObject</a></li>
+<li><p><a href="#o8">例子</a></p></li>
+<li><p>OC 中定义一个类分为声明和实现</p>
+
+<ul>
+<li>类可不声明只实现 (但不建议这样写)</li>
+</ul>
+</li>
+<li>类名首字母应大写</li>
+<li>OC 的类本质上就是一个结构体</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 参考 C 语言的结构体的使用过程</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Person</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Person</span> <span class="n">sp</span><span class="p">;</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Person</span> <span class="o">*</span><span class="n">sip</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">sp</span><span class="p">;</span> <span class="c1">// 结构体指针</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="o">*</span><span class="n">sip</span><span class="p">).</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+</span><span class='line'><span class="p">(</span><span class="o">*</span><span class="n">sip</span><span class="p">).</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;wutong&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 或者 (不能用 . 语法直接访问实例变量)</span>
+</span><span class='line'><span class="n">sip</span><span class="o">-&gt;</span><span class="n">age</span> <span class="o">=</span> <span class="mi">26</span><span class="p">;</span>
+</span><span class='line'><span class="n">sip</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;wt&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>所有的对象没有实例化之前都是 nil</li>
+<li>OC 不支持方法重载但支持重写</li>
+</ul>
+
+
+<h1><h2 id="o1">OC 多文件开发</h2></h1>
+
+<ul>
+<li>多文件开发中，文件要使用谁，就导入谁的 h 文件即可
+
+<ul>
+<li>不能导入 m 文件，否则会报错</li>
+</ul>
+</li>
+<li>通常把不同的类放到不同的文件中，每个类的声明和实现分开
+
+<ul>
+<li>声明写在 h 文件中</li>
+<li>实现写在 m 文件中</li>
+<li>类名是什么，文件名就是什么</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>@interface, @implementation</h2>
+
+<ul>
+<li>@interface 写在 h 文件中，用于声明</li>
+<li>@implementation 写在 m 文件中，用于实现具体逻辑</li>
+</ul>
+
+
+<h1><h2 id="o2">isa 指针</h2></h1>
+
+<ul>
+<li>每个对象都包含一个 isa 指针，这个指针指向当前对象所属的类</li>
+<li><code>[p eat]</code> 表示给 p 所指向的对象发送一条 eat 消息，调用对象的 eat 方法
+
+<ul>
+<li>此时对象会顺着内部 isa 指针找到存储于类中的方法执行</li>
+</ul>
+</li>
+<li>isa 是对象中的隐藏指针，指向这个对象的类</li>
+<li>通过 isa 我们可在运行时知道当前对象是属于哪个类的</li>
+</ul>
+
+
+<h1><h2 id="o3">实例变量(成员变量)</h2></h1>
+
+<ul>
+<li>其写在 @interface 的大括号中</li>
+<li>默认权限是受保护的，想外部访问需加上 @public</li>
+<li>编写 OC 实例变量时，建议<strong>私有实例变量</strong>命名前加上 <code>_</code></li>
+<li>实例变量不能离开类，不能在定义的同时初始化</li>
+<li>实例变量只能通过对象来访问</li>
+<li>实例变量不要以 new 开头，否则有可能导致未知错误</li>
+</ul>
+
+
+<h2>实例变量修饰符</h2>
+
+<p>实例变量修饰符作用域: 从出现的位置，一直到下一个修饰符出现为止</p>
+
+<ol>
+<li>@public
+
+<ol>
+<li>可以在其他类中访问</li>
+<li>可以在本类中访问</li>
+<li>可在子类中访问父类 public 实例变量</li>
+</ol>
+</li>
+<li>@private
+
+<ol>
+<li>不可在其他类中访问</li>
+<li>可以在本类中访问</li>
+<li>不可在子类中访问父类 private 实例变量</li>
+</ol>
+</li>
+<li>@protected <strong>(没添加修饰符的都默认被该修饰符修饰)</strong>
+
+<ol>
+<li>不可在其他类中访问</li>
+<li>可以在本类中访问</li>
+<li>可在子类中访问父类 protected 实例变量</li>
+</ol>
+</li>
+<li>@package
+
+<ol>
+<li>介于 public 和 private 之间</li>
+<li>如在其他包中访问那么就是 private</li>
+<li>如在当前包中访问那么就是 public</li>
+<li>可在子类中访问父类 package 实例变量</li>
+</ol>
+</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_year</span><span class="p">;</span> <span class="c1">// protected 不公开，外部想访问需提供 setter/getter</span>
+</span><span class='line'><span class="k">@public</span>        <span class="c1">// public 公开，外部可直接访问</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">f</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>全局变量、局部变量和实例变量的区别</h2>
+
+<h3>全局变量</h3>
+
+<ul>
+<li>全局变量依托于文件</li>
+<li>全局变量可先定义再初始化，或定义同时初始化</li>
+<li>存储于<strong>静态区</strong>
+
+<ul>
+<li>程序一启动就会分配存储空间，直到程序结束才会释放</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>局部变量</h3>
+
+<ul>
+<li>局部变量依托于函数或代码块</li>
+<li>局部变量可先定义再初始化，或定义同时初始化</li>
+<li>存储于<strong>栈</strong>
+
+<ul>
+<li>栈中的数据，系统会自动给我们释放</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>实例变量</h3>
+
+<ul>
+<li>实例变量依托于类</li>
+<li>实例变量不能在定义的同时初始化</li>
+<li>存储于<strong>堆</strong> (当前对象对应的堆的存储空间中)
+
+<ul>
+<li>存储在堆中的数据，不会被自动释放，只能程序员手动释放</li>
+</ul>
+</li>
+</ul>
+
+
+<h1><h2 id="o4">方法</h2></h1>
+
+<ul>
+<li>C 语言函数，声明在 h 文件中，实现在 c 文件中</li>
+<li>OC 方法，声明在 @interface 中，实现在 @implementation 中</li>
+<li>OC 方法声明写在 @interface 的大括号下面，而不能写在其中</li>
+<li>OC 方法支持重载</li>
+<li>OC 中的方法，如没有形参不需要写 ()，这是因为 OC 方法中的 () 有其他用处，是用于扩住数据类型的</li>
+<li>有参方法的冒号和外部参数名也是方法名的一部分</li>
+<li><strong>方法可以没有声明只有实现</strong></li>
+<li><strong>方法如声明了没实现，编译不会报错，运行时会报错</strong>
+
+<ul>
+<li>错误: <code>unrecognized selector send to class/instance</code> (发送了一个不能识别的消息)</li>
+</ul>
+</li>
+<li>方法不要以 new 开头，否则有可能导致未知错误</li>
+<li>OC 方法分类方法和实例方法</li>
+</ul>
+
+
+<h2>实例方法 (减号方法)</h2>
+
+<ul>
+<li>只能通过实例调用</li>
+<li>方法中可以直接使用实例变量
+8 方法中可调用其他实例方法(通过 self 调用)以及类方法(通过类调用)</li>
+</ul>
+
+
+<h2>类方法 (加号方法)</h2>
+
+<ul>
+<li>只能通过类名调用</li>
+<li>方法中不能直接使用实例变量</li>
+<li>不用每次使用方法都要创建对象开辟存储空间</li>
+<li>调用类方法的效率会比调用实例方法高</li>
+<li>方法中可调用其他类方法或者实例方法
+
+<ul>
+<li>类方法中调用实例方法，需要实例化类，通过实例调用</li>
+<li>类方法中调用其他类方法
+
+<ol>
+<li>通过类调用</li>
+<li>通过 self 调用</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>一般用于定义工具方法</li>
+</ul>
+
+
+<h1><h2 id="o5">私有变量和私有方法</h2></h1>
+
+<h2>私有变量</h2>
+
+<ul>
+<li>实例变量即可在 interface 中定义也可在 implementation 中定义</li>
+<li>implementation 中定义的实例变量在其他类中无法访问 (即使其是用 public 修饰的)</li>
+<li>implementation 中定义的实例变量只能在本类中访问</li>
+<li>implementation 中定义的实例变量不能和 interface 中定义的实例变量同名</li>
+<li>因为在其他文件中通常都只是包含头文件而不会包含实现文件，所以在 m 文件中声明的实例变量是 private 的，这种情况下使用 public 也是徒劳的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Demo.m</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span> <span class="c1">// 外界访问不到，即使是 public</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>私有方法</h2>
+
+<ul>
+<li>私有方法: 只有实现没有声明的方法</li>
+<li>原则上: 私有方法只能在本类中才能调用
+
+<ul>
+<li>注意: OC 中没有真正的私有方法</li>
+<li>因为 OC 的方法调用是通过消息机制，所以可通过 selector 访问到私有方法</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// p 的 test 是个私有方法，没在 interface 中声明</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">performSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">test</span><span class="p">)];</span> <span class="c1">// 但仍可通过这种方式调用到</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o6">self</h2></h1>
+
+<ol>
+<li>self 在类方法中，那么 self 就代表那个类</li>
+<li>self 在实例方法中，那么 self 就代表调用当前实例方法的那个实例</li>
+<li>可通过 self 调用实例变量 <code>self-&gt;_age</code></li>
+<li><strong>注意点:</strong>
+
+<ol>
+<li>self 会自动区分类方法和实例方法，如果在类方法中使用 self 调用实例方法，那么会直接报错</li>
+<li>不能再实例方法或类方法中利用 self 调用当前 self 所在的方法，会造成死循环</li>
+</ol>
+</li>
+<li>使用场景:
+
+<ol>
+<li>可用于在实例方法之间的相互调用</li>
+<li>可用于在类方法之间的相互调用</li>
+<li>可用于区分成员变量和局部变量同名的情况 <code>self-&gt;实例变量</code></li>
+</ol>
+</li>
+</ol>
+
+
+<h1><h2 id="o7">NSObject</h2></h1>
+
+<p>提供了创建对象实例的能力(new 方法)，所以需继承它</p>
+
+<h1><h2 id="o8">例子</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 类声明</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 实例变量定义:</span>
+</span><span class='line'>    <span class="c1">//     1. 默认情况下，OC 对象中的实例变量，调用时是不能直接访问的</span>
+</span><span class='line'>    <span class="c1">//     2. 所以需要公开才可访问 @public 才可通过一个指向结构体的指针访问到</span>
+</span><span class='line'>    <span class="c1">//     3. @public 下面的实例变量 cpu、cpu2 都会被公开</span>
+</span><span class='line'><span class="k">@public</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">_cpu</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">_cpu2</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 类方法声明</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">do</span><span class="p">;</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">do:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 实例方法声明</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">about</span><span class="p">;</span>    <span class="c1">// 无参无返回值</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="nf">about2</span><span class="p">;</span> <span class="c1">// 无参有返回值</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 有参函数声明</span>
+</span><span class='line'><span class="c1">//    - 参数的数据类型前面必须加上一个 &quot;:&quot; 号</span>
+</span><span class='line'><span class="c1">//        - 注意: 当前这个方法名称为 &quot;printInt:&quot; 名称中是有冒号的</span>
+</span><span class='line'><span class="c1">//        - 方法名为 &quot;printInt:&quot;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">printInt:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span><span class="p">;</span> <span class="c1">// 有一参有返回值</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//    - 定义多参方法 (无外部参数名)</span>
+</span><span class='line'><span class="c1">//        - 方法名为 &quot;printInt::&quot;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">printInt:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="o">:</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">content</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//    - 定义多参方法 (有外部参数名)</span>
+</span><span class='line'><span class="c1">//        - 方法名为 &quot;printMessageWithNumber:andContent:&quot;</span>
+</span><span class='line'><span class="c1">//        - 方法名像自然语言一样流畅，建议这样写</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">printMessageWithNumber:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="nf">andContent:</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="nv">content</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 类实现</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Iphone</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 类方法的实现</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">do</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 类方法中调用实例方法 (不可直接调用)</span>
+</span><span class='line'>    <span class="n">Iphone</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Iphone</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">p</span> <span class="n">about</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 类方法中调用其他类方法</span>
+</span><span class='line'>    <span class="c1">// 1. 通过类</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">Iphone</span> <span class="n">do2</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">// 2. 通过 self</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="n">do2</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">do:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 实例方法的实现</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">about</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 实例方法中可访问成员变量</span>
+</span><span class='line'>    <span class="c1">// 1. 直接访问</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span> <span class="n">_cpu</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 2. 通过 self 访问</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span> <span class="nb">self</span><span class="o">-&gt;</span><span class="n">_cpu</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 调用类方法</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">Iphone</span> <span class="k">do</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 调用其他实例方法</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="n">about2</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="nf">about2</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;啦啦啦&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">printInt:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">number</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">printInt:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="o">:</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">content</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%s&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">printMessageWithNumber</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="n">number</span> <span class="nl">andContent</span><span class="p">:(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">content</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d %s&quot;</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">content</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 类调用</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. 实例化</span>
+</span><span class='line'>    <span class="c1">// OC 中要想创建类实例，需给类发送消息 new (这个类需继承 NSObject)</span>
+</span><span class='line'>    <span class="c1">//    1. new 创建出来的对象存储在堆中，堆中的数据不会自动释放 (栈才会)</span>
+</span><span class='line'>    <span class="c1">// 实例化会做 3 件事情</span>
+</span><span class='line'>    <span class="c1">//    1. 为 Iphone 类创建出来的对象分配存储空间 (在堆内存中开辟空间)</span>
+</span><span class='line'>    <span class="c1">//    2. 初始化 Iphone 类创建出来的对象中的实例变量</span>
+</span><span class='line'>    <span class="c1">//    3. 返回 Iphone 类创建出来的对象对应的地址</span>
+</span><span class='line'>    <span class="c1">//        - 返回的地址是类的第 0 个属性的地址</span>
+</span><span class='line'>    <span class="c1">//        - 并不是自己创建的那个，而是系统自动添加的名为 isa 的属性 (继承于 NSObject)</span>
+</span><span class='line'>    <span class="c1">//        - 其实系统会在堆内存中开辟一块空间存储这个类，称其为类对象</span>
+</span><span class='line'>    <span class="c1">//          类对象中存储了这个类的方法列表，isa 就指向这个类对象，</span>
+</span><span class='line'>    <span class="c1">//          所以可通过其调用类的属性和方法</span>
+</span><span class='line'>    <span class="c1">// OC 的类本质上就是一个结构体，所以 p 这个指针其实就是指向了一个结构体</span>
+</span><span class='line'>    <span class="n">Iphone</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Iphone</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. 访问类的公开实例变量 (不能用 . 语法直接访问实例变量)</span>
+</span><span class='line'>    <span class="n">p</span><span class="o">-&gt;</span><span class="n">_cpu</span> <span class="o">=</span> <span class="mf">3.5</span><span class="p">;</span> <span class="c1">// 通过指针访问</span>
+</span><span class='line'>    <span class="n">p</span><span class="o">-&gt;</span><span class="n">_cpu2</span> <span class="o">=</span> <span class="mf">3.6</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f %f&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">_cpu</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">_cpu2</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. 调用方法 (通过指针发送消息)</span>
+</span><span class='line'>    <span class="c1">//    - 消息机制 (调用: 发送消息: [类/实例 方法名])</span>
+</span><span class='line'>    <span class="c1">//    1. 调用类方法</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">Iphone</span> <span class="k">do</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//    2. 调用实例方法</span>
+</span><span class='line'>    <span class="c1">//      先在栈内存中找到 p 这个局部变量，其存储了实例对象的地址</span>
+</span><span class='line'>    <span class="c1">//      然后通过这个地址在堆内存中找到实例对象的存储空间，并得到里面的 isa 指针</span>
+</span><span class='line'>    <span class="c1">//      再通过 isa 里存放的地址，找到 Iphone 类对象的存储空间</span>
+</span><span class='line'>    <span class="c1">//      再在存储空间的方法列表中找是否有名为 about 的方法，如有则执行</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">p</span> <span class="n">about</span><span class="p">];</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="o">*</span><span class="n">content</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="n">about2</span><span class="p">];</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">printInt</span><span class="p">:</span><span class="mi">123</span><span class="p">];</span> <span class="c1">// 调用有参数的方法</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">num2</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">printInt</span><span class="p">:</span><span class="mi">123</span> <span class="o">:</span><span class="s">&quot;lalala&quot;</span><span class="p">];</span> <span class="c1">// 无外部参数名</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">p</span> <span class="nl">printMessageWithNumber</span><span class="p">:</span><span class="mi">123</span> <span class="nl">andContent</span><span class="p">:</span><span class="s">&quot;lalala&quot;</span><span class="p">];</span> <span class="c1">// 有外部参数名</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Block]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/03/oc-block/"/>
+    <updated>2018-02-03T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/03/oc-block</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#block-1">函数指针与 block</a></li>
+<li><a href="#block-2">block 与 typedef</a></li>
+<li><a href="#block-3">应用场景</a></li>
+<li><a href="#block-4">注意事项</a></li>
+<li><a href="#block-5">内存管理</a></li>
+<li><a href="#block-6">循环引用</a></li>
+<li><p><a href="#block-7">传递变量</a></p></li>
+<li><p>block 是 iOS 中一种比较特殊的数据类型</p></li>
+<li>block 是苹果官方特别推荐使用的数据类型，应用场景比较广泛
+
+<ul>
+<li>动画、多线程、集合遍历、网络请求回调</li>
+</ul>
+</li>
+<li>block 的作用
+
+<ul>
+<li>用来保存某一段代码，可以在恰当的时间再取出来调用</li>
+<li>功能类似于函数和方法</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// block 的格式</span>
+</span><span class='line'><span class="err">返回值类型</span> <span class="p">(</span><span class="o">^</span><span class="n">block</span><span class="err">变量名</span><span class="p">)(</span><span class="err">形参列表</span><span class="p">)</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="err">形参列表</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="block-1">函数指针与 block</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">void</span> <span class="nf">printA</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">chjar</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. 调用函数</span>
+</span><span class='line'>    <span class="n">printA</span><span class="p">();</span> <span class="c1">// &quot;a&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. 指向函数 printA 的指针</span>
+</span><span class='line'>    <span class="c1">//    - void 表指向的函数没有返回值</span>
+</span><span class='line'>    <span class="c1">//    - () 代表指向的函数没有形参</span>
+</span><span class='line'>    <span class="c1">//    - (*ap) 代表 ap 是一个指向函数的指针</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">ap</span><span class="p">)</span> <span class="p">();</span>
+</span><span class='line'>    <span class="n">ap</span> <span class="o">=</span> <span class="n">printA</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">ap</span><span class="p">();</span> <span class="c1">// &quot;a&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// ---------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. 定义 block</span>
+</span><span class='line'>    <span class="c1">//    - block 和函数一样，可以没有(有)返回值，也没有(有)</span>
+</span><span class='line'>    <span class="c1">//    - void 代表这个 block 将来保存的代码没有返回值</span>
+</span><span class='line'>    <span class="c1">//    - () 代表这个 block 将来保存的代码没有形参</span>
+</span><span class='line'>    <span class="c1">//    - (^printB) 代表 printB 是一个 block 变量，可以用于保存一段 block 代码</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">printB</span><span class="p">)</span> <span class="p">();</span> <span class="c1">// 定义</span>
+</span><span class='line'>    <span class="n">ap2</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>           <span class="c1">// 保存 block 类型代码段</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="n">ap2</span><span class="p">();</span> <span class="c1">// &quot;b&quot; 执行 block</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">int</span> <span class="p">(</span><span class="o">^</span><span class="n">sum</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;sum = %i&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">));</span> <span class="c1">// &quot;sum = 50&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="block-2">block 与 typedef</h2></h1>
+
+<p>使用 typedef 可简化 block 的声明</p>
+
+<h2>函数指针使用 typedef</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 函数</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">minus</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">chjar</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">sumP</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span> <span class="c1">// 函数指针</span>
+</span><span class='line'>    <span class="n">sumP</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">sumP</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;3&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">minusP</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">minusP</span> <span class="o">=</span> <span class="n">minus</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">minusP</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">int</span> <span class="nf">sum</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="kt">int</span> <span class="nf">minus</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用 typedef</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">calculte</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">chjar</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">calculte</span> <span class="n">sumP</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">sumP</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;3&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">calculte</span> <span class="n">minusP</span> <span class="o">=</span> <span class="n">minus</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">minusP</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>block 使用 typedef</h2>
+
+<p>不能在方法代码中使用 typedef，必须写在文件的顶部或头文件中</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">chjar</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">^</span><span class="n">sum</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;3&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">^</span><span class="n">minus</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">minus</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">minus</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用 typedef</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">^</span><span class="n">calculte</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">chjar</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">calculte</span> <span class="n">sum</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;3&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">calculte</span> <span class="n">minus</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">minus</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="block-3">应用场景</h2></h1>
+
+<ol>
+<li>代码复用</li>
+<li>高阶函数 (作为参数或返回值)</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">run:</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)())</span><span class="nv">blockFunc</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'>    <span class="n">blockFunc</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span><span class="p">(</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;block...&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>类之间的通信
+
+<ol>
+<li>可替代代理委托</li>
+<li>B 类中为 A 类的某个类型为 block 的属性赋值，A 类中会在某个事件中调用这个 block，从而实现跨类通信</li>
+</ol>
+</li>
+</ol>
+
+
+<h1><h2 id="block-4">注意事项</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 1. block 中可以访问外部的变量</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span> <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span> <span class="c1">// &quot;10&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 2. block 中定义了和外部同名的变量，则 blick 内的优先</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span> <span class="c1">// &quot;20&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 3. 默认情况下，不可以在 block 中修改外界变量的值</span>
+</span><span class='line'><span class="c1">//    - 因为 block 中的变量和外界的变量不是用一个变量</span>
+</span><span class='line'><span class="c1">//    - 如果 block 中访问了外界的变量，block 会将外界的这个变量拷贝一份到堆内存中</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">// 修改了外部变量(实际上不是外部的变量)，报错</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span> <span class="c1">// 报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 4. block 会在定义时拷贝外界使用到的变量</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// 在这里就将 a 的值拷贝了一份，此时 a 值为 10</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">// 不会影响到 block 中拷贝的值</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span> <span class="c1">// &quot;10&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 5.如想在 block 中修改外界变量的值，必须在外界变量前加上 __block</span>
+</span><span class='line'><span class="c1">//    - 这样如在 block 中修改了外界变量的值，会影响到外界变量的值</span>
+</span><span class='line'><span class="c1">//    - 因为加了 __block 就是地址传递，所以可修改</span>
+</span><span class='line'><span class="k">__block</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span>       <span class="c1">// &quot;20&quot;</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// &quot;20&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>block 可存储于堆中也可存储在栈中，默认在栈中
+
+<ul>
+<li>如对 block 进行 copy 操作，block 会转移到堆中</li>
+<li>如 block 在栈中，block 中访问了外界的对象，那么不会对对象进行 retain 操作</li>
+<li>但是如果 block 在堆中，block 中访问了外界的对象，那么会对外界的对象进行一次 retain 操作</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span> <span class="c1">// p 引用计数为 1</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%lu&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span> <span class="n">retainCount</span><span class="p">]);</span>    <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span> <span class="c1">// 由于下面用了 Block_copy，所以这里是 retain，p 引用计数 +1，为 2</span>
+</span><span class='line'>  <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%lu&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span> <span class="n">retainCount</span><span class="p">]);</span> <span class="c1">// &quot;2&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Block_copy</span><span class="p">(</span><span class="n">myBlock</span><span class="p">);</span> <span class="c1">// copy 操作使 block 转移到堆中，此时 block 中访问外部变量会造成 retain</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="k">release</span><span class="p">];</span> <span class="c1">// p 引用计数 -1，此时为 1，释放不了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 如在 block 中访问了外界的对象，一定要给对象加上 __block，只要加上了</span>
+</span><span class='line'><span class="c1">// 哪怕 block 在堆中，也不会对外界的对象进行 retain</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">__block</span> <span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span> <span class="c1">// p 引用计数为 1</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%lu&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span> <span class="n">retainCount</span><span class="p">]);</span>    <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">myBlock</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span> <span class="c1">// 由于 p 定义时加上了 __block，不会有 retain，p 引用计数不变为 1</span>
+</span><span class='line'>  <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%lu&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span> <span class="n">retainCount</span><span class="p">]);</span> <span class="c1">// &quot;1&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Block_copy</span><span class="p">(</span><span class="n">myBlock</span><span class="p">);</span>
+</span><span class='line'><span class="n">myBlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="k">release</span><span class="p">];</span> <span class="c1">// p 引用计数 -1，此时为 0，释放了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="block-5">内存管理</h2></h1>
+
+<p>block 也是一个对象</p>
+
+<h2>MRC</h2>
+
+<ul>
+<li>只要 block 没有引用外部局部变量，block 放在全局区</li>
+<li>只要 block 引用外部局部变量，block 则放在栈里</li>
+<li>block 只能使用 copy，不能使用 retain，使用 retain，block 还是在栈中，使用 copy 才会到堆里</li>
+</ul>
+
+
+<h2>ARC</h2>
+
+<ul>
+<li>只要 block 引用外部局部变量，block 则放在堆里</li>
+<li>block 使用 strong，最好不要使用 copy</li>
+</ul>
+
+
+<h1><h2 id="block-6">循环引用</h2></h1>
+
+<p>block 造成循环引用: block 会默认对里面用到的所有外部对象变量全部强引用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">_block</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="nb">self</span><span class="p">);</span> <span class="c1">// 强引用了 self，造成该实例不会销毁</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解决: 使用弱引用</span>
+</span><span class='line'><span class="k">__weak</span> <span class="k">typeof</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span> <span class="n">weakSelf</span> <span class="o">=</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="n">_block</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">weakSelf</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 由于 block 中可能要用到这个 weakSelf</span>
+</span><span class='line'>    <span class="c1">// 而当用到时，可能这个弱指针被销毁了，所以可在定义一个强指针保存它</span>
+</span><span class='line'>    <span class="k">__strong</span> <span class="k">typeof</span><span class="p">(</span><span class="n">weakSelf</span><span class="p">)</span> <span class="n">strongSelf</span> <span class="o">=</span> <span class="n">weakSelf</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// 之后就可使用这个 strongSelf 啦</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="block-7">传递变量</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 如果是局部变量，block 是值传递</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">block</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span> <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="n">block</span><span class="p">();</span> <span class="c1">// 3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 如是静态变量，block 是指针传递</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">block</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span> <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="n">block</span><span class="p">();</span> <span class="c1">// 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 如是全局变量，block 是指针传递</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">block</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span> <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">block</span><span class="p">();</span> <span class="c1">// 5</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 如是 __block 修饰的变量，block 是指针传递</span>
+</span><span class='line'><span class="k">__block</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="n">block</span><span class="p">)()</span> <span class="o">=</span> <span class="o">^</span><span class="p">{</span> <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="n">block</span><span class="p">();</span> <span class="c1">// 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - SEL, Id]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/02/oc-sel-id/"/>
+    <updated>2018-02-02T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/02/oc-sel-id</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#sel">SEL</a></li>
+<li><a href="#id">id</a></li>
+</ul>
+
+
+<h1><h2 id="sel">选择器类型 SEL</h2></h1>
+
+<ul>
+<li>SEL 类型代表着方法的签名，在类对象的方法列表中存储着该签名与方法代码的对应关系</li>
+<li>每个类的方法列表都存储在类对象中</li>
+<li>每个方法都有一个与之对应的 SEL 类型的对象</li>
+<li>根据一个 SEL 对象就可以找到方法的地址，进而调用方法</li>
+<li>SEL 类型的定义: <code>typedef struct obj_selector *SEL;</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">[</span><span class="n">p</span> <span class="n">test</span><span class="p">];</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">1. 首先把 test 这个方法名包装成 SEL 类型的数据</span>
+</span><span class='line'><span class="cm">2. 根据 SEL 数据到该类的类对象上去找对应的方法的代码，找到就执行该代码</span>
+</span><span class='line'><span class="cm">3. 没找到则根据类对象上父类的类对象指针，去父类的类对象中查找，找到则执行父类的代码</span>
+</span><span class='line'><span class="cm">4. 如还没找到，一直向上找，直到基类 NSObject</span>
+</span><span class='line'><span class="cm">5. 如都没找到就报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">**这个操作过程中有缓存，第一次找是一个个的找，很耗性能，之后再用，直接从缓存中取用</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>SEL 的作用 1: 配合对象/类来检查对象/类中有没有实现某一个方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">SEL</span> <span class="n">sel</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">setAge</span><span class="p">:);</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="c1">// 判断对象 p 中有没实现实例方法 &quot;setAge:&quot;</span>
+</span><span class='line'><span class="kt">BOOL</span> <span class="n">flag</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="n">sel</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// respondsToSelector 注意点</span>
+</span><span class='line'><span class="c1">// 1. 如果是通过一个对象来调用该方法那么会判断该对象有没实现该实例方法</span>
+</span><span class='line'><span class="c1">// 2. 如果是通过类来调用，那么会判断该类有没实现这个类方法</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">flag</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="n">sel</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>SEL 的作用 2: 配合对象/类来调用某一个 SEL 方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 调用无参方法</span>
+</span><span class='line'><span class="kt">SEL</span> <span class="n">sel</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="n">demo</span><span class="p">);</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="c1">// 调用 p 对象中 sel 类型对应的方法，即 demo 方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">performSelector</span><span class="p">:</span><span class="n">sel</span><span class="p">];</span> <span class="c1">// 相当于 [p demo]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 调用单参方法</span>
+</span><span class='line'><span class="kt">SEL</span> <span class="n">sel2</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">demo</span><span class="p">:);</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">performSelector</span><span class="p">:</span><span class="n">sel2</span> <span class="nl">withObject</span><span class="p">:</span><span class="s">@&quot;123&quot;</span><span class="p">];</span> <span class="c1">// withObject 就是要传递的参数</span>
+</span><span class='line'><span class="c1">// 如用 performSelector 调用有参方法，那么参数必须是对象类型</span>
+</span><span class='line'><span class="c1">//    即方法的形参必须是一个对象，因为 withObject 只能传递一个对象</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 调用多参方法 (performSelector 最多只能传递 2 个参数)</span>
+</span><span class='line'><span class="kt">SEL</span> <span class="n">sel3</span> <span class="o">=</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">demo</span><span class="p">:</span><span class="nl">andOther</span><span class="p">:);</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">performSelector</span><span class="p">:</span><span class="n">sel3</span> <span class="nl">withObject</span><span class="p">:</span><span class="s">@&quot;123&quot;</span> <span class="nl">withObject</span><span class="p">:</span><span class="s">@&quot;456&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>SEL 的作用 3: 配合对象将 SEL 类型作为方法的形参</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="c1">// 调用传入对象的指定方法</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">useSel:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">obj</span> <span class="nf">andSel:</span><span class="p">(</span><span class="kt">SEL</span><span class="p">)</span><span class="nv">sel</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">useSel:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">obj</span> <span class="nf">andSel:</span><span class="p">(</span><span class="kt">SEL</span><span class="p">)</span><span class="nv">sel</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">obj</span> <span class="nl">performSelector</span><span class="p">:</span><span class="n">sel</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//     调用 obj1 的 test 方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">demo</span> <span class="nl">useSel</span><span class="p">:</span><span class="n">obj1</span> <span class="nl">andSel</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">test</span><span class="p">)];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="id">id</h2></h1>
+
+<ul>
+<li>id 是一个数据类型，并且是一个动态数据类型 (万能指针)</li>
+</ul>
+
+
+<h3>静态类型</h3>
+
+<p>将一个指针变量定义为特定类的对象时，使用的是静态类型，在编译时就知道这个指针变量所属的类。这个变量总是存储特定类的对象</p>
+
+<p>编译时已经知道类中有哪些属性和方法，如访问了不属于该静态类型的属性和方法，编译器会报错</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>动态类型</h3>
+
+<p>这一特性是程序直到执行时才确定对象所属的类</p>
+
+<p>编译时不知道其真实类型，在运行时才知道其真实类型。并且通过动态类型定义变量，如访问了不属于该动态类型的属性和方法，编译器不会报错 (躲过了编译器的检查)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// id 的定义中，已经包好了 *，所以自己不用写</span>
+</span><span class='line'><span class="c1">// id 指针只能指向 OC 中的对象</span>
+</span><span class='line'><span class="c1">// 当 id 指向的变量调用了本项目中所有类都没有的方法，编译器会报错</span>
+</span><span class='line'><span class="c1">// id 类型不能使用 . 语法。因为 . 语法是编译时特性，id 是运行时特性</span>
+</span><span class='line'><span class="kt">id</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>id == NSObject *</code>，但是数据类型不一样
+
+<ol>
+<li>id 是动态类型</li>
+<li><code>NSObject *</code> 是静态类型</li>
+</ol>
+</li>
+</ul>
+
+
+<h3>动态类型的作用</h3>
+
+<ol>
+<li>调用子类方法而不用强转
+
+<ol>
+<li>通过静态类型定义变量，不能调用子类特有的方法(除非强转成子类)
+ <code>objectivec
+ id obj = [Father new];
+ [obj child_function]; // 可调用子类特有的方法
+</code></li>
+<li>通过动态类型定义变量，可以调用子类特有的方法(不用强转)</li>
+</ol>
+</li>
+<li>可通过动态数据类型调用私有方法(即只有实现没有声明的方法)</li>
+</ol>
+
+
+<h3>动态类型的缺点</h3>
+
+<ul>
+<li>由于动态类型可调用任意方法，所以有可能调用到不属于自己的方法，而编译不会报错，所以可能导致运行时报错</li>
+<li>虽说 id 类型可存储任何类型的对象，但不要养成滥用这种通用类型的习惯
+
+<ol>
+<li>如没使用<strong>多态</strong>尽量使用静态类型
+
+<ul>
+<li>用于多态，可减少代码量，避免调用子类特有的方法需要强制类型转换</li>
+</ul>
+</li>
+<li>静态类型可以更早的发现错误 (在编译阶段而不是运行阶段)】</li>
+<li>静态类型可提高程序的可读性</li>
+<li><strong>使用动态类型前最好判断其真实类型</strong> (避免运行时错误)</li>
+</ol>
+</li>
+</ul>
+
+
+<h3>动态类型判断真实类型</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// </span>
+</span><span class='line'><span class="c1">// 方法1: isKindOfClass:classObj 判断实例对象是否是这个类或者这个类的子类的实例</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">Student</span> <span class="o">*</span><span class="n">stu</span> <span class="o">=</span> <span class="p">[</span><span class="n">Student</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">BOOL</span> <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">isKindOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span> <span class="c1">// YES</span>
+</span><span class='line'><span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">stu</span> <span class="nl">isKindOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span>    <span class="c1">// YES</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// isMemberOfClass:classObj 判断是否是这个类的实例</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">Student</span> <span class="o">*</span><span class="n">stu</span> <span class="o">=</span> <span class="p">[</span><span class="n">Student</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">BOOL</span> <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">isMemberOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span> <span class="c1">// YES</span>
+</span><span class='line'><span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">stu</span> <span class="nl">isMemberOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span>    <span class="c1">// NO (是子类不是实例)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="kt">id</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">([</span><span class="n">obj</span> <span class="nl">isKindOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">obj</span> <span class="n">person_function</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 基础]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/01/oc-basic/"/>
+    <updated>2018-02-01T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/01/oc-basic</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#c">OC vs. C</a></li>
+<li><a href="#type">数据类型</a></li>
+<li><a href="#if-loop">流程语句</a></li>
+<li><a href="#function">函数</a></li>
+<li><a href="#oop">面向对象</a></li>
+<li><a href="#catch">异常处理</a></li>
+<li><a href="#import">import</a></li>
+<li><a href="#output">输入输出</a></li>
+<li><a href="#hello">Hello World</a></li>
+</ul>
+
+
+<h1><h2 id="c">OC vs. C</h2></h1>
+
+<ul>
+<li>Objective-C 是一门面向对象的计算机语言</li>
+<li>它在 C 语言的基础上增加了一层最小的面向对象语法</li>
+<li>OC 完全兼容 C 语言，可在 OC 代码中混入 C/C++ 代码
+
+<ul>
+<li>并且可将 C 语言的源文件和 OC 的源文件组合在一起生成可执行文件</li>
+</ul>
+</li>
+</ul>
+
+
+<p>源代码文件拓展名对比</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">  </th>
+<th style="text-align:center;"> 头文件 </th>
+<th style="text-align:left;"> 实现文件 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;"> c </td>
+<td style="text-align:center;"> .h </td>
+<td style="text-align:left;"> .c </td>
+</tr>
+<tr>
+<td style="text-align:right;"> c++ </td>
+<td style="text-align:center;"> .h </td>
+<td style="text-align:left;"> .cpp </td>
+</tr>
+<tr>
+<td style="text-align:right;"> oc </td>
+<td style="text-align:center;"> .h </td>
+<td style="text-align:left;"> .m </td>
+</tr>
+<tr>
+<td style="text-align:right;"> oc &amp; c++ </td>
+<td style="text-align:center;"> .h </td>
+<td style="text-align:left;"> .mm </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>OC 与 C</p>
+
+<table>
+<thead>
+<tr>
+<th>OC </th>
+<th> C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面向对象 </td>
+<td> 数据类型</td>
+</tr>
+<tr>
+<td>@property 与 @synthesize </td>
+<td> 常量变量</td>
+</tr>
+<tr>
+<td>类方法与实例方法 </td>
+<td> 运算符</td>
+</tr>
+<tr>
+<td>self 关键字 </td>
+<td> 流程语句</td>
+</tr>
+<tr>
+<td>点语法、@selector </td>
+<td> 函数</td>
+</tr>
+<tr>
+<td>category </td>
+<td> 进制</td>
+</tr>
+<tr>
+<td>protocol </td>
+<td> 一维/多维数组</td>
+</tr>
+<tr>
+<td>copy </td>
+<td> 指针</td>
+</tr>
+<tr>
+<td>block </td>
+<td> 结构体</td>
+</tr>
+<tr>
+<td>autoreleasepool </td>
+<td> 预处理指令</td>
+</tr>
+<tr>
+<td>Foundation </td>
+<td> 文件操作</td>
+</tr>
+<tr>
+<td>常用结构体 </td>
+<td> &hellip;</td>
+</tr>
+<tr>
+<td>KVC、KVO </td>
+<td> /</td>
+</tr>
+<tr>
+<td>&hellip; </td>
+<td> /</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>关键字 (OC 中新增的关键字大部分都以 @ 符号开头)</p>
+
+<table>
+<thead>
+<tr>
+<th>OC </th>
+<th> C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@interface </td>
+<td> auto</td>
+</tr>
+<tr>
+<td>@implementation </td>
+<td> double</td>
+</tr>
+<tr>
+<td>@end </td>
+<td> int</td>
+</tr>
+<tr>
+<td>@public </td>
+<td> struct</td>
+</tr>
+<tr>
+<td>@protected </td>
+<td> break</td>
+</tr>
+<tr>
+<td>@private </td>
+<td> else</td>
+</tr>
+<tr>
+<td>@selector </td>
+<td> long</td>
+</tr>
+<tr>
+<td>@try </td>
+<td> switch</td>
+</tr>
+<tr>
+<td>@catch </td>
+<td> case</td>
+</tr>
+<tr>
+<td>@throw </td>
+<td> enum</td>
+</tr>
+<tr>
+<td>@finally </td>
+<td> register</td>
+</tr>
+<tr>
+<td>@protocol </td>
+<td> typedef</td>
+</tr>
+<tr>
+<td>@optional </td>
+<td> char</td>
+</tr>
+<tr>
+<td>@required </td>
+<td> extern</td>
+</tr>
+<tr>
+<td>@class </td>
+<td> return</td>
+</tr>
+<tr>
+<td>@property </td>
+<td> union</td>
+</tr>
+<tr>
+<td>@synthesize </td>
+<td> const</td>
+</tr>
+<tr>
+<td>@dynamic </td>
+<td> float</td>
+</tr>
+<tr>
+<td>BOOL </td>
+<td> short</td>
+</tr>
+<tr>
+<td>Class </td>
+<td> unsigned</td>
+</tr>
+<tr>
+<td>SEL </td>
+<td> continue</td>
+</tr>
+<tr>
+<td>YES </td>
+<td> for</td>
+</tr>
+<tr>
+<td>NO </td>
+<td> signed</td>
+</tr>
+<tr>
+<td>id </td>
+<td> void</td>
+</tr>
+<tr>
+<td>self </td>
+<td> default</td>
+</tr>
+<tr>
+<td>super </td>
+<td> goto</td>
+</tr>
+<tr>
+<td>nil </td>
+<td> sizeof</td>
+</tr>
+<tr>
+<td>atomic </td>
+<td> volatile</td>
+</tr>
+<tr>
+<td>nonatomic </td>
+<td> do</td>
+</tr>
+<tr>
+<td>retain </td>
+<td> if</td>
+</tr>
+<tr>
+<td>assign </td>
+<td> while</td>
+</tr>
+<tr>
+<td>copy </td>
+<td> static</td>
+</tr>
+<tr>
+<td>block </td>
+<td> /</td>
+</tr>
+<tr>
+<td>_ </td>
+<td> /</td>
+</tr>
+</tbody>
+</table>
+
+
+<h1><h2 id="type">数据类型</h2></h1>
+
+<blockquote><p>加粗为 OC 相对于 C 新增的</p></blockquote>
+
+<h2>基本数据类型</h2>
+
+<ul>
+<li>整型 (short int long <strong>BOOL</strong>)
+
+<ul>
+<li>布尔型 BOOL: 取值为 YES(1)、NO(0)</li>
+</ul>
+</li>
+<li>字符型 (char)</li>
+<li>浮点型 (float double)</li>
+</ul>
+
+
+<h2>Block 类型 (OC 新增)</h2>
+
+<ul>
+<li><strong>block</strong> (代码块数据类型)</li>
+</ul>
+
+
+<h2>构造类型</h2>
+
+<p>数组、结构体、枚举、共用体</p>
+
+<h2>指针类型</h2>
+
+<ul>
+<li><strong>class</strong></li>
+<li><strong>id</strong> (动态对象类型、万能指针)</li>
+<li><strong>NSObject</strong> (对象类型)</li>
+</ul>
+
+
+<h2>空类型 void</h2>
+
+<h2>特殊类型 (OC 新增)</h2>
+
+<ul>
+<li><strong>SEL</strong> (选择器类型)</li>
+<li><strong>nil</strong></li>
+</ul>
+
+
+<h1><h2 id="if-loop">流程语句</h2></h1>
+
+<ul>
+<li>C 语言中使用的流程语句 OC 都可使用
+
+<ul>
+<li>if switch while do-while for break continue &hellip;</li>
+</ul>
+</li>
+</ul>
+
+
+<p>新增语句</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 增强型 for 循环</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">name</span> <span class="k">in</span> <span class="n">arr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="function">函数</h2></h1>
+
+<ul>
+<li>C 语言中函数的声明与实现
+
+<ul>
+<li>声明: <code>int sum(int a, int b);</code></li>
+<li>实现: <code>int sum(int a, int b) { return a + b }</code></li>
+</ul>
+</li>
+<li>OC 中函数的声明与实现
+
+<ul>
+<li>声明: <code>- (int)sum:(int)a andB:(int)b;</code></li>
+<li>实现: <code>- (int)sum:(int)a andB:(int)b { return a + b  }</code></li>
+</ul>
+</li>
+<li><strong>注意:</strong> 方法只能写在类里面，而函数可以写在任何地方</li>
+</ul>
+
+
+<h1><h2 id="oop">面向对象</h2></h1>
+
+<blockquote><p>仅介绍特殊语法</p></blockquote>
+
+<h2>属性生成器</h2>
+
+<ul>
+<li>@property</li>
+<li>@synthesize</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 声明属性</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 合成属性</span>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>分类</h2>
+
+<ul>
+<li>分类是横向拓展、继承是竖向扩展</li>
+<li>使用分类拓展类，无需子类化</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="bp">NSString</span> <span class="nl">(MyNSString)</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">encryptWithMD5</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>协议</h2>
+
+<ul>
+<li>类似 C#、Java 中的接口</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@protocol</span> <span class="nc">MyProtocol</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">myProtocolMethod</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="import">异常处理</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@try</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="k">@catch</span><span class="p">(</span><span class="bp">NSException</span> <span class="o">*</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span> <span class="k">@finally</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="import">import</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// C</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// OC</span>
+</span><span class='line'><span class="c1">// 和 include 功能一样，将文件拷贝到 import 的位置</span>
+</span><span class='line'><span class="c1">// import 同一个文件多次也只会导入一次</span>
+</span><span class='line'><span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+</span><span class='line'><span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+</span><span class='line'><span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>import 功能和 include 一样，但 import 更强大</li>
+<li>import 可防止重复导入，可不用像使用 C 的 include 一样，程序员得去写头文件卫士来预防这个问题</li>
+<li><code>#import</code> 导入的文件名需要加上双引号或尖括号
+
+<ul>
+<li>双引号: 编译器会先在项目目录下查找相应的头文件</li>
+<li>尖括号: 编译器会先在预先设定好的标准目录下查找相应的头文件</li>
+</ul>
+</li>
+</ul>
+
+
+<h1><h2 id="output">输入输出</h2></h1>
+
+<h2>输入</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 接收用户控制台的输入信息</span>
+</span><span class='line'><span class="c1">// 获取整型数据</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">userSelect</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">userSelect</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 获取字符串类型</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">ans</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="n">rewind</span><span class="p">(</span><span class="n">stdin</span><span class="p">);</span>
+</span><span class='line'><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%c&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">ans</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>log</h2>
+
+<ul>
+<li>NSLog 支持 C 语言的字符串，但支持得不是很好
+
+<ul>
+<li>如打印中文的 C 语言字符串，可能输出乱码，或输出空白</li>
+</ul>
+</li>
+</ul>
+
+
+<p>打印类型时可用如 NSStringFromCGPoint 这些函数辅助，CGRect 等类型同</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="bp">CGPoint</span> <span class="n">point</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">NSStringFromCGPoint</span><span class="p">(</span><span class="n">point</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在函数内打印时可使用 <strong>func</strong> 打印出当前函数名</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello C!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Hello OC!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 输出 C 语言字符串</span>
+</span><span class='line'><span class="kt">char</span> <span class="o">*</span><span class="n">content</span> <span class="o">=</span> <span class="s">&quot;lalala&quot;</span><span class="err">；</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%s&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>去除控制台输出运行的时间和项目名称</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="cp">#define NSLog(FORMAT, ...) fprintf(stderr,&quot;%s&quot;,[[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="hello">Hello World</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 可见 OC 是兼容 C 的</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello C!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// NSLog 会自动换行</span>
+</span><span class='line'>    <span class="c1">// NSLog 在输出时会附加一些系统信息</span>
+</span><span class='line'>    <span class="c1">// NSLog 和 printf 接收的参数不一样</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Hello OC!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   
