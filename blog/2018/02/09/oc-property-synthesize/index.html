@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ObjectiveC - Property, Synthesize - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="Xcode4.4之前 @property 用于生成实例变量 getter/setter 的声明，@synthesize 用于生成 getter/setter 的实现 @property 和 @synthesize 在 Xcode4.4 以前一直都是配合着使用，在 4.4 以后，@property &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">ObjectiveC - Property, Synthesize</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-09T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<blockquote><p>Xcode4.4之前 @property 用于生成实例变量 getter/setter 的声明，@synthesize 用于生成 getter/setter 的实现</p>
+
+<p>@property 和 @synthesize 在 Xcode4.4 以前一直都是配合着使用，在 4.4 以后，@property 得到了增强，一行代码编译器就会自动帮我们生成 setter 和  getter 方法的声明和实现，同时在 m 文件中声明一个和属性名一样并且在最前面带有下划线的实例变量 (私有的)</p></blockquote>
+
+<ul>
+<li><a href="#property">Property</a></li>
+<li><a href="#synthesize">Synthesize</a></li>
+</ul>
+
+
+<h1><h2 id="property">Property</h2></h1>
+
+<ul>
+<li>@property 是一个编译器指令</li>
+<li>可以使用 @property 来代替 getter/setter 方法的声明和实现
+
+<ul>
+<li>即只要写 @property 就不用写 getter/setter 方法了</li>
+<li>但 @property 生成的 getter/setter 十分简单，想增强，可自己重写</li>
+<li>但如<strong>同时重写(只重写其一不会)</strong>了 getter/setter @property 就不会自动生成私有的实例变量</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用实例变量 getter/setter</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// setter</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// getter</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用 property 替代 实例变量 getter/setter</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 编译器只要看到 property，就做下面的事情</span>
+</span><span class='line'><span class="c1">//    - 编译时生成一个实例变量 _age</span>
+</span><span class='line'><span class="c1">//    - 生成 getter/setter 的声明</span>
+</span><span class='line'><span class="c1">//    - 生成 getter/setter 的实现</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span> <span class="c1">// property 名不用写下划线</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">setAge</span><span class="p">:</span><span class="mi">11</span><span class="p">];</span> <span class="c1">// 可使用 setter 了</span>
+</span><span class='line'><span class="n">p</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Property 修饰符</h2>
+
+<ul>
+<li><code>@property (修饰符1, 修饰符2, ...) 数据类型 变量名;</code></li>
+<li>不写修饰符默认为 <code>(atomic, assign, readwrite)</code></li>
+</ul>
+
+
+<h3>readwrite, readonly</h3>
+
+<ul>
+<li>readwrite: (默认) 可读可写，生成 getter/setter</li>
+<li>readonly: 只读，只生成 getter</li>
+<li>也可指定生成的方法的名称</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">readonly</span><span class="p">)</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">getter</span><span class="o">=</span><span class="n">isMarried</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">married</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 通常 BOOL 类型的属性的 getter 要以 is 开头</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>getter, setter</h3>
+
+<ul>
+<li>getter: 可以给生成的 getter 方法起一个名称</li>
+<li>setter: 可以给生成的 setter 方法起一个名称</li>
+</ul>
+
+
+<h3>atomic, nonatomic</h3>
+
+<ul>
+<li>atomic: 线程安全，为 setter 加锁，默认就是 atomic，需要消耗大量的资源</li>
+<li>nonatomic: 非线程安全，不会为 setter 加锁，适合内存小的移动设备</li>
+</ul>
+
+
+<h3>retain</h3>
+
+<p>自动生成 set 方法内存管理的代码</p>
+
+<ul>
+<li>指针的拷贝，使用的是原来的内存空间，对象的索引计数加1</li>
+<li>此属性只能用于Objective-C对象类型，而不能用于Core Foundation对象。
+
+<ul>
+<li>原因很明显，retain会增加对象的引用计数，而基本数据类型或者 Core Foundation 对象都没有引用计数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setBook:</span><span class="p">(</span><span class="n">Book</span> <span class="o">*</span><span class="p">)</span><span class="nv">book</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_book</span> <span class="o">!=</span> <span class="n">book</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_book</span> <span class="k">release</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">_book</span> <span class="o">=</span> <span class="p">[</span><span class="n">book</span> <span class="k">retain</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>assign</h3>
+
+<p>不会生成 set 方法内存管理的代码，仅仅只会生成普通的 set 方法</p>
+
+<ul>
+<li>直接赋值，索引计数不改变，适用于简单数据类型，例如：NSIngeter、CGFloat、int、char 等</li>
+<li>修饰对象了类型时，不改变其引用计数</li>
+<li>所指对象在被释放之后，仍指向那块内存地址，会产生悬垂指针</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setBook:</span><span class="p">(</span><span class="n">Book</span> <span class="o">*</span><span class="p">)</span><span class="nv">book</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_book</span> <span class="o">=</span> <span class="n">book</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>weak, strong</h3>
+
+<ul>
+<li>weak:
+
+<ul>
+<li>不改变被修饰对象的引用计数</li>
+<li>所指对象在被释放之后会自动置为 nil</li>
+<li><code>assign 和 weak 的区别</code>:
+
+<ol>
+<li><code>weak / __weak</code>: 弱指针，不会让引用计数器加一，如果指向的对象被销毁，指针会自动清空</li>
+<li><code>assign / __unsafe_unretained</code>: 不会让引用计数器加一，如果指向的对象被销毁，指针不会清空</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>strong: 强指针 <code>__strong</code></li>
+</ul>
+
+
+<h3>copy</h3>
+
+<p>对象的拷贝，新申请一块内存空间，并把原始内容复制到那片空间，新对象的索引计数为 1</p>
+
+<ul>
+<li>对象进行拷贝，对于不可变对象拷贝为不可变对象会创建新对象</li>
+<li>此属性只对那些实行了 NSCopying 协议的对象类型有效</li>
+<li>很多 Objective-C 中的 object 最好使用用 retain，一些特别的 object（例如：string）使用 copy</li>
+<li>详见内存管理笔记</li>
+<li>会先判断这个对象是可变的还是不可变的
+
+<ul>
+<li>所以如该对象不可变可使用 strong，避免判断，以提高性能</li>
+</ul>
+</li>
+<li><strong>一般就用于 NSString 和 block</strong></li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 源对象类型 </th>
+<th> 拷贝方式 </th>
+<th> 目标对象类型 </th>
+<th> 拷贝类型 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> mutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 深拷贝 </td>
+</tr>
+<tr>
+<td> mutable 对象 mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+<td></td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 浅拷贝 </td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+</tr>
+</tbody>
+</table>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@property</span><span class="p">(</span><span class="k">copy</span><span class="p">)</span> <span class="bp">NSMutableArray</span><span class="o">*</span> <span class="n">arr</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 赋值过来的是 NSMutableArray，copy 之后是 NSArray</span>
+</span><span class='line'><span class="c1">// 赋值过来的是 NSArray，copy 之后是 NSArray</span>
+</span><span class='line'><span class="c1">// 所以这样定义容易出现一些异常</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="synthesize">Synthesize</h2></h1>
+
+<ul>
+<li>@synthesize 是一个编译器指令</li>
+<li>通常使用 @property 生成了 getter/setter
+
+<ul>
+<li>可用 synthesize 来修改属性的名称</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">{</span>
+</span><span class='line'><span class="cm">    int _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age;</span>
+</span><span class='line'><span class="cm">- (int)age;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">// 并且还在 implementation 中生成了对应的实现</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    _age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 告诉编译器，需要实现哪个 @property 生成的声明</span>
+</span><span class='line'><span class="c1">//   这里需要实现的是 age property</span>
+</span><span class='line'><span class="c1">// 告诉 @synthesize，需要将传入的值赋给谁和返回谁的值给调用者</span>
+</span><span class='line'><span class="c1">// 如只写 @synthesize age 那么相当于 @synthesize age = age</span>
+</span><span class='line'><span class="c1">// </span>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    _age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="err">$</span><span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    $age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return $age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用场景</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 生成了实例变量 _age，并且实现了它的 getter/setter 的声明和实现</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 当同时重写了 setter/getter 时，系统会报错，原因是找不到 _age 这个变量</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解决方法一 (在 .h 的文件中声明这个属性)</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解决方法二 (在 .m 的文件中使用 @synthesize)</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 由于自己重写了 setter/getter 所以得定义下 synthesize</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm">@synthesize age = _age 告诉编译器有个叫 _age 的实例变量，它是方法 age 以及 setAge 的实例变量，如果它不存在，就要将它创建出来</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">通过这个看似像是赋值的一个操作</span>
+</span><span class='line'><span class="cm">我们可以在 @synthesize 中定义与变量名不同的 setter 和 getter 的命名</span>
+</span><span class='line'><span class="cm">以此来保护变量不会被不恰当的访问</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-09T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objectivec/'>objectivec</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/" data-via="" data-counturl="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/08/oc-description-category-extention/" title="Previous Post: ObjectiveC - Description, Category, Extention">&laquo; ObjectiveC - Description, Category, Extention</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/02/10/oc-const-static-extern/" title="Next Post: ObjectiveC - const, static, extern">ObjectiveC - const, static, extern &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

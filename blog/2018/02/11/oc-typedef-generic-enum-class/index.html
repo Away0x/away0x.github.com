@@ -1,0 +1,712 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ObjectiveC - Typedef, Generic, Enum, @class - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="typedef
+generic
+enum
+@class typedef 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+// &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">ObjectiveC - Typedef, Generic, Enum, @class</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-11T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#typedef">typedef</a></li>
+<li><a href="#generic">generic</a></li>
+<li><a href="#enum">enum</a></li>
+<li><a href="#class">@class</a></li>
+</ul>
+
+
+<h1><h2 id="typedef">typedef</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 未使用别名</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">IColor</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">kIColorBlack</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">kIColorWhite</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="n">IColor</span> <span class="n">_color</span><span class="p">;</span> <span class="c1">// 类型名很长</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Iphone</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用别名</span>
+</span><span class='line'><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">kIColorBlack</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">kIColorWhite</span>
+</span><span class='line'><span class="p">}</span> <span class="n">IColor</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">IColor</span> <span class="n">_color</span><span class="p">;</span> <span class="c1">// 使用类型别名</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Iphone</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Iphone</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Iphone</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">p</span><span class="o">-&gt;</span><span class="n">_color</span> <span class="o">=</span> <span class="n">kIColorBlack</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="generic">generic</h2></h1>
+
+<blockquote><p>iOS9+</p></blockquote>
+
+<ol>
+<li>用于限制类型</li>
+<li>提高代码规划，减少沟通成本</li>
+<li>限制集合里的存储类型，不限制的话都是 id 类型
+
+<ul>
+<li>限制后只能存储对应类型，且由于有了具体类型，取出时可以使用点语法</li>
+<li>id 类型是不能使用点语法的</li>
+</ul>
+</li>
+<li>泛型仅仅是报警告</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 不用泛型 --------</span>
+</span><span class='line'><span class="c1">// 属性</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">arr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="p">[</span><span class="n">_arr</span> <span class="nl">addObject</span><span class="p">:</span><span class="s">@&quot;112&quot;</span><span class="p">];</span> <span class="c1">// 由于定义时没用泛型，所以这里 add 进去的其实是 id 类型</span>
+</span><span class='line'><span class="n">_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">length</span><span class="p">;</span> <span class="c1">// 报错，_arr[0] 里面是 id 类型，id 类型不能使用点语法</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用泛型 --------</span>
+</span><span class='line'><span class="c1">// 属性</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSMutableArray</span><span class="o">&lt;</span><span class="bp">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">arr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="p">[</span><span class="n">_arr</span> <span class="nl">addObject</span><span class="p">:</span><span class="s">@&quot;112&quot;</span><span class="p">];</span> <span class="c1">// add 的是 NSString 类型</span>
+</span><span class='line'><span class="n">_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">length</span><span class="p">;</span> <span class="c1">// 不报错，数组里是 NSString 类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 参数</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="bp">NSSet</span><span class="o">&lt;</span><span class="bp">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="bp">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 限定类型</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Test</span><span class="o">&lt;</span><span class="n">ObjectType</span><span class="o">&gt;</span> <span class="o">:</span> <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="n">ObjectType</span> <span class="n">language</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Java</span> <span class="o">*</span><span class="n">java</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Java</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">iOS</span> <span class="o">*</span><span class="n">ios</span> <span class="o">=</span> <span class="p">[[</span><span class="n">iOS</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Test</span><span class="o">&lt;</span><span class="n">iOS</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">t</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Test</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">t</span><span class="p">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">ios</span><span class="p">;</span>  <span class="c1">// 泛型限制了，这里只能设置 iOS 类型</span>
+</span><span class='line'><span class="n">t</span><span class="p">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">java</span><span class="p">;</span> <span class="c1">// 报警告</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="enum">enum</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 第一种写法 (无法设置枚举值类型)</span>
+</span><span class='line'><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span> <span class="n">DemoType</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 第二种写法 (可设置枚举值类型)</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">NS_ENUM</span><span class="p">(</span><span class="bp">NSInteger</span><span class="p">,</span> <span class="n">DemoType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span><span class="p">,</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 第三种写法 (位移枚举)</span>
+</span><span class='line'><span class="c1">// 更强大，使用时可用并运算</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">NS_OPTIONS</span><span class="p">(</span><span class="bp">NSInteger</span><span class="p">,</span> <span class="n">DemoType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span><span class="p">,</span>    <span class="c1">// 1*2^0 = 1</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">// 1*2^1 = 2</span>
+</span><span class='line'>    <span class="n">DemoTypeLeft</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">,</span>   <span class="c1">// 1*2^2 = 4</span>
+</span><span class='line'>    <span class="n">DemoTypeRight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1">// 1*2^3 = 8</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>位移枚举可进行位运算</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 按位与 &amp;</span>
+</span><span class='line'><span class="c1">//    1&amp;1==1 1&amp;0==0 0&amp;0==0</span>
+</span><span class='line'><span class="c1">//    总结: 只有有 0 则为 0</span>
+</span><span class='line'><span class="c1">// 按位或 |</span>
+</span><span class='line'><span class="c1">//    1|1==1 1|0==1 0|0==0</span>
+</span><span class='line'><span class="c1">//    总结: 只有有 1 则为 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">demo:</span><span class="p">(</span><span class="n">DemoType</span><span class="p">)</span><span class="nv">type</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeTop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;top --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeTop</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeBottom</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;bottom --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeBottom</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeLeft</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;left --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeLeft</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeRight</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;right --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeRight</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">test</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">demo</span><span class="p">:</span><span class="n">DemoTypeTop</span> <span class="o">|</span> <span class="n">DemoTypeRight</span><span class="p">];</span> <span class="c1">// 打印 top 和 right</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">demo</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 什么都不会打印</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 小技巧</span>
+</span><span class='line'>    <span class="c1">// 如是位移枚举，可观察第一个枚举值，如该枚举值不为 0</span>
+</span><span class='line'>    <span class="c1">// 那么可默认传 0 做参数，如传 0，那么效率最高 (因为什么额外操作都不会做)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>枚举中的位运算</h2>
+
+<ul>
+<li>位移枚举，可以使用并运算 <code>|</code></li>
+<li>一般情况下，如方法参数是枚举值，那么可用过 <code>|</code> 符号，连接多个枚举值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="bp">NSDate</span> <span class="o">*</span><span class="n">now</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDate</span> <span class="n">date</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSCalendar</span> <span class="o">*</span><span class="n">calendar</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSCalendar</span> <span class="n">currentCalendar</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 分别获取 年月日时分秒</span>
+</span><span class='line'><span class="c1">// 如方法参数是位移枚举，那么可用过 | 符号，连接多个枚举值</span>
+</span><span class='line'><span class="n">NSCalendarUnit</span> <span class="n">type</span> <span class="o">=</span> <span class="n">NSCalendarUnitYear</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitMonth</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitDay</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitHour</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitMinute</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitSecond</span><span class="p">;</span>
+</span><span class='line'><span class="bp">NSDateComponents</span> <span class="o">*</span><span class="n">cmps</span> <span class="o">=</span> <span class="p">[</span><span class="n">calendar</span> <span class="nl">components</span><span class="p">:</span><span class="n">type</span> <span class="nl">fromDate</span><span class="p">:</span><span class="n">now</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;year = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">year</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;month = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">month</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;day = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">day</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;hour = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">hour</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;minute = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">minute</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;second = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="class">@class</h2></h1>
+
+<p>作用: 可以简单的引用一个类</p>
+
+<ul>
+<li><p>简单使用: <code>@class Dog;</code> 仅仅是告诉编译器: Dog 是一个类，并不会包含 Dog 这个类的所有内容</p></li>
+<li><p><code>@class:</code> 在 <code>.h</code> 文件中使用 <code>@class</code> 引用一个类</p>
+
+<ul>
+<li>仅仅只是告诉编译器，<code>@class</code>后面的名称是一个类，不会做任何拷贝操作</li>
+<li>注意: 编译器不会知道这个类中有哪些属性和方法，所以在 <code>.m</code> 中使用这个类时，需要 import 这个类，才能使用</li>
+</ul>
+</li>
+<li><code>#import:</code>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件
+
+<ul>
+<li>会将整个文件的代码拷贝到 import 所在的位置</li>
+<li>只要 import 的文件发生了改变，那么 import 就会重新拷贝一次 (更新操作)
+
+<ul>
+<li>多个类时，编译效率变慢</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Person2.h 中</span>
+</span><span class='line'><span class="k">@class</span> <span class="nc">Person1</span>; <span class="c1">// 该文件中引入 Person1 类</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Person2.m 中</span>
+</span><span class='line'><span class="cp">#import &quot;Person1.h&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果在 A 类中要包含 B类，B 类中又要包含 A 类，则 <code>.h</code> 中一定要用 <code>@class</code> 避免循环引入</p>
+
+<ul>
+<li>总结:
+
+<ol>
+<li>在 <code>.h</code> 中使用 <code>@class</code> 引用一个类</li>
+<li>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>@class 其他应用场景</h2>
+
+<p>对于循环依赖关系来说，比方 A 类引用 B 类，同时 B 类也引用 A 类</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 这种嵌套包含的代码编译会报错</span>
+</span><span class='line'><span class="cp">#import &quot;B.h&quot;</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">A</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">B</span> <span class="o">*</span><span class="n">_b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#import &quot;A.h&quot;</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">B</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">A</span> <span class="o">*</span><span class="n">_a</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 当使用 @class 在两个类相互声明，就不会出现编译报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@class</span> <span class="nc">B</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">A</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">B</span> <span class="o">*</span><span class="n">_b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@class</span> <span class="nc">A</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">B</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">A</span> <span class="o">*</span><span class="n">_a</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>@class 和 #import 的区别</h2>
+
+<ul>
+<li>作用上的区别
+
+<ul>
+<li>import 会包含引用类的所有信息(内容)，包括引用类的变量和方法</li>
+<li>@class 仅仅是告诉编译器有这么个类，具体这个类有什么信息，完全不知</li>
+</ul>
+</li>
+<li>效率上的区别
+
+<ul>
+<li>如果有上百个头文件都 <code>#import</code> 了同一个文件，或者这些文件依次被 <code>#import</code>，那么一旦最开始的头文件有所改动，后面引用到这个文件的所有类都需要重新编译一遍，编译效率非常低</li>
+<li>相对来讲，使用 <code>@class</code> 就不会出现这个问题了</li>
+</ul>
+</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-11T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objectivec/'>objectivec</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class/" data-via="" data-counturl="http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/10/oc-const-static-extern/" title="Previous Post: ObjectiveC - const, static, extern">&laquo; ObjectiveC - const, static, extern</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

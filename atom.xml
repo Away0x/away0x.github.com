@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-26T10:42:16+08:00</updated>
+  <updated>2021-04-26T12:43:54+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,1449 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Typedef, Generic, Enum, @class]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class/"/>
+    <updated>2018-02-11T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#typedef">typedef</a></li>
+<li><a href="#generic">generic</a></li>
+<li><a href="#enum">enum</a></li>
+<li><a href="#class">@class</a></li>
+</ul>
+
+
+<h1><h2 id="typedef">typedef</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 未使用别名</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">IColor</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">kIColorBlack</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">kIColorWhite</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="n">IColor</span> <span class="n">_color</span><span class="p">;</span> <span class="c1">// 类型名很长</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Iphone</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用别名</span>
+</span><span class='line'><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">kIColorBlack</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">kIColorWhite</span>
+</span><span class='line'><span class="p">}</span> <span class="n">IColor</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Iphone</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">IColor</span> <span class="n">_color</span><span class="p">;</span> <span class="c1">// 使用类型别名</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Iphone</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Iphone</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Iphone</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">p</span><span class="o">-&gt;</span><span class="n">_color</span> <span class="o">=</span> <span class="n">kIColorBlack</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="generic">generic</h2></h1>
+
+<blockquote><p>iOS9+</p></blockquote>
+
+<ol>
+<li>用于限制类型</li>
+<li>提高代码规划，减少沟通成本</li>
+<li>限制集合里的存储类型，不限制的话都是 id 类型
+
+<ul>
+<li>限制后只能存储对应类型，且由于有了具体类型，取出时可以使用点语法</li>
+<li>id 类型是不能使用点语法的</li>
+</ul>
+</li>
+<li>泛型仅仅是报警告</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 不用泛型 --------</span>
+</span><span class='line'><span class="c1">// 属性</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">arr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="p">[</span><span class="n">_arr</span> <span class="nl">addObject</span><span class="p">:</span><span class="s">@&quot;112&quot;</span><span class="p">];</span> <span class="c1">// 由于定义时没用泛型，所以这里 add 进去的其实是 id 类型</span>
+</span><span class='line'><span class="n">_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">length</span><span class="p">;</span> <span class="c1">// 报错，_arr[0] 里面是 id 类型，id 类型不能使用点语法</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用泛型 --------</span>
+</span><span class='line'><span class="c1">// 属性</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSMutableArray</span><span class="o">&lt;</span><span class="bp">NSString</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">arr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="p">[</span><span class="n">_arr</span> <span class="nl">addObject</span><span class="p">:</span><span class="s">@&quot;112&quot;</span><span class="p">];</span> <span class="c1">// add 的是 NSString 类型</span>
+</span><span class='line'><span class="n">_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">length</span><span class="p">;</span> <span class="c1">// 不报错，数组里是 NSString 类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 参数</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">touchesBegan:</span><span class="p">(</span><span class="bp">NSSet</span><span class="o">&lt;</span><span class="bp">UITouch</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="p">)</span><span class="nv">touches</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="bp">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 限定类型</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Test</span><span class="o">&lt;</span><span class="n">ObjectType</span><span class="o">&gt;</span> <span class="o">:</span> <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="n">ObjectType</span> <span class="n">language</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Java</span> <span class="o">*</span><span class="n">java</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Java</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">iOS</span> <span class="o">*</span><span class="n">ios</span> <span class="o">=</span> <span class="p">[[</span><span class="n">iOS</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Test</span><span class="o">&lt;</span><span class="n">iOS</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">t</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Test</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">t</span><span class="p">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">ios</span><span class="p">;</span>  <span class="c1">// 泛型限制了，这里只能设置 iOS 类型</span>
+</span><span class='line'><span class="n">t</span><span class="p">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">java</span><span class="p">;</span> <span class="c1">// 报警告</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="enum">enum</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 第一种写法 (无法设置枚举值类型)</span>
+</span><span class='line'><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span> <span class="n">DemoType</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 第二种写法 (可设置枚举值类型)</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">NS_ENUM</span><span class="p">(</span><span class="bp">NSInteger</span><span class="p">,</span> <span class="n">DemoType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span><span class="p">,</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 第三种写法 (位移枚举)</span>
+</span><span class='line'><span class="c1">// 更强大，使用时可用并运算</span>
+</span><span class='line'><span class="k">typedef</span> <span class="nf">NS_OPTIONS</span><span class="p">(</span><span class="bp">NSInteger</span><span class="p">,</span> <span class="n">DemoType</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">DemoTypeTop</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span><span class="p">,</span>    <span class="c1">// 1*2^0 = 1</span>
+</span><span class='line'>    <span class="n">DemoTypeBottom</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">// 1*2^1 = 2</span>
+</span><span class='line'>    <span class="n">DemoTypeLeft</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">,</span>   <span class="c1">// 1*2^2 = 4</span>
+</span><span class='line'>    <span class="n">DemoTypeRight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1">// 1*2^3 = 8</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>位移枚举可进行位运算</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 按位与 &amp;</span>
+</span><span class='line'><span class="c1">//    1&amp;1==1 1&amp;0==0 0&amp;0==0</span>
+</span><span class='line'><span class="c1">//    总结: 只有有 0 则为 0</span>
+</span><span class='line'><span class="c1">// 按位或 |</span>
+</span><span class='line'><span class="c1">//    1|1==1 1|0==1 0|0==0</span>
+</span><span class='line'><span class="c1">//    总结: 只有有 1 则为 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">demo:</span><span class="p">(</span><span class="n">DemoType</span><span class="p">)</span><span class="nv">type</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeTop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;top --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeTop</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeBottom</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;bottom --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeBottom</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeLeft</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;left --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeLeft</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeRight</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;right --- %zd&quot;</span><span class="p">,</span> <span class="n">type</span> <span class="o">&amp;</span> <span class="n">DemoTypeRight</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">test</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">demo</span><span class="p">:</span><span class="n">DemoTypeTop</span> <span class="o">|</span> <span class="n">DemoTypeRight</span><span class="p">];</span> <span class="c1">// 打印 top 和 right</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">demo</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 什么都不会打印</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 小技巧</span>
+</span><span class='line'>    <span class="c1">// 如是位移枚举，可观察第一个枚举值，如该枚举值不为 0</span>
+</span><span class='line'>    <span class="c1">// 那么可默认传 0 做参数，如传 0，那么效率最高 (因为什么额外操作都不会做)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>枚举中的位运算</h2>
+
+<ul>
+<li>位移枚举，可以使用并运算 <code>|</code></li>
+<li>一般情况下，如方法参数是枚举值，那么可用过 <code>|</code> 符号，连接多个枚举值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="bp">NSDate</span> <span class="o">*</span><span class="n">now</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDate</span> <span class="n">date</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSCalendar</span> <span class="o">*</span><span class="n">calendar</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSCalendar</span> <span class="n">currentCalendar</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 分别获取 年月日时分秒</span>
+</span><span class='line'><span class="c1">// 如方法参数是位移枚举，那么可用过 | 符号，连接多个枚举值</span>
+</span><span class='line'><span class="n">NSCalendarUnit</span> <span class="n">type</span> <span class="o">=</span> <span class="n">NSCalendarUnitYear</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitMonth</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitDay</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitHour</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitMinute</span> <span class="o">|</span>
+</span><span class='line'>                      <span class="n">NSCalendarUnitSecond</span><span class="p">;</span>
+</span><span class='line'><span class="bp">NSDateComponents</span> <span class="o">*</span><span class="n">cmps</span> <span class="o">=</span> <span class="p">[</span><span class="n">calendar</span> <span class="nl">components</span><span class="p">:</span><span class="n">type</span> <span class="nl">fromDate</span><span class="p">:</span><span class="n">now</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;year = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">year</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;month = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">month</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;day = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">day</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;hour = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">hour</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;minute = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">minute</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;second = %ld&quot;</span><span class="p">,</span> <span class="n">cmps</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="class">@class</h2></h1>
+
+<p>作用: 可以简单的引用一个类</p>
+
+<ul>
+<li><p>简单使用: <code>@class Dog;</code> 仅仅是告诉编译器: Dog 是一个类，并不会包含 Dog 这个类的所有内容</p></li>
+<li><p><code>@class:</code> 在 <code>.h</code> 文件中使用 <code>@class</code> 引用一个类</p>
+
+<ul>
+<li>仅仅只是告诉编译器，<code>@class</code>后面的名称是一个类，不会做任何拷贝操作</li>
+<li>注意: 编译器不会知道这个类中有哪些属性和方法，所以在 <code>.m</code> 中使用这个类时，需要 import 这个类，才能使用</li>
+</ul>
+</li>
+<li><code>#import:</code>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件
+
+<ul>
+<li>会将整个文件的代码拷贝到 import 所在的位置</li>
+<li>只要 import 的文件发生了改变，那么 import 就会重新拷贝一次 (更新操作)
+
+<ul>
+<li>多个类时，编译效率变慢</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Person2.h 中</span>
+</span><span class='line'><span class="k">@class</span> <span class="nc">Person1</span>; <span class="c1">// 该文件中引入 Person1 类</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Person2.m 中</span>
+</span><span class='line'><span class="cp">#import &quot;Person1.h&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果在 A 类中要包含 B类，B 类中又要包含 A 类，则 <code>.h</code> 中一定要用 <code>@class</code> 避免循环引入</p>
+
+<ul>
+<li>总结:
+
+<ol>
+<li>在 <code>.h</code> 中使用 <code>@class</code> 引用一个类</li>
+<li>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>@class 其他应用场景</h2>
+
+<p>对于循环依赖关系来说，比方 A 类引用 B 类，同时 B 类也引用 A 类</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 这种嵌套包含的代码编译会报错</span>
+</span><span class='line'><span class="cp">#import &quot;B.h&quot;</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">A</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">B</span> <span class="o">*</span><span class="n">_b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#import &quot;A.h&quot;</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">B</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">A</span> <span class="o">*</span><span class="n">_a</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 当使用 @class 在两个类相互声明，就不会出现编译报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@class</span> <span class="nc">B</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">A</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">B</span> <span class="o">*</span><span class="n">_b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@class</span> <span class="nc">A</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">B</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">A</span> <span class="o">*</span><span class="n">_a</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>@class 和 #import 的区别</h2>
+
+<ul>
+<li>作用上的区别
+
+<ul>
+<li>import 会包含引用类的所有信息(内容)，包括引用类的变量和方法</li>
+<li>@class 仅仅是告诉编译器有这么个类，具体这个类有什么信息，完全不知</li>
+</ul>
+</li>
+<li>效率上的区别
+
+<ul>
+<li>如果有上百个头文件都 <code>#import</code> 了同一个文件，或者这些文件依次被 <code>#import</code>，那么一旦最开始的头文件有所改动，后面引用到这个文件的所有类都需要重新编译一遍，编译效率非常低</li>
+<li>相对来讲，使用 <code>@class</code> 就不会出现这个问题了</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Const, Static, Extern]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/10/oc-const-static-extern/"/>
+    <updated>2018-02-10T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/10/oc-const-static-extern</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#const">const</a></li>
+<li><a href="#static">static</a></li>
+<li><a href="#extern">extern</a></li>
+</ul>
+
+
+<h1><h2 id="const">const</h2></h1>
+
+<blockquote><p>苹果推荐使用 const 常量替代宏字符串常量</p></blockquote>
+
+<h2>const 与宏的区别</h2>
+
+<ol>
+<li><strong>编译时刻:</strong> 宏是<strong>预编译</strong>(编译之前处理)，const 是<strong>编译阶段</strong></li>
+<li><strong>编译检查:</strong> 宏不做检查，不会报编译错误，只是替换，const 会编译检查，会报编译错误</li>
+<li><strong>宏的好处:</strong> 宏能定义一些函数、方法。const 则不能</li>
+<li><strong>宏的坏处:</strong> 使用大量宏，容易造成编译时间久，每次都需要重新替换</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 宏</span>
+</span><span class='line'><span class="cp">#define MyAccount @&quot;account&quot;</span>
+</span><span class='line'><span class="cp">#define MyUserDefault [NSUserDefaults standardUserDefaults]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 字符串常量</span>
+</span><span class='line'><span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">account</span> <span class="o">=</span> <span class="s">@&quot;account&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 使用宏</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">MyUserDefault</span> <span class="nl">setValue</span><span class="p">:</span><span class="s">@&quot;123&quot;</span><span class="p">,</span> <span class="nl">forKey</span><span class="p">:</span><span class="n">MyAccount</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 使用 const 常量</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">setValue</span><span class="p">:</span><span class="s">@&quot;123&quot;</span><span class="p">,</span> <span class="nl">forKey</span><span class="p">:</span><span class="n">account</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用</h2>
+
+<ul>
+<li>作用
+
+<ol>
+<li>修饰右边的基本变量或指针变量</li>
+<li>被 cosnt 修饰的变量是只读的</li>
+</ol>
+</li>
+<li>使用场景
+
+<ol>
+<li>修饰全局只读变量</li>
+<li>修饰方法中只读参数</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 可以修改</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="k">const</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// 也可这样写 const int b = 3;</span>
+</span><span class='line'><span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 不可修改，报错</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// const 修饰指针变量</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// 3</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// 5</span>
+</span><span class='line'><span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// 8</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// const 修饰 *p</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="k">const</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">;</span> <span class="c1">// p 可以修改</span>
+</span><span class='line'><span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span> <span class="c1">// *p 被 const 修饰了，不可修改，会报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// const 修饰 p</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="o">*</span> <span class="k">const</span> <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">;</span> <span class="c1">// p 被 const 修饰了，不可修改，会报错</span>
+</span><span class='line'><span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span> <span class="c1">// *p 可被修改</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">int</span> <span class="o">*</span> <span class="k">const</span> <span class="n">p</span><span class="p">;</span>       <span class="c1">// p: 不可修改，*p: 可修改</span>
+</span><span class='line'><span class="kt">int</span> <span class="k">const</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>        <span class="c1">// p: 可修改，  *p: 不可修改</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">p</span><span class="p">;</span>       <span class="c1">// p: 可修改，  *p: 不可修改</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">int</span> <span class="o">*</span> <span class="k">const</span> <span class="n">p</span><span class="p">;</span> <span class="c1">// p: 不可修改，*p: 不可修改</span>
+</span><span class='line'><span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">p</span><span class="p">;</span> <span class="c1">// p: 不可修改，*p: 不可修改</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="static">static</h2></h1>
+
+<ol>
+<li>修饰局部变量，被其修饰的局部变量，会延长生命周期，生命长度跟整个应用程序有关
+
+<ul>
+<li>被 static 修饰的局部变量，只会分配一次内存</li>
+<li>被 static 修饰的局部变量，程序一运行就会给其分配内存</li>
+</ul>
+</li>
+<li>修饰全局变量，被 static 修饰的全局变量，作用域会修改，只能在当前文件下使用</li>
+</ol>
+
+
+<h2>static 和 const 联合使用</h2>
+
+<ul>
+<li>cosnt 修饰全局变量，使其只读</li>
+<li>static 修饰全局变量，使其作用域为文件作用域</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 只在当前文件中可访问到的只读全局变量</span>
+</span><span class='line'><span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;wt&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">ViewController</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="extern">extern</h2></h1>
+
+<ol>
+<li>用于声明(使用)外部全局变量，<strong>注意: 其只能用于声明，不能用于定义</strong></li>
+<li>工作原理: 先会去当前文件下查找有无对应全局变量，如没有，才会去其他文件查找</li>
+<li>全局变量在程序运行时就会分配，如 A 文件中定义了全局变量 <code>int a = 0</code>，在 B 文件中可用 <code>extern int a</code> 来使用它</li>
+<li>如该全局变量使用 static 修饰，那么 extern 无法找到它，因为其是文件作用域</li>
+</ol>
+
+
+<h2>extern 和 const 联合使用</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// A 类</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">a</span> <span class="o">=</span> <span class="s">@&quot;a&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">A</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用全局变量 a</span>
+</span><span class='line'><span class="k">extern</span> <span class="bp">NSString</span> <span class="o">*</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">B</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">test</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// &quot;a&quot; 可读到</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="s">@&quot;aa&quot;</span><span class="p">;</span>       <span class="c1">// 报错，a 被 const 修饰了，不可修改</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>注意点</h2>
+
+<ul>
+<li>注意: 全局变量不能定义在自己的类中
+
+<ul>
+<li>如多个文件声明了同名的全局变量，会编译失败</li>
+</ul>
+</li>
+<li>可自己创建一个管理全局变量的类，如 <code>GlobeConst</code>
+
+<ul>
+<li>在 m 文件中定义全局变量，在 h 中使用 extern 引用，这样其他文件要使用这些全局变量，只要引用 <code>GlobeConst.h</code> 文件即可</li>
+<li><code>GlobeConst</code> 中的全局变量使用 const 修饰，避免其他文件使用时对其修改了</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// GlobeConst.h</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">extern</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">one_name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// GlobeConst.m</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">one_name</span> <span class="o">=</span> <span class="s">@&quot;one name&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 其他文件</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#import &quot;GlobeConst.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">one_name</span><span class="p">);</span> <span class="c1">// &quot;one name&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Property, Synthesize]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/"/>
+    <updated>2018-02-09T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/09/oc-property-synthesize</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<blockquote><p>Xcode4.4之前 @property 用于生成实例变量 getter/setter 的声明，@synthesize 用于生成 getter/setter 的实现</p>
+
+<p>@property 和 @synthesize 在 Xcode4.4 以前一直都是配合着使用，在 4.4 以后，@property 得到了增强，一行代码编译器就会自动帮我们生成 setter 和  getter 方法的声明和实现，同时在 m 文件中声明一个和属性名一样并且在最前面带有下划线的实例变量 (私有的)</p></blockquote>
+
+<ul>
+<li><a href="#property">Property</a></li>
+<li><a href="#synthesize">Synthesize</a></li>
+</ul>
+
+
+<h1><h2 id="property">Property</h2></h1>
+
+<ul>
+<li>@property 是一个编译器指令</li>
+<li>可以使用 @property 来代替 getter/setter 方法的声明和实现
+
+<ul>
+<li>即只要写 @property 就不用写 getter/setter 方法了</li>
+<li>但 @property 生成的 getter/setter 十分简单，想增强，可自己重写</li>
+<li>但如<strong>同时重写(只重写其一不会)</strong>了 getter/setter @property 就不会自动生成私有的实例变量</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用实例变量 getter/setter</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// setter</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// getter</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用 property 替代 实例变量 getter/setter</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 编译器只要看到 property，就做下面的事情</span>
+</span><span class='line'><span class="c1">//    - 编译时生成一个实例变量 _age</span>
+</span><span class='line'><span class="c1">//    - 生成 getter/setter 的声明</span>
+</span><span class='line'><span class="c1">//    - 生成 getter/setter 的实现</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span> <span class="c1">// property 名不用写下划线</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">p</span> <span class="nl">setAge</span><span class="p">:</span><span class="mi">11</span><span class="p">];</span> <span class="c1">// 可使用 setter 了</span>
+</span><span class='line'><span class="n">p</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Property 修饰符</h2>
+
+<ul>
+<li><code>@property (修饰符1, 修饰符2, ...) 数据类型 变量名;</code></li>
+<li>不写修饰符默认为 <code>(atomic, assign, readwrite)</code></li>
+</ul>
+
+
+<h3>readwrite, readonly</h3>
+
+<ul>
+<li>readwrite: (默认) 可读可写，生成 getter/setter</li>
+<li>readonly: 只读，只生成 getter</li>
+<li>也可指定生成的方法的名称</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">readonly</span><span class="p">)</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">getter</span><span class="o">=</span><span class="n">isMarried</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">married</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 通常 BOOL 类型的属性的 getter 要以 is 开头</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>getter, setter</h3>
+
+<ul>
+<li>getter: 可以给生成的 getter 方法起一个名称</li>
+<li>setter: 可以给生成的 setter 方法起一个名称</li>
+</ul>
+
+
+<h3>atomic, nonatomic</h3>
+
+<ul>
+<li>atomic: 线程安全，为 setter 加锁，默认就是 atomic，需要消耗大量的资源</li>
+<li>nonatomic: 非线程安全，不会为 setter 加锁，适合内存小的移动设备</li>
+</ul>
+
+
+<h3>retain</h3>
+
+<p>自动生成 set 方法内存管理的代码</p>
+
+<ul>
+<li>指针的拷贝，使用的是原来的内存空间，对象的索引计数加1</li>
+<li>此属性只能用于Objective-C对象类型，而不能用于Core Foundation对象。
+
+<ul>
+<li>原因很明显，retain会增加对象的引用计数，而基本数据类型或者 Core Foundation 对象都没有引用计数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setBook:</span><span class="p">(</span><span class="n">Book</span> <span class="o">*</span><span class="p">)</span><span class="nv">book</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_book</span> <span class="o">!=</span> <span class="n">book</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">_book</span> <span class="k">release</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">_book</span> <span class="o">=</span> <span class="p">[</span><span class="n">book</span> <span class="k">retain</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>assign</h3>
+
+<p>不会生成 set 方法内存管理的代码，仅仅只会生成普通的 set 方法</p>
+
+<ul>
+<li>直接赋值，索引计数不改变，适用于简单数据类型，例如：NSIngeter、CGFloat、int、char 等</li>
+<li>修饰对象了类型时，不改变其引用计数</li>
+<li>所指对象在被释放之后，仍指向那块内存地址，会产生悬垂指针</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setBook:</span><span class="p">(</span><span class="n">Book</span> <span class="o">*</span><span class="p">)</span><span class="nv">book</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_book</span> <span class="o">=</span> <span class="n">book</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>weak, strong</h3>
+
+<ul>
+<li>weak:
+
+<ul>
+<li>不改变被修饰对象的引用计数</li>
+<li>所指对象在被释放之后会自动置为 nil</li>
+<li><code>assign 和 weak 的区别</code>:
+
+<ol>
+<li><code>weak / __weak</code>: 弱指针，不会让引用计数器加一，如果指向的对象被销毁，指针会自动清空</li>
+<li><code>assign / __unsafe_unretained</code>: 不会让引用计数器加一，如果指向的对象被销毁，指针不会清空</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>strong: 强指针 <code>__strong</code></li>
+</ul>
+
+
+<h3>copy</h3>
+
+<p>对象的拷贝，新申请一块内存空间，并把原始内容复制到那片空间，新对象的索引计数为 1</p>
+
+<ul>
+<li>对象进行拷贝，对于不可变对象拷贝为不可变对象会创建新对象</li>
+<li>此属性只对那些实行了 NSCopying 协议的对象类型有效</li>
+<li>很多 Objective-C 中的 object 最好使用用 retain，一些特别的 object（例如：string）使用 copy</li>
+<li>详见内存管理笔记</li>
+<li>会先判断这个对象是可变的还是不可变的
+
+<ul>
+<li>所以如该对象不可变可使用 strong，避免判断，以提高性能</li>
+</ul>
+</li>
+<li><strong>一般就用于 NSString 和 block</strong></li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 源对象类型 </th>
+<th> 拷贝方式 </th>
+<th> 目标对象类型 </th>
+<th> 拷贝类型 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> mutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 深拷贝 </td>
+</tr>
+<tr>
+<td> mutable 对象 mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+<td></td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 浅拷贝 </td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+</tr>
+</tbody>
+</table>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@property</span><span class="p">(</span><span class="k">copy</span><span class="p">)</span> <span class="bp">NSMutableArray</span><span class="o">*</span> <span class="n">arr</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 赋值过来的是 NSMutableArray，copy 之后是 NSArray</span>
+</span><span class='line'><span class="c1">// 赋值过来的是 NSArray，copy 之后是 NSArray</span>
+</span><span class='line'><span class="c1">// 所以这样定义容易出现一些异常</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="synthesize">Synthesize</h2></h1>
+
+<ul>
+<li>@synthesize 是一个编译器指令</li>
+<li>通常使用 @property 生成了 getter/setter
+
+<ul>
+<li>可用 synthesize 来修改属性的名称</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@property</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">{</span>
+</span><span class='line'><span class="cm">    int _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age;</span>
+</span><span class='line'><span class="cm">- (int)age;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">// 并且还在 implementation 中生成了对应的实现</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    _age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 告诉编译器，需要实现哪个 @property 生成的声明</span>
+</span><span class='line'><span class="c1">//   这里需要实现的是 age property</span>
+</span><span class='line'><span class="c1">// 告诉 @synthesize，需要将传入的值赋给谁和返回谁的值给调用者</span>
+</span><span class='line'><span class="c1">// 如只写 @synthesize age 那么相当于 @synthesize age = age</span>
+</span><span class='line'><span class="c1">// </span>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    _age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return _age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="err">$</span><span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 相当于下面的代码</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">- (void)setAge:(int)age {</span>
+</span><span class='line'><span class="cm">    $age = age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">- (int)age {</span>
+</span><span class='line'><span class="cm">    return $age;</span>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用场景</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 生成了实例变量 _age，并且实现了它的 getter/setter 的声明和实现</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 当同时重写了 setter/getter 时，系统会报错，原因是找不到 _age 这个变量</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解决方法一 (在 .h 的文件中声明这个属性)</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解决方法二 (在 .m 的文件中使用 @synthesize)</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@synthesize</span> <span class="n">age</span> <span class="o">=</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 由于自己重写了 setter/getter 所以得定义下 synthesize</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm">@synthesize age = _age 告诉编译器有个叫 _age 的实例变量，它是方法 age 以及 setAge 的实例变量，如果它不存在，就要将它创建出来</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">通过这个看似像是赋值的一个操作</span>
+</span><span class='line'><span class="cm">我们可以在 @synthesize 中定义与变量名不同的 setter 和 getter 的命名</span>
+</span><span class='line'><span class="cm">以此来保护变量不会被不恰当的访问</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Description, Category, Extention]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/08/oc-description-category-extention/"/>
+    <updated>2018-02-08T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/08/oc-description-category-extention</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#category">Category</a></li>
+<li><a href="#extention">Extention</a></li>
+</ul>
+
+
+<h1><h2 id="description">Description</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 这会调用 A 的 description 方法来输出 A 的描述信息</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">A</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>description 方法默认返回对象的描述信息 (默认实现是返回类名和对象的内存地址)</li>
+<li>description 方法是基类 NSObject 所带的方法，我们可以重写其来输出对象的信息</li>
+<li>注意:
+
+<ol>
+<li>description 中尽量不要使用 self 来打印</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">description</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 打印 self 应用 %p</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%p&quot;</span><span class="p">,</span> <span class="nb">self</span><span class="p">);</span> <span class="c1">// 这样才行</span>
+</span><span class='line'>    <span class="c1">// NSLog(@&quot;%@&quot;, self); // 使用 %@ 打印 self 会造成死循环</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">description</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;对象信息&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">+</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">description</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;类对象信息 %@&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">Demo</span> <span class="k">class</span><span class="p">]];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="category">Category</h2></h1>
+
+<ul>
+<li>Category 是 OC 特有的语法</li>
+<li>Category 也分为声明和实现</li>
+<li>一个类可有多个 Category</li>
+<li>作用
+
+<ol>
+<li><strong>可以在不修改原来类的基础上，为这个类扩充一些方法</strong></li>
+<li><strong>一个庞大的类可以分模块开发</strong> (把一个类拆分，归类管理)</li>
+<li>一个庞大的类可以由多个人来编写，更有利于团队合作</li>
+</ol>
+</li>
+<li>注意事项
+
+<ol>
+<li>Category 是用于给原有的类添加方法的，只能添加方法，不能添加实例变量</li>
+<li>Category 中添加 @property，只会生成 setter/getter 的声明，不会生成实现和私有实例变量</li>
+<li>可以在 Category 中访问原有类 <strong>h 文件</strong>中定义的属性</li>
+<li>Category 中有和原有类同名的方法，会覆盖原有类的方法</li>
+<li>如多个 Category 中都有和原有类同名的方法，那么调用该方法时由编译器决定执行哪个，会执行最后一个参与编译的分类中的方法</li>
+</ol>
+</li>
+<li>方法的调用顺序
+
+<ol>
+<li>分类 > 本类 > 父类 > &hellip; > NSObject</li>
+</ol>
+</li>
+<li>Category 中重写的是原来就有的方法，那么使用其的文件中，不用引入 Category 头文件，就可使用</li>
+<li>Category 中重写的是新方法，那么使用其的文件中，需要引入 Category 头文件，方可使用</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 例如扩充 Person 类</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Category 声明</span>
+</span><span class='line'><span class="c1">// Person+Test.h</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> <span class="nl">(Test)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">run</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Category 实现</span>
+</span><span class='line'><span class="c1">// Person+Test.m</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span> <span class="nl">(Test)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">run</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;run...&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用 Person 类的地方，只要导入了 Person+Test.h</span>
+</span><span class='line'><span class="c1">// 就可以使用 Person 新增的实例方法 run 了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="extention">Extention</h2></h1>
+
+<ul>
+<li>Class Extention: 类扩展、匿名 Category</li>
+<li>可以为某个类扩充一些<strong>私有</strong>的实例变量和方法，外部是无法访问的
+
+<ul>
+<li>保证封装性 (iOS UI 编写中常用)</li>
+<li>子类无法获取父类的类扩展</li>
+</ul>
+</li>
+<li>对比 Category
+
+<ol>
+<li>写在<strong>m 文件</strong>中</li>
+<li>不仅可扩充方法，还可扩充实例变量和 @property</li>
+<li>定义格式中不用写分类名</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Person.m</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Class Extention</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> <span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 类的实现</span>
+</span><span class='line'><span class="p">@</span><span class="n">inpelmentation</span> <span class="n">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ObjectiveC - Protocol]]></title>
@@ -2774,6 +4217,27 @@
 </table>
 
 
+<h2>iOS9 新增关键字</h2>
+
+<p>关键字不能用于基本数据类型，nil 只用于对象</p>
+
+<ul>
+<li>nullable (表可能为空，用于属性、方法返回值和参数中)</li>
+<li>nonnull (不能为空)</li>
+<li>null_resettable (get 方法不能返回 nil，set 方法可以传入 nil)</li>
+<li>null_unspecified (不确定是否为空)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">@</span><span class="n">porperty</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="bp">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 或</span>
+</span><span class='line'><span class="p">@</span><span class="n">porperty</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="n">_Nullable</span> <span class="n">name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h1><h2 id="type">数据类型</h2></h1>
 
 <blockquote><p>加粗为 OC 相对于 C 新增的</p></blockquote>
@@ -2820,6 +4284,13 @@
 <li><strong>SEL</strong> (选择器类型)</li>
 <li><strong>nil</strong></li>
 </ul>
+
+
+<h2>类型判断</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">BOOL</span> <span class="n">is_person</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">isKindOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1><h2 id="if-loop">流程语句</h2></h1>

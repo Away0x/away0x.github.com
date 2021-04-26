@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class/</loc>
+<lastmod>2018-02-11T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/10/oc-const-static-extern/</loc>
+<lastmod>2018-02-10T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/</loc>
+<lastmod>2018-02-09T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/08/oc-description-category-extention/</loc>
+<lastmod>2018-02-08T08:00:00+08:00</lastmod>
+</url>
+<url>
 <loc>http://away0x.github.io/blog/2018/02/07/oc-protocol/</loc>
 <lastmod>2018-02-07T08:00:00+08:00</lastmod>
 </url>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objectivec | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/objectivec/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-26T10:42:16+08:00</updated>
+  <updated>2021-04-26T12:43:54+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,991 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Typedef, Generic, Enum, @class]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class/"/>
+    <updated>2018-02-11T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/11/oc-typedef-generic-enum-class</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#typedef">typedef</a></li>
+<li><a href="#generic">generic</a></li>
+<li><a href="#enum">enum</a></li>
+<li><a href="#class">@class</a></li>
+</ul>
+
+
+<h1><h2 id="typedef">typedef</h2></h1>
+
+<pre><code class="objectivec">// 未使用别名
+enum IColor {
+    kIColorBlack,
+    kIColorWhite
+}
+
+@interface Iphone : NSObject {
+    enum IColor _color; // 类型名很长
+}
+
+@end
+
+@implementation Iphone
+
+@end
+
+// 使用别名
+typedef enum {
+    kIColorBlack,
+    kIColorWhite
+} IColor;
+
+@interface Iphone : NSObject {
+    IColor _color; // 使用类型别名
+}
+
+@end
+
+@implementation Iphone
+
+@end
+
+// 使用
+int main(int argc, const char * argv[]) {
+    Iphone *p = [Iphone new];
+    p-&gt;_color = kIColorBlack;
+
+    return 0;
+}
+</code></pre>
+
+<h1><h2 id="generic">generic</h2></h1>
+
+<blockquote><p>iOS9+</p></blockquote>
+
+<ol>
+<li>用于限制类型</li>
+<li>提高代码规划，减少沟通成本</li>
+<li>限制集合里的存储类型，不限制的话都是 id 类型
+
+<ul>
+<li>限制后只能存储对应类型，且由于有了具体类型，取出时可以使用点语法</li>
+<li>id 类型是不能使用点语法的</li>
+</ul>
+</li>
+<li>泛型仅仅是报警告</li>
+</ol>
+
+
+<pre><code class="objectivec">// 不用泛型 --------
+// 属性
+@property (nonatomic, strong) NSMutableArray *arr;
+
+// 使用
+[_arr addObject:@"112"]; // 由于定义时没用泛型，所以这里 add 进去的其实是 id 类型
+_arr[0].length; // 报错，_arr[0] 里面是 id 类型，id 类型不能使用点语法
+
+// 使用泛型 --------
+// 属性
+@property (nonatomic, strong) NSMutableArray&lt;NSString *&gt; *arr;
+
+// 使用
+[_arr addObject:@"112"]; // add 的是 NSString 类型
+_arr[0].length; // 不报错，数组里是 NSString 类型
+</code></pre>
+
+<pre><code class="objectivec">// 参数
+- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event;
+</code></pre>
+
+<pre><code class="objectivec">// 限定类型
+@interface Test&lt;ObjectType&gt; : NSObject
+@property (nonatomic, strong) ObjectType language;
+@end
+
+// 使用
+Java *java = [[Java alloc] init];
+iOS *ios = [[iOS alloc] init];
+
+Test&lt;iOS *&gt; *t = [[Test alloc] init];
+t.language = ios;  // 泛型限制了，这里只能设置 iOS 类型
+t.language = java; // 报警告
+</code></pre>
+
+<h1><h2 id="enum">enum</h2></h1>
+
+<pre><code class="objectivec">// 第一种写法 (无法设置枚举值类型)
+typedef enum {
+    DemoTypeTop,
+    DemoTypeBottom,
+} DemoType;
+
+// 第二种写法 (可设置枚举值类型)
+typedef NS_ENUM(NSInteger, DemoType) {
+    DemoTypeTop,
+    DemoTypeBottom,
+};
+
+// 第三种写法 (位移枚举)
+// 更强大，使用时可用并运算
+typedef NS_OPTIONS(NSInteger, DemoType) {
+    DemoTypeTop = 1 &lt;&lt; 0,    // 1*2^0 = 1
+    DemoTypeBottom = 1 &lt;&lt; 1, // 1*2^1 = 2
+    DemoTypeLeft = 1 &lt;&lt; 2,   // 1*2^2 = 4
+    DemoTypeRight = 1 &lt;&lt; 3,  // 1*2^3 = 8
+};
+</code></pre>
+
+<p>位移枚举可进行位运算</p>
+
+<pre><code class="objectivec">// 按位与 &amp;
+//    1&amp;1==1 1&amp;0==0 0&amp;0==0
+//    总结: 只有有 0 则为 0
+// 按位或 |
+//    1|1==1 1|0==1 0|0==0
+//    总结: 只有有 1 则为 1
+
+- (void)demo:(DemoType)type {
+    if (type &amp; DemoTypeTop) {
+        NSLog(@"top --- %zd", type &amp; DemoTypeTop);
+    }
+    if (type &amp; DemoTypeBottom) {
+        NSLog(@"bottom --- %zd", type &amp; DemoTypeBottom);
+    }
+    if (type &amp; DemoTypeLeft) {
+        NSLog(@"left --- %zd", type &amp; DemoTypeLeft);
+    }
+    if (type &amp; DemoTypeRight) {
+        NSLog(@"right --- %zd", type &amp; DemoTypeRight);
+    }
+}
+
+- (void)test {
+    [self demo:DemoTypeTop | DemoTypeRight]; // 打印 top 和 right
+    [self demo:0]; // 什么都不会打印
+
+    // 小技巧
+    // 如是位移枚举，可观察第一个枚举值，如该枚举值不为 0
+    // 那么可默认传 0 做参数，如传 0，那么效率最高 (因为什么额外操作都不会做)
+}
+</code></pre>
+
+<h2>枚举中的位运算</h2>
+
+<ul>
+<li>位移枚举，可以使用并运算 <code>|</code></li>
+<li>一般情况下，如方法参数是枚举值，那么可用过 <code>|</code> 符号，连接多个枚举值</li>
+</ul>
+
+
+<pre><code class="objectivec">NSDate *now = [NSDate date];
+NSCalendar *calendar = [NSCalendar currentCalendar];
+
+// 分别获取 年月日时分秒
+// 如方法参数是位移枚举，那么可用过 | 符号，连接多个枚举值
+NSCalendarUnit type = NSCalendarUnitYear |
+                      NSCalendarUnitMonth |
+                      NSCalendarUnitDay |
+                      NSCalendarUnitHour |
+                      NSCalendarUnitMinute |
+                      NSCalendarUnitSecond;
+NSDateComponents *cmps = [calendar components:type fromDate:now];
+NSLog(@"year = %ld", cmps.year);
+NSLog(@"month = %ld", cmps.month);
+NSLog(@"day = %ld", cmps.day);
+NSLog(@"hour = %ld", cmps.hour);
+NSLog(@"minute = %ld", cmps.minute);
+NSLog(@"second = %ld", cmps.second);
+</code></pre>
+
+<h1><h2 id="class">@class</h2></h1>
+
+<p>作用: 可以简单的引用一个类</p>
+
+<ul>
+<li><p>简单使用: <code>@class Dog;</code> 仅仅是告诉编译器: Dog 是一个类，并不会包含 Dog 这个类的所有内容</p></li>
+<li><p><code>@class:</code> 在 <code>.h</code> 文件中使用 <code>@class</code> 引用一个类</p>
+
+<ul>
+<li>仅仅只是告诉编译器，<code>@class</code>后面的名称是一个类，不会做任何拷贝操作</li>
+<li>注意: 编译器不会知道这个类中有哪些属性和方法，所以在 <code>.m</code> 中使用这个类时，需要 import 这个类，才能使用</li>
+</ul>
+</li>
+<li><code>#import:</code>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件
+
+<ul>
+<li>会将整个文件的代码拷贝到 import 所在的位置</li>
+<li>只要 import 的文件发生了改变，那么 import 就会重新拷贝一次 (更新操作)
+
+<ul>
+<li>多个类时，编译效率变慢</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// Person2.h 中
+@class Person1; // 该文件中引入 Person1 类
+
+// Person2.m 中
+#import "Person1.h"
+</code></pre>
+
+<p>如果在 A 类中要包含 B类，B 类中又要包含 A 类，则 <code>.h</code> 中一定要用 <code>@class</code> 避免循环引入</p>
+
+<ul>
+<li>总结:
+
+<ol>
+<li>在 <code>.h</code> 中使用 <code>@class</code> 引用一个类</li>
+<li>在 <code>.m</code> 文件中使用 <code>#import</code> 包含这个类的 <code>.h</code> 文件</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>@class 其他应用场景</h2>
+
+<p>对于循环依赖关系来说，比方 A 类引用 B 类，同时 B 类也引用 A 类</p>
+
+<pre><code class="objectivec">// 这种嵌套包含的代码编译会报错
+#import "B.h"
+@interface A : NSObject {
+    B *_b;
+}
+@end
+
+#import "A.h"
+@interface B : NSObject {
+    A *_a;
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">// 当使用 @class 在两个类相互声明，就不会出现编译报错
+
+@class B
+@interface A : NSObject {
+    B *_b;
+}
+@end
+
+@class A
+@interface B : NSObject {
+    A *_a;
+}
+@end
+</code></pre>
+
+<h2>@class 和 #import 的区别</h2>
+
+<ul>
+<li>作用上的区别
+
+<ul>
+<li>import 会包含引用类的所有信息(内容)，包括引用类的变量和方法</li>
+<li>@class 仅仅是告诉编译器有这么个类，具体这个类有什么信息，完全不知</li>
+</ul>
+</li>
+<li>效率上的区别
+
+<ul>
+<li>如果有上百个头文件都 <code>#import</code> 了同一个文件，或者这些文件依次被 <code>#import</code>，那么一旦最开始的头文件有所改动，后面引用到这个文件的所有类都需要重新编译一遍，编译效率非常低</li>
+<li>相对来讲，使用 <code>@class</code> 就不会出现这个问题了</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Const, Static, Extern]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/10/oc-const-static-extern/"/>
+    <updated>2018-02-10T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/10/oc-const-static-extern</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#const">const</a></li>
+<li><a href="#static">static</a></li>
+<li><a href="#extern">extern</a></li>
+</ul>
+
+
+<h1><h2 id="const">const</h2></h1>
+
+<blockquote><p>苹果推荐使用 const 常量替代宏字符串常量</p></blockquote>
+
+<h2>const 与宏的区别</h2>
+
+<ol>
+<li><strong>编译时刻:</strong> 宏是<strong>预编译</strong>(编译之前处理)，const 是<strong>编译阶段</strong></li>
+<li><strong>编译检查:</strong> 宏不做检查，不会报编译错误，只是替换，const 会编译检查，会报编译错误</li>
+<li><strong>宏的好处:</strong> 宏能定义一些函数、方法。const 则不能</li>
+<li><strong>宏的坏处:</strong> 使用大量宏，容易造成编译时间久，每次都需要重新替换</li>
+</ol>
+
+
+<pre><code class="objectivec">// 宏
+#define MyAccount @"account"
+#define MyUserDefault [NSUserDefaults standardUserDefaults]
+
+// 字符串常量
+static NSString * const account = @"account";
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    // 使用宏
+    [MyUserDefault setValue:@"123", forKey:MyAccount];
+
+    // 使用 const 常量
+    [[NSUserDefaults standardUserDefaults] setValue:@"123", forKey:account];
+}
+</code></pre>
+
+<h2>使用</h2>
+
+<ul>
+<li>作用
+
+<ol>
+<li>修饰右边的基本变量或指针变量</li>
+<li>被 cosnt 修饰的变量是只读的</li>
+</ol>
+</li>
+<li>使用场景
+
+<ol>
+<li>修饰全局只读变量</li>
+<li>修饰方法中只读参数</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">int a = 3;
+a = 5; // 可以修改
+
+int const b = 3; // 也可这样写 const int b = 3;
+b = 5; // 不可修改，报错
+</code></pre>
+
+<pre><code class="objectivec">// const 修饰指针变量
+
+int a = 3;
+int *p = &amp;a;
+NSLog(@"%d", a); // 3
+a = 5;
+NSLog(@"%d", a); // 5
+*p = 8;
+NSLog(@"%d", a); // 8
+
+// const 修饰 *p
+int a = 3;
+int b = 5;
+int const *p = &amp;a;
+p = &amp;b; // p 可以修改
+*p = 8; // *p 被 const 修饰了，不可修改，会报错
+
+// const 修饰 p
+int a = 3;
+int b = 5;
+int * const p = &amp;a;
+p = &amp;b; // p 被 const 修饰了，不可修改，会报错
+*p = 8; // *p 可被修改
+</code></pre>
+
+<pre><code class="objectivec">int * const p;       // p: 不可修改，*p: 可修改
+int const *p;        // p: 可修改，  *p: 不可修改
+const int * p;       // p: 可修改，  *p: 不可修改
+const int * const p; // p: 不可修改，*p: 不可修改
+int const * const p; // p: 不可修改，*p: 不可修改
+</code></pre>
+
+<h1><h2 id="static">static</h2></h1>
+
+<ol>
+<li>修饰局部变量，被其修饰的局部变量，会延长生命周期，生命长度跟整个应用程序有关
+
+<ul>
+<li>被 static 修饰的局部变量，只会分配一次内存</li>
+<li>被 static 修饰的局部变量，程序一运行就会给其分配内存</li>
+</ul>
+</li>
+<li>修饰全局变量，被 static 修饰的全局变量，作用域会修改，只能在当前文件下使用</li>
+</ol>
+
+
+<h2>static 和 const 联合使用</h2>
+
+<ul>
+<li>cosnt 修饰全局变量，使其只读</li>
+<li>static 修饰全局变量，使其作用域为文件作用域</li>
+</ul>
+
+
+<pre><code class="objectivec">// 只在当前文件中可访问到的只读全局变量
+static NSString * const name = @"wt";
+
+@implementation ViewController
+@end
+</code></pre>
+
+<h1><h2 id="extern">extern</h2></h1>
+
+<ol>
+<li>用于声明(使用)外部全局变量，<strong>注意: 其只能用于声明，不能用于定义</strong></li>
+<li>工作原理: 先会去当前文件下查找有无对应全局变量，如没有，才会去其他文件查找</li>
+<li>全局变量在程序运行时就会分配，如 A 文件中定义了全局变量 <code>int a = 0</code>，在 B 文件中可用 <code>extern int a</code> 来使用它</li>
+<li>如该全局变量使用 static 修饰，那么 extern 无法找到它，因为其是文件作用域</li>
+</ol>
+
+
+<h2>extern 和 const 联合使用</h2>
+
+<pre><code class="objectivec">// A 类
+NSString * const a = @"a";
+
+@implementation A
+@end
+</code></pre>
+
+<pre><code class="objectivec">// 使用全局变量 a
+extern NSString *a;
+
+@implementation B
+
+- (void)test {
+    NSLog(@"%@", a); // "a" 可读到
+    a = @"aa";       // 报错，a 被 const 修饰了，不可修改
+}
+
+@end
+</code></pre>
+
+<h2>注意点</h2>
+
+<ul>
+<li>注意: 全局变量不能定义在自己的类中
+
+<ul>
+<li>如多个文件声明了同名的全局变量，会编译失败</li>
+</ul>
+</li>
+<li>可自己创建一个管理全局变量的类，如 <code>GlobeConst</code>
+
+<ul>
+<li>在 m 文件中定义全局变量，在 h 中使用 extern 引用，这样其他文件要使用这些全局变量，只要引用 <code>GlobeConst.h</code> 文件即可</li>
+<li><code>GlobeConst</code> 中的全局变量使用 const 修饰，避免其他文件使用时对其修改了</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// GlobeConst.h
+
+extern NSString * const one_name;
+</code></pre>
+
+<pre><code class="objectivec">// GlobeConst.m
+
+NSString * const one_name = @"one name";
+</code></pre>
+
+<pre><code class="objectivec">// 其他文件
+
+#import "GlobeConst.h"
+
+NSLog(@"%@", one_name); // "one name"
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Property, Synthesize]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/"/>
+    <updated>2018-02-09T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/09/oc-property-synthesize</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<blockquote><p>Xcode4.4之前 @property 用于生成实例变量 getter/setter 的声明，@synthesize 用于生成 getter/setter 的实现</p>
+
+<p>@property 和 @synthesize 在 Xcode4.4 以前一直都是配合着使用，在 4.4 以后，@property 得到了增强，一行代码编译器就会自动帮我们生成 setter 和  getter 方法的声明和实现，同时在 m 文件中声明一个和属性名一样并且在最前面带有下划线的实例变量 (私有的)</p></blockquote>
+
+<ul>
+<li><a href="#property">Property</a></li>
+<li><a href="#synthesize">Synthesize</a></li>
+</ul>
+
+
+<h1><h2 id="property">Property</h2></h1>
+
+<ul>
+<li>@property 是一个编译器指令</li>
+<li>可以使用 @property 来代替 getter/setter 方法的声明和实现
+
+<ul>
+<li>即只要写 @property 就不用写 getter/setter 方法了</li>
+<li>但 @property 生成的 getter/setter 十分简单，想增强，可自己重写</li>
+<li>但如<strong>同时重写(只重写其一不会)</strong>了 getter/setter @property 就不会自动生成私有的实例变量</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// 使用实例变量 getter/setter
+@interface Person : NSObject {
+    int _age;
+}
+// setter
+- (void)setAge:(int)age;
+// getter
+- (int)age;
+@end
+</code></pre>
+
+<pre><code class="objectivec">// 使用 property 替代 实例变量 getter/setter
+@interface Person : NSObject
+
+// 编译器只要看到 property，就做下面的事情
+//    - 编译时生成一个实例变量 _age
+//    - 生成 getter/setter 的声明
+//    - 生成 getter/setter 的实现
+@property int age; // property 名不用写下划线
+
+@end
+
+// 使用
+Person *p = [Person new];
+[p setAge:11]; // 可使用 setter 了
+p.age = 11;
+</code></pre>
+
+<h2>Property 修饰符</h2>
+
+<ul>
+<li><code>@property (修饰符1, 修饰符2, ...) 数据类型 变量名;</code></li>
+<li>不写修饰符默认为 <code>(atomic, assign, readwrite)</code></li>
+</ul>
+
+
+<h3>readwrite, readonly</h3>
+
+<ul>
+<li>readwrite: (默认) 可读可写，生成 getter/setter</li>
+<li>readonly: 只读，只生成 getter</li>
+<li>也可指定生成的方法的名称</li>
+</ul>
+
+
+<pre><code class="objectivec">@property (readonly) int age;
+
+@property (getter=isMarried) BOOL married;
+// 通常 BOOL 类型的属性的 getter 要以 is 开头
+</code></pre>
+
+<h3>getter, setter</h3>
+
+<ul>
+<li>getter: 可以给生成的 getter 方法起一个名称</li>
+<li>setter: 可以给生成的 setter 方法起一个名称</li>
+</ul>
+
+
+<h3>atomic, nonatomic</h3>
+
+<ul>
+<li>atomic: 线程安全，为 setter 加锁，默认就是 atomic，需要消耗大量的资源</li>
+<li>nonatomic: 非线程安全，不会为 setter 加锁，适合内存小的移动设备</li>
+</ul>
+
+
+<h3>retain</h3>
+
+<p>自动生成 set 方法内存管理的代码</p>
+
+<ul>
+<li>指针的拷贝，使用的是原来的内存空间，对象的索引计数加1</li>
+<li>此属性只能用于Objective-C对象类型，而不能用于Core Foundation对象。
+
+<ul>
+<li>原因很明显，retain会增加对象的引用计数，而基本数据类型或者 Core Foundation 对象都没有引用计数</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">- (void)setBook:(Book *)book {
+    if (_book != book) {
+        [_book release];
+        _book = [book retain];
+    }
+}
+</code></pre>
+
+<h3>assign</h3>
+
+<p>不会生成 set 方法内存管理的代码，仅仅只会生成普通的 set 方法</p>
+
+<ul>
+<li>直接赋值，索引计数不改变，适用于简单数据类型，例如：NSIngeter、CGFloat、int、char 等</li>
+<li>修饰对象了类型时，不改变其引用计数</li>
+<li>所指对象在被释放之后，仍指向那块内存地址，会产生悬垂指针</li>
+</ul>
+
+
+<pre><code class="objectivec">- (void)setBook:(Book *)book {
+    _book = book;
+}
+</code></pre>
+
+<h3>weak, strong</h3>
+
+<ul>
+<li>weak:
+
+<ul>
+<li>不改变被修饰对象的引用计数</li>
+<li>所指对象在被释放之后会自动置为 nil</li>
+<li><code>assign 和 weak 的区别</code>:
+
+<ol>
+<li><code>weak / __weak</code>: 弱指针，不会让引用计数器加一，如果指向的对象被销毁，指针会自动清空</li>
+<li><code>assign / __unsafe_unretained</code>: 不会让引用计数器加一，如果指向的对象被销毁，指针不会清空</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>strong: 强指针 <code>__strong</code></li>
+</ul>
+
+
+<h3>copy</h3>
+
+<p>对象的拷贝，新申请一块内存空间，并把原始内容复制到那片空间，新对象的索引计数为 1</p>
+
+<ul>
+<li>对象进行拷贝，对于不可变对象拷贝为不可变对象会创建新对象</li>
+<li>此属性只对那些实行了 NSCopying 协议的对象类型有效</li>
+<li>很多 Objective-C 中的 object 最好使用用 retain，一些特别的 object（例如：string）使用 copy</li>
+<li>详见内存管理笔记</li>
+<li>会先判断这个对象是可变的还是不可变的
+
+<ul>
+<li>所以如该对象不可变可使用 strong，避免判断，以提高性能</li>
+</ul>
+</li>
+<li><strong>一般就用于 NSString 和 block</strong></li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 源对象类型 </th>
+<th> 拷贝方式 </th>
+<th> 目标对象类型 </th>
+<th> 拷贝类型 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> mutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 深拷贝 </td>
+</tr>
+<tr>
+<td> mutable 对象 mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+<td></td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> copy </td>
+<td> 不可变 </td>
+<td> 浅拷贝 </td>
+</tr>
+<tr>
+<td> immutable 对象 </td>
+<td> mutableCopy </td>
+<td> 可变 </td>
+<td> 深拷贝 </td>
+</tr>
+</tbody>
+</table>
+
+
+<pre><code class="objectivec">@property(copy) NSMutableArray* arr;
+// 赋值过来的是 NSMutableArray，copy 之后是 NSArray
+// 赋值过来的是 NSArray，copy 之后是 NSArray
+// 所以这样定义容易出现一些异常
+</code></pre>
+
+<h1><h2 id="synthesize">Synthesize</h2></h1>
+
+<ul>
+<li>@synthesize 是一个编译器指令</li>
+<li>通常使用 @property 生成了 getter/setter
+
+<ul>
+<li>可用 synthesize 来修改属性的名称</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">@interface Person : NSObject
+@property int age;
+// 相当于下面的代码
+/*
+{
+    int _age;
+}
+- (void)setAge:(int)age;
+- (int)age;
+
+// 并且还在 implementation 中生成了对应的实现
+- (void)setAge:(int)age {
+    _age = age;
+}
+- (int)age {
+    return _age;
+}
+*/
+@end
+
+@implementation Person
+
+// 告诉编译器，需要实现哪个 @property 生成的声明
+//   这里需要实现的是 age property
+// 告诉 @synthesize，需要将传入的值赋给谁和返回谁的值给调用者
+// 如只写 @synthesize age 那么相当于 @synthesize age = age
+// 
+@synthesize age = _age;
+// 相当于下面的代码
+/*
+- (void)setAge:(int)age {
+    _age = age;
+}
+- (int)age {
+    return _age;
+}
+*/
+
+@synthesize age = $age;
+// 相当于下面的代码
+/*
+- (void)setAge:(int)age {
+    $age = age;
+}
+- (int)age {
+    return $age;
+}
+*/
+@end
+</code></pre>
+
+<h2>使用场景</h2>
+
+<pre><code class="objectivec">// 生成了实例变量 _age，并且实现了它的 getter/setter 的声明和实现
+@property (nonatomic, assign) int age;
+
+// 当同时重写了 setter/getter 时，系统会报错，原因是找不到 _age 这个变量
+
+// 解决方法一 (在 .h 的文件中声明这个属性)
+@interface Person : NSObject {
+  int _age;
+}
+@end;
+
+
+// 解决方法二 (在 .m 的文件中使用 @synthesize)
+@implementation Person
+
+@synthesize age = _age;
+// 由于自己重写了 setter/getter 所以得定义下 synthesize
+- (int)age {
+    return _age;
+}
+- (void)setAge:(int)age {
+    _age = age;
+}
+
+@end
+
+/**
+@synthesize age = _age 告诉编译器有个叫 _age 的实例变量，它是方法 age 以及 setAge 的实例变量，如果它不存在，就要将它创建出来
+
+通过这个看似像是赋值的一个操作
+我们可以在 @synthesize 中定义与变量名不同的 setter 和 getter 的命名
+以此来保护变量不会被不恰当的访问
+*/
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Description, Category, Extention]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/08/oc-description-category-extention/"/>
+    <updated>2018-02-08T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/08/oc-description-category-extention</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#category">Category</a></li>
+<li><a href="#extention">Extention</a></li>
+</ul>
+
+
+<h1><h2 id="description">Description</h2></h1>
+
+<pre><code class="objectivec">// 这会调用 A 的 description 方法来输出 A 的描述信息
+NSLog(@"%@", A);
+</code></pre>
+
+<ul>
+<li>description 方法默认返回对象的描述信息 (默认实现是返回类名和对象的内存地址)</li>
+<li>description 方法是基类 NSObject 所带的方法，我们可以重写其来输出对象的信息</li>
+<li>注意:
+
+<ol>
+<li>description 中尽量不要使用 self 来打印</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">- (void)description {
+    // 打印 self 应用 %p
+    NSLog(@"%p", self); // 这样才行
+    // NSLog(@"%@", self); // 使用 %@ 打印 self 会造成死循环
+}
+</code></pre>
+
+<pre><code class="objectivec">@interface Demo : NSObject
+
+@end
+
+@impletation Demo
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"对象信息"];
+}
+
++ (NSString *)description {
+    return [NSString stringWithFormat:@"类对象信息 %@", [Demo class]];
+}
+
+@end
+</code></pre>
+
+<h1><h2 id="category">Category</h2></h1>
+
+<ul>
+<li>Category 是 OC 特有的语法</li>
+<li>Category 也分为声明和实现</li>
+<li>一个类可有多个 Category</li>
+<li>作用
+
+<ol>
+<li><strong>可以在不修改原来类的基础上，为这个类扩充一些方法</strong></li>
+<li><strong>一个庞大的类可以分模块开发</strong> (把一个类拆分，归类管理)</li>
+<li>一个庞大的类可以由多个人来编写，更有利于团队合作</li>
+</ol>
+</li>
+<li>注意事项
+
+<ol>
+<li>Category 是用于给原有的类添加方法的，只能添加方法，不能添加实例变量</li>
+<li>Category 中添加 @property，只会生成 setter/getter 的声明，不会生成实现和私有实例变量</li>
+<li>可以在 Category 中访问原有类 <strong>h 文件</strong>中定义的属性</li>
+<li>Category 中有和原有类同名的方法，会覆盖原有类的方法</li>
+<li>如多个 Category 中都有和原有类同名的方法，那么调用该方法时由编译器决定执行哪个，会执行最后一个参与编译的分类中的方法</li>
+</ol>
+</li>
+<li>方法的调用顺序
+
+<ol>
+<li>分类 > 本类 > 父类 > &hellip; > NSObject</li>
+</ol>
+</li>
+<li>Category 中重写的是原来就有的方法，那么使用其的文件中，不用引入 Category 头文件，就可使用</li>
+<li>Category 中重写的是新方法，那么使用其的文件中，需要引入 Category 头文件，方可使用</li>
+</ul>
+
+
+<pre><code class="objectivec">// 例如扩充 Person 类
+
+// Category 声明
+// Person+Test.h
+@interface Person (Test)
+
+- (void)run;
+
+@end
+
+// Category 实现
+// Person+Test.m
+@implementation Person (Test)
+
+- (void)run {
+    NSLog(@"run...");
+}
+
+@end
+
+// 使用 Person 类的地方，只要导入了 Person+Test.h
+// 就可以使用 Person 新增的实例方法 run 了
+</code></pre>
+
+<h1><h2 id="extention">Extention</h2></h1>
+
+<ul>
+<li>Class Extention: 类扩展、匿名 Category</li>
+<li>可以为某个类扩充一些<strong>私有</strong>的实例变量和方法，外部是无法访问的
+
+<ul>
+<li>保证封装性 (iOS UI 编写中常用)</li>
+<li>子类无法获取父类的类扩展</li>
+</ul>
+</li>
+<li>对比 Category
+
+<ol>
+<li>写在<strong>m 文件</strong>中</li>
+<li>不仅可扩充方法，还可扩充实例变量和 @property</li>
+<li>定义格式中不用写分类名</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// Person.m
+
+// Class Extention
+@interface Person ()
+
+@end
+
+// 类的实现
+@inpelmentation Person
+
+@end
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ObjectiveC - Protocol]]></title>
@@ -168,1360 +1153,6 @@ if ([dog respondsToSelector:@selector(eat)]) {
 <h2>委托代理</h2>
 
 <p>详见类之间通信的笔记</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - Constructor]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/06/oc-constructor/"/>
-    <updated>2018-02-06T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/06/oc-constructor</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#o1">new &amp; init</a></li>
-<li><a href="#o2">instancetype &amp; id</a></li>
-<li><a href="#o3">自定义构造方法</a></li>
-<li><a href="#o4">自定义类工厂方法</a></li>
-<li><a href="#o5">类的本质</a></li>
-</ul>
-
-
-<blockquote><p>OC 中的构造方法实际上并不是传统意义上的构造方法</p></blockquote>
-
-<h1><h2 id="o1">new &amp; init</h2></h1>
-
-<h2>new</h2>
-
-<ul>
-<li>new 做了三件事情
-
-<ol>
-<li>开辟存储空间</li>
-<li>初始化所有的属性(实例变量)</li>
-<li>返回对象的地址</li>
-</ol>
-</li>
-<li>new 相当于是 alloc 和 init 的组合</li>
-<li><strong>推荐使用 alloc + init 的方式</strong>
-
-<ol>
-<li>能够统一编码格式能够统一的对代码进行初始化 (使用 new 不方便使用自定义构造方法)</li>
-</ol>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">Person *p = [Person new];
-// 相当于下面
-Person *p = [[Person alloc] init];
-/*
-alloc 做的事
-    1. 开辟存储空间 
-    2. 将所有的属性设置为 0 (无论属性是何类型)
-    3. 返回当前实例对象的地址
-init 做的事
-    1. 初始化成员变量，但是默认情况下 init 的实现是什么都没有做
-    2. 返回初始化后的实例变量
-
-注意: alloc 返回的地址，和 init 返回的地址是同一个地址
-*/
-Person *p1 = [Person alloc];
-Person *p2 = [p1 init];
-NSLog(@"%p %p", p1, p2); // 相同
-</code></pre>
-
-<h2>init</h2>
-
-<ul>
-<li>OC 中以 init 开头的方法，称之为构造方法</li>
-<li>用途: 用于初始化一个对象，让某个对象一创建出来就拥有某些属性和值</li>
-</ul>
-
-
-<pre><code class="objectivec">@implementation Person
-
-// 重写 init 方法，在 init 方法中初始化实例变量
-// 注意: 重写 init 方法必须按苹果规定的格式重写，不这样会引发一些未知的错误
-//    1. 先初始化父类，再初始化子类
-//    2. 判断父类是否初始化成功，只有父类初始化成功才能继续初始化子类
-//    3. 返回当前对象的地址
-- (instancetype)init {
-    // 1. 初始化父类
-    self = [super init]; // 初始化成功返回对应地址，失败返回 nil
-
-    // 2. 判断是否初始化成功
-    if (self) {
-        // 2.1 初始化子类 (如设置实例变量的值)
-    }
-
-    // 3. 返回地址
-    return self;
-}
-
-@end
-
-// 使用
-Person *p = [[Person alloc] init];
-</code></pre>
-
-<h1><h2 id="o2">instancetype &amp; id</h2></h1>
-
-<ul>
-<li>instancetype 和 id 一样都是万能指针</li>
-<li>如果构造函数返回值是 instancetype，那么将返回值赋值给一个其他的对象会报一个警告；id 类型则不会</li>
-<li>instancetype 在编译时可判断对象的真实类型，id 则不能</li>
-<li>id 可用来定义变量，可以作为返回值，可以作为形参。instancetype 只能作为返回值</li>
-<li><strong>注意:</strong> 定义构造方法，返回值尽量使用 instancetype，不要使用 id</li>
-</ul>
-
-
-<pre><code class="objectivec">@implementation Person
-- (instancetype)init {
-    if (self = [super init]) {}
-    return self;
-}
-@end
-
-// 使用
-Person *p1 = [[Person alloc] init];
-
-// 报警告！将 instancetype 赋给其他对象了
-NSString *p2 = [[Person alloc] init];
-</code></pre>
-
-<pre><code class="objectivec">@implementation Person
-- (id)init {
-    if (self = [super init]) {}
-    return self;
-}
-@end
-
-// 使用
-// 不会报警告，因为返回值是 id 类型 (新版本 xcode 也会警告了)
-NSString *p = [[Person alloc] init];
-</code></pre>
-
-<h1><h2 id="o3">自定义构造方法</h2></h1>
-
-<ul>
-<li>一个类可以有 0 个或者多个自定义构造方法</li>
-<li>其实就是自定义一个 init 方法
-
-<ol>
-<li>一定是实例方法</li>
-<li>一定返回 id/instancetype (建议 instancetype)</li>
-<li>方法名一定以 init 开头，之后有参数的 <code>initWithXXX</code>，W 一定要大写 (苹果硬性规定)
-
-<ul>
-<li>initwithxxx W 小写的话，不认为其是自定义构造方法，其内不能调用 <code>[super init]</code></li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">// Person.h
-@interface Person : NSObject
-
-@property int age;
-
-@end
-
-// Person.m
-@implementation Person
-
-- (instancetype)init {
-    if (self = [super init]) {
-        _age = 10;
-    }
-    return self;
-}
-// 自定义构造方法
-- (instancetype)initWithAge:(int)age {
-    if (self = [super init]) {
-        _age = age;
-    }
-    return self;
-}
-
-@end
-
-// 使用
-Person *p = [[Person alloc] initWithAge:25];
-p.age; // 25
-</code></pre>
-
-<h1><h2 id="o4">自定义类工厂方法</h2></h1>
-
-<ul>
-<li>类工厂方法是一种用于分配、初始化实例并返回一个它自己的实例的类方法</li>
-<li>类工厂方法规范
-
-<ol>
-<li>一定是类方法</li>
-<li>返回值一般是 instancetype 类型</li>
-<li>方面名以类名开头，首字母小写</li>
-<li>类工厂中创建对象不要使用类名创建，应该使用 self 来创建</li>
-</ol>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">+ (instancetype)personWithAge:(int)age {
-    // 不能是 [Person alloc]，否则继承时会有问题
-    Person *p = [[self alloc] init];
-    [p setAge:age];
-    return p;
-}
-
-// 使用
-Person *p = [Person personWithAge:25];
-</code></pre>
-
-<h1><h2 id="o5">类的本质</h2></h1>
-
-<ul>
-<li>类的本质其实也是一个对象 (类对象)</li>
-<li>程序中第一次使用该类的时候被创建，在整个程序中只有一份</li>
-<li>此后每次使用都是这个类对象，它在程序运行时一直存在</li>
-<li>类对象是一种数据结构，存储类的基本信息: 类大小、类名称、类的版本、继承层次、以及消息与函数的映射表等</li>
-<li>类对象代表类，Class 类型，对象方法属于类对象</li>
-<li>如果消息的接收者是类名，则类名代表类对象</li>
-<li>所有类的实例都由类对象生成，类对象会把实例的 isa 的值修改成自己的地址，每个实例的 isa 都指向该实例的类对象</li>
-</ul>
-
-
-<h2>获取类对象</h2>
-
-<pre><code class="objectivec">// 1. 通过实例对象
-Person *p = [[Person alloc] init];
-Class c1 = [p class];
-
-// 通过类名获取 (类名其实就是类对象)
-Class c2 = [Person class];
-</code></pre>
-
-<pre><code class="objectivec">// 应用场景
-
-// 1. 用于创建实例对象
-Person *p1 = [[c1 alloc] init];
-
-// 2. 用于调用类方法
-[c1 test];
-</code></pre>
-
-<h2>类的启动过程</h2>
-
-<p>只要程序启动就会将类的代码加载到内存中，放到代码区</p>
-
-<pre><code class="objectivec">@inplementation Person
-
-// load 方法会在当前类被加载到内存时调用，仅会被调用一次
-// 如存在继承关系，会先调用父类的 load 方法，再调用子类的 load 方法
-+ (void)load {
-    NSLog(@"类被加载到内存中了...");
-}
-
-// 当前类第一次被使用时会调用 (创建类对象的时候)
-// 在整个程序的运行过程中只会被调用一次，无论你使用多少次这个类都只会调用一次
-// 用于对某一个类进行一次性的初始化
-// 如存在继承关系，会先调用父类的 initialize 方法，再调用子类的 initialize 方法
-+ (void)initialize {
-    NSLog(@"类第一次被使用啦");
-}
-
-@end
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(二)]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/05/oc-oop-features/"/>
-    <updated>2018-02-05T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/05/oc-oop-features</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#o1">封装</a></li>
-<li><a href="#o2">继承</a></li>
-<li><a href="#o3">多态</a></li>
-</ul>
-
-
-<h1><h2 id="o1">封装</h2></h1>
-
-<ul>
-<li>屏蔽内部实现的细节，仅对外提供公有的方法/接口</li>
-<li>优点: 保证数据的安全性，将变化隔离</li>
-</ul>
-
-
-<h2>实例变量的封装</h2>
-
-<h3>未封装的实例变量</h3>
-
-<pre><code class="objectivec">@interface Demo : NSObject {
-@public
-    int _age;
-}
-@end
-
-@impletation Demo
-@end
-</code></pre>
-
-<pre><code class="objectivec">Demo *demo = [Demo new];
-demo-&gt;_age = 25;
-int age = demo-&gt;age;
-</code></pre>
-
-<h3>使用 getter/setter 封装实例变量</h3>
-
-<ul>
-<li>二者写法格式是固定的</li>
-<li><strong>setter</strong>
-
-<ol>
-<li>作用: 设置实例变量的值</li>
-<li>一定是实例方法且无返回值</li>
-<li>一定有参数，参数类型和需设置的实例变量类型相同，且名称是实例变量的名称去掉下划线</li>
-<li>命名一定是 &ldquo;set + 实例变量&rdquo; (实例变量名去掉开头下划线，且首字母大写)</li>
-</ol>
-</li>
-<li><strong>getter</strong>
-
-<ol>
-<li>获取实例变量的值</li>
-<li>一定是实例方法且有返回值</li>
-<li>返回值和获取的实例变量的类型一致</li>
-<li>一定无参数</li>
-<li>命名是获取的实例变量的名称去掉下划线</li>
-</ol>
-</li>
-<li>只读属性: 私有实例变量只提供了 getter</li>
-<li>只写属性: 私有实例变量只提供了 setter</li>
-<li>可读可写属性: 私有实例变量只提供了 getter、setter</li>
-</ul>
-
-
-<pre><code class="objectivec">@interface Demo : NSObject {
-    int _age;
-}
-// setter 声明
-- (void)setAge:(int)age;
-
-// getter 声明
-- (int)age;
-
-@end
-
-@impletation Demo
-
-// setter 实现
-- (void)setAge:(int)age {
-    _age = age; 
-}
-
-// getter 实现
-- (int)age {
-    return _age;
-}
-
-@end
-</code></pre>
-
-<pre><code class="objectivec">Demo *demo = [Demo new];
-[demo setAge:25];     // setter
-int age = [demo age]; // getter
-</code></pre>
-
-<h2>点语法</h2>
-
-<ul>
-<li>如果实例属性提供了 setter、getter 方法，那么访问属性又多了一种访问方式: <strong>点语法</strong></li>
-<li>点语法的本质是调用了 setter/getter (C++ 中的点可以直接访问实例变量)</li>
-<li>点语法是一个编译器特性，实际并不是 OC 的语法
-
-<ul>
-<li>会在程序翻译成二进制时，将点语法自动转换为 setter/getter</li>
-</ul>
-</li>
-<li>点语法的注意点:
-
-<ul>
-<li>点语法一般用于给实例变量赋值，如果不是给实例变量赋值一般情况不建议使用</li>
-<li>因为其是编译器特性，会将 <code>a.b</code> 翻译成 <code>[a b]</code> 所以也可以调用一些实例方法，但不要使用</li>
-<li><code>请将点语法当成是便捷版的实例变量 getter/setter 的使用方式，其他情况下请不要使用</code></li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">Demo *demo = [Demo new];
-demo.age = 25; // 相当于 setter "[demo setAge:25];"
-int age = demo.age; // 相当于 getter "int age = [demo age];"
-</code></pre>
-
-<h1><h2 id="o2">继承</h2></h1>
-
-<ul>
-<li>OC 是单继承</li>
-<li>A 类继承了 B 类，那么 B 类就拥有了 A 类所有属性和方法</li>
-</ul>
-
-
-<pre><code class="objectivec">// Demo 继承了 NSObject
-@interface Demo : NSObject
-@end
-
-@impletation Demo
-@end
-</code></pre>
-
-<ul>
-<li>如子类中有和父类同名的方法，称之为 <strong>方法重写</strong></li>
-<li>继承中的方法调用顺序: 自己有就调用自己的，自己无就调用父类的，以此类推，逐级往上
-
-<ul>
-<li>如一直找到 NSObject 类都没有找到，那么就会报错</li>
-</ul>
-</li>
-<li>继承的优点:
-
-<ol>
-<li>提高了代码的复用性</li>
-<li>让类与类之间产生了关系，这才有了多态</li>
-</ol>
-</li>
-</ul>
-
-
-<h2>super</h2>
-
-<ul>
-<li>super 和 self 指向的是相同的消息接收者</li>
-<li>作用:
-
-<ol>
-<li>直接调用父类中的某个方法</li>
-<li>super 在实例方法中，会调用父类的实例方法</li>
-<li>super 在类方法中，会调用父类的类方法</li>
-</ol>
-</li>
-<li>使用场景:
-
-<ol>
-<li>子类重写父类的方法时，想保留父类的一些行为</li>
-</ol>
-</li>
-</ul>
-
-
-<h1><h2 id="o3">多态</h2></h1>
-
-<ul>
-<li>多态: 事物的多种表现形态</li>
-<li>OC 不同于传统程序设计语言，它可以在运行时加入新的数据类型和新的程序模块: 动态类型识别、动态绑定、动态加载</li>
-<li>多态的条件:
-
-<ol>
-<li>有继承关系</li>
-<li>子类重写父类方法</li>
-<li>父类指针指向子类对象</li>
-</ol>
-</li>
-<li>表现: 当父类指针指向不同对象的时候，通过父类指针调用被重写的方法时，会执行指正所指向</li>
-<li>优点:
-
-<ol>
-<li>提高了代码的拓展性</li>
-</ol>
-</li>
-<li>注意点:
-
-<ol>
-<li>如父类指针指向子类对象，如需调用<strong>子类特有</strong>的方法，必须先强制类型转换为子类才能调用</li>
-</ol>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">// 实现多态
-// Animal 是父类，子类有 Cat 和 Dog，分别重写了父类的 eat 方法
-// 那么实例化时，可这样:
-Animal *animal = nil;
-
-// 实例化 Dog
-animal = [Dog new];
-[animal eat]; // Dog 的 eat
-// 实例化 Cat
-animal = [Cat new];
-[animal eat]; // Cat 的 eat
-</code></pre>
-
-<h2>动态类型</h2>
-
-<ul>
-<li>在编译时编译器只会检查当前类型中有没有需要调用的方法</li>
-<li>运行时，才会去判断对象的真实类型</li>
-</ul>
-
-
-<pre><code class="objectivec">Animal *a = [Dog new];
-
-// 1
-// 首先由于 a 是 Animal 类型，所以编译时会在去 Animal 里找是否已 eat 方法，无, 会编译失败
-// 然后在运行时，系统判断出了 a 的真实类型是 Dog 类型
-// 因此这里调用的是 Dog 类的 eat 方法，而不是 Animal 类
-[a eat];
-
-// 2
-// 如果想调用子类特有的方法，必须强制类型转换为子类才能调用
-// 如子类 Dog 特有方法 dogEat，Animal 类没有这个方法
-[a dogEat]; // 报错，因为编译阶段发现 Animal 中没有这个方法
-
-Dog *dog = (Dog *)a;
-[dog dogEat]; // 正确
-</code></pre>
-
-<h2>id 类型</h2>
-
-<p>id 类型: 通用对象指针类型，弱类型，编译时不进行类型检查</p>
-
-<h2>应用场景</h2>
-
-<pre><code class="objectivec">@interface Person: NSObject
-+ (void)food:(Animal *)animal;
-@end
-
-@implementation Person
-+ (void)food:(Animal *)animal {
-    // 运行时会动态监测 animal 的真实类型，从而调用对应类型的方法
-    // 这样就不用创建针对于不同类型的 food 方法啦
-    // 如果真实类型没有 eat 方法，这会找到 Animal 类，调用其的 eat 方法
-    // 注意这里 Animal 类得有 eat 方法，因为编译时会做检测
-    // 运行时才会确定真实类型
-    [animal eat];
-}
-@end
-
-// 使用
-// Cat Dog 继承与 Animal
-// Animal 有 eat 方法
-// Cat Dog 都各自重写了父类的 eat 方法
-Dog *d = [Dog new];
-Cat *c = [Cat new];
-
-[Person food:d]; // 调用的是 Dog 的 eat 方法
-[Person food:c]; // 调用的是 Cat 的 eat 方法
-</code></pre>
-
-<h2>注意点</h2>
-
-<p>如果存在多态，父类是可以访问子类特有的方法。否则不能直接调用</p>
-
-<pre><code class="objectivec">// 子类特有方法 bark
-[dog bark];
-
-Animal *animal = [Dog new];
-[(Dog *)animal bark]; // 把父类的指针，强制类型转换
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(一)]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/04/oc-oop-basic/"/>
-    <updated>2018-02-04T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/04/oc-oop-basic</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#o1">OC 多文件开发</a></li>
-<li><a href="#o2">isa 指针</a></li>
-<li><a href="#o3">实例变量(成员变量)</a></li>
-<li><a href="#o4">方法</a></li>
-<li><a href="#o5">私有变量和私有方法</a></li>
-<li><a href="#o6">self</a></li>
-<li><a href="#o7">NSObject</a></li>
-<li><p><a href="#o8">例子</a></p></li>
-<li><p>OC 中定义一个类分为声明和实现</p>
-
-<ul>
-<li>类可不声明只实现 (但不建议这样写)</li>
-</ul>
-</li>
-<li>类名首字母应大写</li>
-<li>OC 的类本质上就是一个结构体</li>
-</ul>
-
-
-<pre><code class="objectivec">// 参考 C 语言的结构体的使用过程
-struct Person {
-    int age;
-    char *name;
-};
-struct Person sp;
-struct Person *sip = &amp;sp; // 结构体指针
-
-(*sip).age = 25;
-(*sip).name = "wutong";
-// 或者 (不能用 . 语法直接访问实例变量)
-sip-&gt;age = 26;
-sip-&gt;name = "wt";
-</code></pre>
-
-<ul>
-<li>所有的对象没有实例化之前都是 nil</li>
-<li>OC 不支持方法重载但支持重写</li>
-</ul>
-
-
-<h1><h2 id="o1">OC 多文件开发</h2></h1>
-
-<ul>
-<li>多文件开发中，文件要使用谁，就导入谁的 h 文件即可
-
-<ul>
-<li>不能导入 m 文件，否则会报错</li>
-</ul>
-</li>
-<li>通常把不同的类放到不同的文件中，每个类的声明和实现分开
-
-<ul>
-<li>声明写在 h 文件中</li>
-<li>实现写在 m 文件中</li>
-<li>类名是什么，文件名就是什么</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>@interface, @implementation</h2>
-
-<ul>
-<li>@interface 写在 h 文件中，用于声明</li>
-<li>@implementation 写在 m 文件中，用于实现具体逻辑</li>
-</ul>
-
-
-<h1><h2 id="o2">isa 指针</h2></h1>
-
-<ul>
-<li>每个对象都包含一个 isa 指针，这个指针指向当前对象所属的类</li>
-<li><code>[p eat]</code> 表示给 p 所指向的对象发送一条 eat 消息，调用对象的 eat 方法
-
-<ul>
-<li>此时对象会顺着内部 isa 指针找到存储于类中的方法执行</li>
-</ul>
-</li>
-<li>isa 是对象中的隐藏指针，指向这个对象的类</li>
-<li>通过 isa 我们可在运行时知道当前对象是属于哪个类的</li>
-</ul>
-
-
-<h1><h2 id="o3">实例变量(成员变量)</h2></h1>
-
-<ul>
-<li>其写在 @interface 的大括号中</li>
-<li>默认权限是受保护的，想外部访问需加上 @public</li>
-<li>编写 OC 实例变量时，建议<strong>私有实例变量</strong>命名前加上 <code>_</code></li>
-<li>实例变量不能离开类，不能在定义的同时初始化</li>
-<li>实例变量只能通过对象来访问</li>
-<li>实例变量不要以 new 开头，否则有可能导致未知错误</li>
-</ul>
-
-
-<h2>实例变量修饰符</h2>
-
-<p>实例变量修饰符作用域: 从出现的位置，一直到下一个修饰符出现为止</p>
-
-<ol>
-<li>@public
-
-<ol>
-<li>可以在其他类中访问</li>
-<li>可以在本类中访问</li>
-<li>可在子类中访问父类 public 实例变量</li>
-</ol>
-</li>
-<li>@private
-
-<ol>
-<li>不可在其他类中访问</li>
-<li>可以在本类中访问</li>
-<li>不可在子类中访问父类 private 实例变量</li>
-</ol>
-</li>
-<li>@protected <strong>(没添加修饰符的都默认被该修饰符修饰)</strong>
-
-<ol>
-<li>不可在其他类中访问</li>
-<li>可以在本类中访问</li>
-<li>可在子类中访问父类 protected 实例变量</li>
-</ol>
-</li>
-<li>@package
-
-<ol>
-<li>介于 public 和 private 之间</li>
-<li>如在其他包中访问那么就是 private</li>
-<li>如在当前包中访问那么就是 public</li>
-<li>可在子类中访问父类 package 实例变量</li>
-</ol>
-</li>
-</ol>
-
-
-<pre><code class="objectivec">@interface Iphone : NSObject {
-    int _year; // protected 不公开，外部想访问需提供 setter/getter
-@public        // public 公开，外部可直接访问
-    float f;
-}
-@end
-</code></pre>
-
-<h2>全局变量、局部变量和实例变量的区别</h2>
-
-<h3>全局变量</h3>
-
-<ul>
-<li>全局变量依托于文件</li>
-<li>全局变量可先定义再初始化，或定义同时初始化</li>
-<li>存储于<strong>静态区</strong>
-
-<ul>
-<li>程序一启动就会分配存储空间，直到程序结束才会释放</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>局部变量</h3>
-
-<ul>
-<li>局部变量依托于函数或代码块</li>
-<li>局部变量可先定义再初始化，或定义同时初始化</li>
-<li>存储于<strong>栈</strong>
-
-<ul>
-<li>栈中的数据，系统会自动给我们释放</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>实例变量</h3>
-
-<ul>
-<li>实例变量依托于类</li>
-<li>实例变量不能在定义的同时初始化</li>
-<li>存储于<strong>堆</strong> (当前对象对应的堆的存储空间中)
-
-<ul>
-<li>存储在堆中的数据，不会被自动释放，只能程序员手动释放</li>
-</ul>
-</li>
-</ul>
-
-
-<h1><h2 id="o4">方法</h2></h1>
-
-<ul>
-<li>C 语言函数，声明在 h 文件中，实现在 c 文件中</li>
-<li>OC 方法，声明在 @interface 中，实现在 @implementation 中</li>
-<li>OC 方法声明写在 @interface 的大括号下面，而不能写在其中</li>
-<li>OC 方法支持重载</li>
-<li>OC 中的方法，如没有形参不需要写 ()，这是因为 OC 方法中的 () 有其他用处，是用于扩住数据类型的</li>
-<li>有参方法的冒号和外部参数名也是方法名的一部分</li>
-<li><strong>方法可以没有声明只有实现</strong></li>
-<li><strong>方法如声明了没实现，编译不会报错，运行时会报错</strong>
-
-<ul>
-<li>错误: <code>unrecognized selector send to class/instance</code> (发送了一个不能识别的消息)</li>
-</ul>
-</li>
-<li>方法不要以 new 开头，否则有可能导致未知错误</li>
-<li>OC 方法分类方法和实例方法</li>
-</ul>
-
-
-<h2>实例方法 (减号方法)</h2>
-
-<ul>
-<li>只能通过实例调用</li>
-<li>方法中可以直接使用实例变量
-8 方法中可调用其他实例方法(通过 self 调用)以及类方法(通过类调用)</li>
-</ul>
-
-
-<h2>类方法 (加号方法)</h2>
-
-<ul>
-<li>只能通过类名调用</li>
-<li>方法中不能直接使用实例变量</li>
-<li>不用每次使用方法都要创建对象开辟存储空间</li>
-<li>调用类方法的效率会比调用实例方法高</li>
-<li>方法中可调用其他类方法或者实例方法
-
-<ul>
-<li>类方法中调用实例方法，需要实例化类，通过实例调用</li>
-<li>类方法中调用其他类方法
-
-<ol>
-<li>通过类调用</li>
-<li>通过 self 调用</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>一般用于定义工具方法</li>
-</ul>
-
-
-<h1><h2 id="o5">私有变量和私有方法</h2></h1>
-
-<h2>私有变量</h2>
-
-<ul>
-<li>实例变量即可在 interface 中定义也可在 implementation 中定义</li>
-<li>implementation 中定义的实例变量在其他类中无法访问 (即使其是用 public 修饰的)</li>
-<li>implementation 中定义的实例变量只能在本类中访问</li>
-<li>implementation 中定义的实例变量不能和 interface 中定义的实例变量同名</li>
-<li>因为在其他文件中通常都只是包含头文件而不会包含实现文件，所以在 m 文件中声明的实例变量是 private 的，这种情况下使用 public 也是徒劳的</li>
-</ul>
-
-
-<pre><code class="objectivec">// Demo.m
-@implementation Demo
-{
-    int _age; // 外界访问不到，即使是 public
-}
-@end
-</code></pre>
-
-<h2>私有方法</h2>
-
-<ul>
-<li>私有方法: 只有实现没有声明的方法</li>
-<li>原则上: 私有方法只能在本类中才能调用
-
-<ul>
-<li>注意: OC 中没有真正的私有方法</li>
-<li>因为 OC 的方法调用是通过消息机制，所以可通过 selector 访问到私有方法</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">// p 的 test 是个私有方法，没在 interface 中声明
-[p performSelector:@selector(test)]; // 但仍可通过这种方式调用到
-</code></pre>
-
-<h1><h2 id="o6">self</h2></h1>
-
-<ol>
-<li>self 在类方法中，那么 self 就代表那个类</li>
-<li>self 在实例方法中，那么 self 就代表调用当前实例方法的那个实例</li>
-<li>可通过 self 调用实例变量 <code>self-&gt;_age</code></li>
-<li><strong>注意点:</strong>
-
-<ol>
-<li>self 会自动区分类方法和实例方法，如果在类方法中使用 self 调用实例方法，那么会直接报错</li>
-<li>不能再实例方法或类方法中利用 self 调用当前 self 所在的方法，会造成死循环</li>
-</ol>
-</li>
-<li>使用场景:
-
-<ol>
-<li>可用于在实例方法之间的相互调用</li>
-<li>可用于在类方法之间的相互调用</li>
-<li>可用于区分成员变量和局部变量同名的情况 <code>self-&gt;实例变量</code></li>
-</ol>
-</li>
-</ol>
-
-
-<h1><h2 id="o7">NSObject</h2></h1>
-
-<p>提供了创建对象实例的能力(new 方法)，所以需继承它</p>
-
-<h1><h2 id="o8">例子</h2></h1>
-
-<pre><code class="objectivec">// 类声明
-@interface Iphone : NSObject {
-    // 实例变量定义:
-    //     1. 默认情况下，OC 对象中的实例变量，调用时是不能直接访问的
-    //     2. 所以需要公开才可访问 @public 才可通过一个指向结构体的指针访问到
-    //     3. @public 下面的实例变量 cpu、cpu2 都会被公开
-@public
-    float _cpu;
-    float _cpu2;
-}
-
-// 类方法声明
-+ (void)do;
-+ (void)do:(int)number;
-
-// 实例方法声明
-- (void)about;    // 无参无返回值
-- (char *)about2; // 无参有返回值
-
-// 有参函数声明
-//    - 参数的数据类型前面必须加上一个 ":" 号
-//        - 注意: 当前这个方法名称为 "printInt:" 名称中是有冒号的
-//        - 方法名为 "printInt:"
-- (int)printInt:(int)number; // 有一参有返回值
-
-//    - 定义多参方法 (无外部参数名)
-//        - 方法名为 "printInt::"
-- (int)printInt:(int)number :(char *)content;
-
-//    - 定义多参方法 (有外部参数名)
-//        - 方法名为 "printMessageWithNumber:andContent:"
-//        - 方法名像自然语言一样流畅，建议这样写
-- (void)printMessageWithNumber:(int)number andContent:(char *)content;
-
-@end
-</code></pre>
-
-<pre><code class="objectivec">// 类实现
-@implementation Iphone
-
-// 类方法的实现
-+ (void)do {
-    // 类方法中调用实例方法 (不可直接调用)
-    Iphone *p = [Iphone new];
-    [p about];
-
-    // 类方法中调用其他类方法
-    // 1. 通过类
-    [Iphone do2];
-    // 2. 通过 self
-    [self do2];
-}
-+ (void)do:(int)number {
-
-}
-
-// 实例方法的实现
-- (void)about {
-    // 实例方法中可访问成员变量
-    // 1. 直接访问
-    NSLog(@"%f", _cpu);
-    // 2. 通过 self 访问
-    NSLog(@"%f", self-&gt;_cpu);
-
-    // 调用类方法
-    [Iphone do];
-
-    // 调用其他实例方法
-    [self about2];
-}
-- (char *)about2 {
-    return "啦啦啦";
-}
-- (int)printInt:(int)number {
-    return number + 1;
-}
-- (int)printInt:(int)number :(char *)content {
-    NSLog(@"%s", content);
-}
-- (void)printMessageWithNumber:(int)number andContent:(char *)content {
-    NSLog(@"%d %s", number, content);
-}
-
-@end
-</code></pre>
-
-<pre><code class="objectivec">// 类调用
-int main(int argc, const char * argv[]) {
-    // 1. 实例化
-    // OC 中要想创建类实例，需给类发送消息 new (这个类需继承 NSObject)
-    //    1. new 创建出来的对象存储在堆中，堆中的数据不会自动释放 (栈才会)
-    // 实例化会做 3 件事情
-    //    1. 为 Iphone 类创建出来的对象分配存储空间 (在堆内存中开辟空间)
-    //    2. 初始化 Iphone 类创建出来的对象中的实例变量
-    //    3. 返回 Iphone 类创建出来的对象对应的地址
-    //        - 返回的地址是类的第 0 个属性的地址
-    //        - 并不是自己创建的那个，而是系统自动添加的名为 isa 的属性 (继承于 NSObject)
-    //        - 其实系统会在堆内存中开辟一块空间存储这个类，称其为类对象
-    //          类对象中存储了这个类的方法列表，isa 就指向这个类对象，
-    //          所以可通过其调用类的属性和方法
-    // OC 的类本质上就是一个结构体，所以 p 这个指针其实就是指向了一个结构体
-    Iphone *p = [Iphone new];
-
-    // 2. 访问类的公开实例变量 (不能用 . 语法直接访问实例变量)
-    p-&gt;_cpu = 3.5; // 通过指针访问
-    p-&gt;_cpu2 = 3.6;
-    NSLog(@"%f %f", p-&gt;_cpu, p-&gt;_cpu2);
-
-    // 3. 调用方法 (通过指针发送消息)
-    //    - 消息机制 (调用: 发送消息: [类/实例 方法名])
-    //    1. 调用类方法
-    [Iphone do];
-    //    2. 调用实例方法
-    //      先在栈内存中找到 p 这个局部变量，其存储了实例对象的地址
-    //      然后通过这个地址在堆内存中找到实例对象的存储空间，并得到里面的 isa 指针
-    //      再通过 isa 里存放的地址，找到 Iphone 类对象的存储空间
-    //      再在存储空间的方法列表中找是否有名为 about 的方法，如有则执行
-    [p about];
-    char *content = [p about2];
-    int num = [p printInt:123]; // 调用有参数的方法
-    int num2 = [p printInt:123 :"lalala"]; // 无外部参数名
-    [p printMessageWithNumber:123 andContent:"lalala"]; // 有外部参数名
-
-    return 0;
-}
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - Block]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/03/oc-block/"/>
-    <updated>2018-02-03T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/03/oc-block</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#block-1">函数指针与 block</a></li>
-<li><a href="#block-2">block 与 typedef</a></li>
-<li><a href="#block-3">应用场景</a></li>
-<li><a href="#block-4">注意事项</a></li>
-<li><a href="#block-5">内存管理</a></li>
-<li><a href="#block-6">循环引用</a></li>
-<li><p><a href="#block-7">传递变量</a></p></li>
-<li><p>block 是 iOS 中一种比较特殊的数据类型</p></li>
-<li>block 是苹果官方特别推荐使用的数据类型，应用场景比较广泛
-
-<ul>
-<li>动画、多线程、集合遍历、网络请求回调</li>
-</ul>
-</li>
-<li>block 的作用
-
-<ul>
-<li>用来保存某一段代码，可以在恰当的时间再取出来调用</li>
-<li>功能类似于函数和方法</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">// block 的格式
-返回值类型 (^block变量名)(形参列表) = ^(形参列表) {
-};
-</code></pre>
-
-<h1><h2 id="block-1">函数指针与 block</h2></h1>
-
-<pre><code class="objectivec">void printA() {
-    printf("a");
-}
-
-int main(int argc, const chjar * argv[]) {
-    // 1. 调用函数
-    printA(); // "a"
-
-    // 2. 指向函数 printA 的指针
-    //    - void 表指向的函数没有返回值
-    //    - () 代表指向的函数没有形参
-    //    - (*ap) 代表 ap 是一个指向函数的指针
-    void (*ap) ();
-    ap = printA;
-    ap(); // "a"
-
-    // ---------------------------------------------------
-
-    // 3. 定义 block
-    //    - block 和函数一样，可以没有(有)返回值，也没有(有)
-    //    - void 代表这个 block 将来保存的代码没有返回值
-    //    - () 代表这个 block 将来保存的代码没有形参
-    //    - (^printB) 代表 printB 是一个 block 变量，可以用于保存一段 block 代码
-    void (^printB) (); // 定义
-    ap2 = ^{           // 保存 block 类型代码段
-        printf("b");
-    };
-    ap2(); // "b" 执行 block
-
-    return 0;
-}
-</code></pre>
-
-<pre><code class="objectivec">int (^sum) (int, int) = ^(int a, int b) {
-    return a + b;
-};
-
-NSLog(@"sum = %i", sum(10, 50)); // "sum = 50"
-</code></pre>
-
-<h1><h2 id="block-2">block 与 typedef</h2></h1>
-
-<p>使用 typedef 可简化 block 的声明</p>
-
-<h2>函数指针使用 typedef</h2>
-
-<pre><code class="objectivec">// 函数
-int sum(int a, int b) { return a + b; }
-int minus(int a, int b) { return a - b; } 
-
-int main(int argc, const chjar * argv[]) {
-    int (*sumP)(int, int); // 函数指针
-    sumP = sum;
-    NSLog(@"%i", sumP(1, 2)); // "3"
-
-    int (*minusP)(int, int);
-    minusP = minus;
-    NSLog(@"%i", minusP(3, 2)); // "1"
-
-    return 0;
-}
-</code></pre>
-
-<pre><code class="objectivec">int sum(int a, int b) { return a + b; }
-int minus(int a, int b) { return a - b; } 
-
-// 使用 typedef
-typedef int (*calculte)(int, int);
-
-int main(int argc, const chjar * argv[]) {
-    calculte sumP = sum;
-    NSLog(@"%i", sumP(1, 2)); // "3"
-
-    calculte minusP = minus;
-    NSLog(@"%i", minusP(3, 2)); // "1"
-
-    return 0;
-}
-</code></pre>
-
-<h2>block 使用 typedef</h2>
-
-<p>不能在方法代码中使用 typedef，必须写在文件的顶部或头文件中</p>
-
-<pre><code class="objectivec">int main(int argc, const chjar * argv[]) {
-    int (^sum) (int, int);
-    sum = ^(int a, int b) { return a + b; };
-    NSLog(@"%i", sum(1, 2)); // "3"
-
-    int (^minus) (int, int);
-    minus = ^(int a, int b) { return a - b };
-    NSLog(@"%i", minus(3, 2)); // "1"
-}
-</code></pre>
-
-<pre><code class="objectivec">// 使用 typedef
-typedef int (^calculte) (int, int);
-
-int main(int argc, const chjar * argv[]) {
-    calculte sum = ^(int a, int b) { return a + b; };
-    NSLog(@"%i", sum(1, 2)); // "3"
-
-    calculte minus = ^(int a, int b) { return a - b };
-    NSLog(@"%i", minus(3, 2)); // "1"
-}
-</code></pre>
-
-<h1><h2 id="block-3">应用场景</h2></h1>
-
-<ol>
-<li>代码复用</li>
-<li>高阶函数 (作为参数或返回值)</li>
-</ol>
-
-
-<pre><code class="objectivec">- (void) run:(void (^)())blockFunc {
-    // ...
-    blockFunc();
-}
-
-run(^{
-    NSLog(@"block...");
-});
-</code></pre>
-
-<ol>
-<li>类之间的通信
-
-<ol>
-<li>可替代代理委托</li>
-<li>B 类中为 A 类的某个类型为 block 的属性赋值，A 类中会在某个事件中调用这个 block，从而实现跨类通信</li>
-</ol>
-</li>
-</ol>
-
-
-<h1><h2 id="block-4">注意事项</h2></h1>
-
-<pre><code class="objectivec">// 1. block 中可以访问外部的变量
-int a = 10;
-void (^myBlock)() = ^{ NSLog(@"%i", a); };
-myBlock(); // "10"
-
-// 2. block 中定义了和外部同名的变量，则 blick 内的优先
-int a = 10;
-void (^myBlock)() = ^{
-    int a = 20;
-    NSLog(@"%i", a);
-};
-myBlock(); // "20"
-
-// 3. 默认情况下，不可以在 block 中修改外界变量的值
-//    - 因为 block 中的变量和外界的变量不是用一个变量
-//    - 如果 block 中访问了外界的变量，block 会将外界的这个变量拷贝一份到堆内存中
-int a = 10;
-void (^myBlock)() = ^{
-    a = 20; // 修改了外部变量(实际上不是外部的变量)，报错
-    NSLog(@"%i", a);
-};
-myBlock(); // 报错
-
-// 4. block 会在定义时拷贝外界使用到的变量
-int a = 10;
-void (^myBlock)() = ^{
-    NSLog(@"%i", a); // 在这里就将 a 的值拷贝了一份，此时 a 值为 10
-};
-a = 20; // 不会影响到 block 中拷贝的值
-myBlock(); // "10"
-
-// 5.如想在 block 中修改外界变量的值，必须在外界变量前加上 __block
-//    - 这样如在 block 中修改了外界变量的值，会影响到外界变量的值
-//    - 因为加了 __block 就是地址传递，所以可修改
-__block int a = 10;
-void (^myBlock)() = ^{
-    a = 20;
-    NSLog(@"%i", a);
-};
-myBlock();       // "20"
-NSLog(@"%i", a); // "20"
-</code></pre>
-
-<ul>
-<li>block 可存储于堆中也可存储在栈中，默认在栈中
-
-<ul>
-<li>如对 block 进行 copy 操作，block 会转移到堆中</li>
-<li>如 block 在栈中，block 中访问了外界的对象，那么不会对对象进行 retain 操作</li>
-<li>但是如果 block 在堆中，block 中访问了外界的对象，那么会对外界的对象进行一次 retain 操作</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">Person *p = [[Person alloc] init]; // p 引用计数为 1
-NSLog(@"%lu", [p retainCount]);    // "1"
-
-void (^myBlock)() = ^{
-  NSLog(@"%@", p); // 由于下面用了 Block_copy，所以这里是 retain，p 引用计数 +1，为 2
-  NSLog(@"%lu", [p retainCount]); // "2"
-};
-
-Block_copy(myBlock); // copy 操作使 block 转移到堆中，此时 block 中访问外部变量会造成 retain
-myBlock();
-
-[p release]; // p 引用计数 -1，此时为 1，释放不了
-</code></pre>
-
-<pre><code class="objectivec">// 如在 block 中访问了外界的对象，一定要给对象加上 __block，只要加上了
-// 哪怕 block 在堆中，也不会对外界的对象进行 retain
-
-__block Person *p = [[Person alloc] init]; // p 引用计数为 1
-NSLog(@"%lu", [p retainCount]);    // "1"
-
-void (^myBlock)() = ^{
-  NSLog(@"%@", p); // 由于 p 定义时加上了 __block，不会有 retain，p 引用计数不变为 1
-  NSLog(@"%lu", [p retainCount]); // "1"
-};
-
-Block_copy(myBlock);
-myBlock();
-
-[p release]; // p 引用计数 -1，此时为 0，释放了
-</code></pre>
-
-<h1><h2 id="block-5">内存管理</h2></h1>
-
-<p>block 也是一个对象</p>
-
-<h2>MRC</h2>
-
-<ul>
-<li>只要 block 没有引用外部局部变量，block 放在全局区</li>
-<li>只要 block 引用外部局部变量，block 则放在栈里</li>
-<li>block 只能使用 copy，不能使用 retain，使用 retain，block 还是在栈中，使用 copy 才会到堆里</li>
-</ul>
-
-
-<h2>ARC</h2>
-
-<ul>
-<li>只要 block 引用外部局部变量，block 则放在堆里</li>
-<li>block 使用 strong，最好不要使用 copy</li>
-</ul>
-
-
-<h1><h2 id="block-6">循环引用</h2></h1>
-
-<p>block 造成循环引用: block 会默认对里面用到的所有外部对象变量全部强引用</p>
-
-<pre><code class="objectivec">_block = ^{
-    NSLog(@"%@", self); // 强引用了 self，造成该实例不会销毁
-};
-
-// 解决: 使用弱引用
-__weak typeof(self) weakSelf = self;
-_block = ^{
-    NSLog(@"%@", weakSelf);
-
-    // 由于 block 中可能要用到这个 weakSelf
-    // 而当用到时，可能这个弱指针被销毁了，所以可在定义一个强指针保存它
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    // 之后就可使用这个 strongSelf 啦
-};
-</code></pre>
-
-<h1><h2 id="block-7">传递变量</h2></h1>
-
-<pre><code class="objectivec">// 如果是局部变量，block 是值传递
-int a = 3;
-void (^block)() = ^{ NSLog(@"%d", a); };
-a = 5;
-block(); // 3
-</code></pre>
-
-<pre><code class="objectivec">// 如是静态变量，block 是指针传递
-static int a = 3;
-void (^block)() = ^{ NSLog(@"%d", a); };
-a = 5;
-block(); // 5
-</code></pre>
-
-<pre><code class="objectivec">// 如是全局变量，block 是指针传递
-int a = 3;
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    void (^block)() = ^{ NSLog(@"%d", a); };
-    a = 5;
-    block(); // 5
-}
-</code></pre>
-
-<pre><code class="objectivec">// 如是 __block 修饰的变量，block 是指针传递
-__block int a = 3;
-void (^block)() = ^{ NSLog(@"%d", a); };
-a = 5;
-block(); // 5
-</code></pre>
 ]]></content>
   </entry>
   

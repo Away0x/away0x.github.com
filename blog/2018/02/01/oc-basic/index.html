@@ -403,6 +403,27 @@ OC 完全兼容 C 语言，可在 OC 代码中混入 C/C++ &hellip;">
 </table>
 
 
+<h2>iOS9 新增关键字</h2>
+
+<p>关键字不能用于基本数据类型，nil 只用于对象</p>
+
+<ul>
+<li>nullable (表可能为空，用于属性、方法返回值和参数中)</li>
+<li>nonnull (不能为空)</li>
+<li>null_resettable (get 方法不能返回 nil，set 方法可以传入 nil)</li>
+<li>null_unspecified (不确定是否为空)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">@</span><span class="n">porperty</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">,</span> <span class="n">nullable</span><span class="p">)</span> <span class="bp">NSString</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 或</span>
+</span><span class='line'><span class="p">@</span><span class="n">porperty</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="n">_Nullable</span> <span class="n">name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h1><h2 id="type">数据类型</h2></h1>
 
 <blockquote><p>加粗为 OC 相对于 C 新增的</p></blockquote>
@@ -449,6 +470,13 @@ OC 完全兼容 C 语言，可在 OC 代码中混入 C/C++ &hellip;">
 <li><strong>SEL</strong> (选择器类型)</li>
 <li><strong>nil</strong></li>
 </ul>
+
+
+<h2>类型判断</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="kt">BOOL</span> <span class="n">is_person</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">isKindOfClass</span><span class="p">:[</span><span class="n">Person</span> <span class="k">class</span><span class="p">]];</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1><h2 id="if-loop">流程语句</h2></h1>
