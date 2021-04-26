@@ -91,6 +91,20 @@ copy | static
 block | /
 _ | /
 
+## iOS9 新增关键字
+关键字不能用于基本数据类型，nil 只用于对象
+
+- nullable (表可能为空，用于属性、方法返回值和参数中)
+- nonnull (不能为空)
+- null_resettable (get 方法不能返回 nil，set 方法可以传入 nil)
+- null_unspecified (不确定是否为空)
+    
+```objectivec
+@porperty (nonatomic, strong, nullable) NSString *name;
+// 或
+@porperty (nonatomic, strong) NSString * _Nullable name;
+```
+
 
 
 # <h2 id="type">数据类型</h2>
@@ -118,6 +132,11 @@ _ | /
 ## 特殊类型 (OC 新增)
 - **SEL** (选择器类型)
 - **nil**
+
+## 类型判断
+```objectivec
+BOOL is_person = [p isKindOfClass:[Person class]];
+```
 
 
 
