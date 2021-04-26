@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objectivec | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/objectivec/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-25T18:07:05+08:00</updated>
+  <updated>2021-04-26T10:42:16+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -14,10 +14,731 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ObjectiveC - 面向对象基础]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/03/oc-oop-basic/"/>
-    <updated>2018-02-03T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/03/oc-oop-basic</id>
+    <title type="html"><![CDATA[ObjectiveC - Protocol]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/07/oc-protocol/"/>
+    <updated>2018-02-07T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/07/oc-protocol</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">基础</a></li>
+<li><a href="#o2">使用场景</a></li>
+</ul>
+
+
+<h1><h2 id="o1">基础</h2></h1>
+
+<ul>
+<li>Java 中有 interface 接口。而 OC 中 interface 是类的头文件声明，OC 的接口由 protocol 实现</li>
+<li>protocol 可<strong>声明一些必须实现的方法和选择实现的方法</strong></li>
+<li>protocol 的作用
+
+<ol>
+<li>用来声明一些方法</li>
+</ol>
+</li>
+<li>protocol 是由一系列的方法声明组成的</li>
+<li><strong>类遵守 protocol</strong>
+
+<ol>
+<li>一个类可以遵守一个或多个 protocol</li>
+<li>任何类只要遵守了 protocol，就相当于拥有了 protocol 的所有方法声明</li>
+</ol>
+</li>
+<li><strong>协议和继承的区别</strong>
+
+<ol>
+<li>继承后默认就有实现，而协议只有声明没有实现</li>
+<li>相同类型的类可以使用继承，但是不同类型的类只能使用协议</li>
+<li>协议可用于存储方法的声明，可以将多个类中共同的方法抽取出来，以后让这些类遵守协议即可</li>
+</ol>
+</li>
+<li><strong>协议的注意事项</strong>
+
+<ol>
+<li>协议只能声明方法，不能声明属性</li>
+<li>父类遵守了某个协议，那么子类也会自动遵守这个协议</li>
+<li>OC 中一个类可以遵守一个或多个协议</li>
+<li>OC 中的协议可遵守其他协议，只要一个协议遵守了其他协议，那么这个协议中就会自动包含其他协议的声明</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>定义</h2>
+
+<pre><code class="objectivec">// 定义 protocol
+@protocol 协议名称
+// 方法声明列表
+@end
+
+// 类遵守 protocol
+@interface 类名 : 父类 &lt;协议1, 协议2, ...&gt;
+@end
+</code></pre>
+
+<h2>基协议 NSObject</h2>
+
+<ul>
+<li>NSObject 是一个基类，最根本最基本的类，任何其他类都要继承自它</li>
+<li>还有个协议也叫 NSObject，它是一个基协议，最根本最基本的协议</li>
+<li>NSObject 协议中声明了很多最基本的方法
+
+<ol>
+<li>description</li>
+<li>retain</li>
+<li>release</li>
+</ol>
+</li>
+<li>建议每个新的协议都要遵守 NSObject 基协议</li>
+</ul>
+
+
+<pre><code class="objectivec">@protocol DemoProtocol &lt;NSObject&gt;
+@end
+</code></pre>
+
+<h2>@required &amp; @optional</h2>
+
+<ul>
+<li>@require: (默认) 这个方法必须实现，不实现会有警告，但不会报错</li>
+<li>@optional: 这个方法不一定要实现</li>
+</ul>
+
+
+<pre><code class="objectivec">@protocol DemoProtocol &lt;NSObject&gt;
+/*
+ func0、func1、func2 不实现会有警告
+ func3 可以不实现
+*/
+
+- (void)func0; // 默认是 required
+
+@required
+- (void)func1;
+- (void)func2;
+
+@optional
+- (void)func3;
+
+@end
+</code></pre>
+
+<h1><h2 id="o2">使用场景</h2></h1>
+
+<h2>类型限制</h2>
+
+<ul>
+<li>通过协议来限制类型</li>
+<li><code>数据类型&lt;协议名称&gt; 变量名</code></li>
+</ul>
+
+
+<pre><code class="objectivec">@protocol Animal &lt;NSObject&gt;
+- (void)eat;
+- (void)run;
+@end
+
+// 如果 dog 没有遵守 Animal 协议就会报警告
+Dog&lt;Animal&gt; dog = [[Dog alloc]init];
+</code></pre>
+
+<pre><code class="objectivec">@interface Dog : NSObject
+
+// 限制 property 的类型需要遵守 Animal 协议
+@property (nonatomic, strong) Puppy&lt;Animal&gt; *puppy1;
+
+// 这个 property 无论是何类都可，但是得遵守 Animal 协议
+@property (nonatomic, strong) id&lt;Animal&gt; *son;
+
+@end
+</code></pre>
+
+<p><strong>注意:</strong> 虽然在对对象进行了类型限定(限定它必须实现某个协议)，但并不意味着这个对象就真正的实现了该方法(不实现只是由警告无报错)。所以在调用对象的协议方法时，应该进行判断</p>
+
+<pre><code class="objectivec">Dog&lt;Animal&gt; dog = [[Dog alloc]init];
+
+// 判断 dog 是否能响应 eat 消息 (即是否有实现这个方法)
+if ([dog respondsToSelector:@selector(eat)]) {
+    [dog eat];
+}
+</code></pre>
+
+<h2>委托代理</h2>
+
+<p>详见类之间通信的笔记</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Constructor]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/06/oc-constructor/"/>
+    <updated>2018-02-06T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/06/oc-constructor</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">new &amp; init</a></li>
+<li><a href="#o2">instancetype &amp; id</a></li>
+<li><a href="#o3">自定义构造方法</a></li>
+<li><a href="#o4">自定义类工厂方法</a></li>
+<li><a href="#o5">类的本质</a></li>
+</ul>
+
+
+<blockquote><p>OC 中的构造方法实际上并不是传统意义上的构造方法</p></blockquote>
+
+<h1><h2 id="o1">new &amp; init</h2></h1>
+
+<h2>new</h2>
+
+<ul>
+<li>new 做了三件事情
+
+<ol>
+<li>开辟存储空间</li>
+<li>初始化所有的属性(实例变量)</li>
+<li>返回对象的地址</li>
+</ol>
+</li>
+<li>new 相当于是 alloc 和 init 的组合</li>
+<li><strong>推荐使用 alloc + init 的方式</strong>
+
+<ol>
+<li>能够统一编码格式能够统一的对代码进行初始化 (使用 new 不方便使用自定义构造方法)</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">Person *p = [Person new];
+// 相当于下面
+Person *p = [[Person alloc] init];
+/*
+alloc 做的事
+    1. 开辟存储空间 
+    2. 将所有的属性设置为 0 (无论属性是何类型)
+    3. 返回当前实例对象的地址
+init 做的事
+    1. 初始化成员变量，但是默认情况下 init 的实现是什么都没有做
+    2. 返回初始化后的实例变量
+
+注意: alloc 返回的地址，和 init 返回的地址是同一个地址
+*/
+Person *p1 = [Person alloc];
+Person *p2 = [p1 init];
+NSLog(@"%p %p", p1, p2); // 相同
+</code></pre>
+
+<h2>init</h2>
+
+<ul>
+<li>OC 中以 init 开头的方法，称之为构造方法</li>
+<li>用途: 用于初始化一个对象，让某个对象一创建出来就拥有某些属性和值</li>
+</ul>
+
+
+<pre><code class="objectivec">@implementation Person
+
+// 重写 init 方法，在 init 方法中初始化实例变量
+// 注意: 重写 init 方法必须按苹果规定的格式重写，不这样会引发一些未知的错误
+//    1. 先初始化父类，再初始化子类
+//    2. 判断父类是否初始化成功，只有父类初始化成功才能继续初始化子类
+//    3. 返回当前对象的地址
+- (instancetype)init {
+    // 1. 初始化父类
+    self = [super init]; // 初始化成功返回对应地址，失败返回 nil
+
+    // 2. 判断是否初始化成功
+    if (self) {
+        // 2.1 初始化子类 (如设置实例变量的值)
+    }
+
+    // 3. 返回地址
+    return self;
+}
+
+@end
+
+// 使用
+Person *p = [[Person alloc] init];
+</code></pre>
+
+<h1><h2 id="o2">instancetype &amp; id</h2></h1>
+
+<ul>
+<li>instancetype 和 id 一样都是万能指针</li>
+<li>如果构造函数返回值是 instancetype，那么将返回值赋值给一个其他的对象会报一个警告；id 类型则不会</li>
+<li>instancetype 在编译时可判断对象的真实类型，id 则不能</li>
+<li>id 可用来定义变量，可以作为返回值，可以作为形参。instancetype 只能作为返回值</li>
+<li><strong>注意:</strong> 定义构造方法，返回值尽量使用 instancetype，不要使用 id</li>
+</ul>
+
+
+<pre><code class="objectivec">@implementation Person
+- (instancetype)init {
+    if (self = [super init]) {}
+    return self;
+}
+@end
+
+// 使用
+Person *p1 = [[Person alloc] init];
+
+// 报警告！将 instancetype 赋给其他对象了
+NSString *p2 = [[Person alloc] init];
+</code></pre>
+
+<pre><code class="objectivec">@implementation Person
+- (id)init {
+    if (self = [super init]) {}
+    return self;
+}
+@end
+
+// 使用
+// 不会报警告，因为返回值是 id 类型 (新版本 xcode 也会警告了)
+NSString *p = [[Person alloc] init];
+</code></pre>
+
+<h1><h2 id="o3">自定义构造方法</h2></h1>
+
+<ul>
+<li>一个类可以有 0 个或者多个自定义构造方法</li>
+<li>其实就是自定义一个 init 方法
+
+<ol>
+<li>一定是实例方法</li>
+<li>一定返回 id/instancetype (建议 instancetype)</li>
+<li>方法名一定以 init 开头，之后有参数的 <code>initWithXXX</code>，W 一定要大写 (苹果硬性规定)
+
+<ul>
+<li>initwithxxx W 小写的话，不认为其是自定义构造方法，其内不能调用 <code>[super init]</code></li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// Person.h
+@interface Person : NSObject
+
+@property int age;
+
+@end
+
+// Person.m
+@implementation Person
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _age = 10;
+    }
+    return self;
+}
+// 自定义构造方法
+- (instancetype)initWithAge:(int)age {
+    if (self = [super init]) {
+        _age = age;
+    }
+    return self;
+}
+
+@end
+
+// 使用
+Person *p = [[Person alloc] initWithAge:25];
+p.age; // 25
+</code></pre>
+
+<h1><h2 id="o4">自定义类工厂方法</h2></h1>
+
+<ul>
+<li>类工厂方法是一种用于分配、初始化实例并返回一个它自己的实例的类方法</li>
+<li>类工厂方法规范
+
+<ol>
+<li>一定是类方法</li>
+<li>返回值一般是 instancetype 类型</li>
+<li>方面名以类名开头，首字母小写</li>
+<li>类工厂中创建对象不要使用类名创建，应该使用 self 来创建</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">+ (instancetype)personWithAge:(int)age {
+    // 不能是 [Person alloc]，否则继承时会有问题
+    Person *p = [[self alloc] init];
+    [p setAge:age];
+    return p;
+}
+
+// 使用
+Person *p = [Person personWithAge:25];
+</code></pre>
+
+<h1><h2 id="o5">类的本质</h2></h1>
+
+<ul>
+<li>类的本质其实也是一个对象 (类对象)</li>
+<li>程序中第一次使用该类的时候被创建，在整个程序中只有一份</li>
+<li>此后每次使用都是这个类对象，它在程序运行时一直存在</li>
+<li>类对象是一种数据结构，存储类的基本信息: 类大小、类名称、类的版本、继承层次、以及消息与函数的映射表等</li>
+<li>类对象代表类，Class 类型，对象方法属于类对象</li>
+<li>如果消息的接收者是类名，则类名代表类对象</li>
+<li>所有类的实例都由类对象生成，类对象会把实例的 isa 的值修改成自己的地址，每个实例的 isa 都指向该实例的类对象</li>
+</ul>
+
+
+<h2>获取类对象</h2>
+
+<pre><code class="objectivec">// 1. 通过实例对象
+Person *p = [[Person alloc] init];
+Class c1 = [p class];
+
+// 通过类名获取 (类名其实就是类对象)
+Class c2 = [Person class];
+</code></pre>
+
+<pre><code class="objectivec">// 应用场景
+
+// 1. 用于创建实例对象
+Person *p1 = [[c1 alloc] init];
+
+// 2. 用于调用类方法
+[c1 test];
+</code></pre>
+
+<h2>类的启动过程</h2>
+
+<p>只要程序启动就会将类的代码加载到内存中，放到代码区</p>
+
+<pre><code class="objectivec">@inplementation Person
+
+// load 方法会在当前类被加载到内存时调用，仅会被调用一次
+// 如存在继承关系，会先调用父类的 load 方法，再调用子类的 load 方法
++ (void)load {
+    NSLog(@"类被加载到内存中了...");
+}
+
+// 当前类第一次被使用时会调用 (创建类对象的时候)
+// 在整个程序的运行过程中只会被调用一次，无论你使用多少次这个类都只会调用一次
+// 用于对某一个类进行一次性的初始化
+// 如存在继承关系，会先调用父类的 initialize 方法，再调用子类的 initialize 方法
++ (void)initialize {
+    NSLog(@"类第一次被使用啦");
+}
+
+@end
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(二)]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/05/oc-oop-features/"/>
+    <updated>2018-02-05T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/05/oc-oop-features</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">封装</a></li>
+<li><a href="#o2">继承</a></li>
+<li><a href="#o3">多态</a></li>
+</ul>
+
+
+<h1><h2 id="o1">封装</h2></h1>
+
+<ul>
+<li>屏蔽内部实现的细节，仅对外提供公有的方法/接口</li>
+<li>优点: 保证数据的安全性，将变化隔离</li>
+</ul>
+
+
+<h2>实例变量的封装</h2>
+
+<h3>未封装的实例变量</h3>
+
+<pre><code class="objectivec">@interface Demo : NSObject {
+@public
+    int _age;
+}
+@end
+
+@impletation Demo
+@end
+</code></pre>
+
+<pre><code class="objectivec">Demo *demo = [Demo new];
+demo-&gt;_age = 25;
+int age = demo-&gt;age;
+</code></pre>
+
+<h3>使用 getter/setter 封装实例变量</h3>
+
+<ul>
+<li>二者写法格式是固定的</li>
+<li><strong>setter</strong>
+
+<ol>
+<li>作用: 设置实例变量的值</li>
+<li>一定是实例方法且无返回值</li>
+<li>一定有参数，参数类型和需设置的实例变量类型相同，且名称是实例变量的名称去掉下划线</li>
+<li>命名一定是 &ldquo;set + 实例变量&rdquo; (实例变量名去掉开头下划线，且首字母大写)</li>
+</ol>
+</li>
+<li><strong>getter</strong>
+
+<ol>
+<li>获取实例变量的值</li>
+<li>一定是实例方法且有返回值</li>
+<li>返回值和获取的实例变量的类型一致</li>
+<li>一定无参数</li>
+<li>命名是获取的实例变量的名称去掉下划线</li>
+</ol>
+</li>
+<li>只读属性: 私有实例变量只提供了 getter</li>
+<li>只写属性: 私有实例变量只提供了 setter</li>
+<li>可读可写属性: 私有实例变量只提供了 getter、setter</li>
+</ul>
+
+
+<pre><code class="objectivec">@interface Demo : NSObject {
+    int _age;
+}
+// setter 声明
+- (void)setAge:(int)age;
+
+// getter 声明
+- (int)age;
+
+@end
+
+@impletation Demo
+
+// setter 实现
+- (void)setAge:(int)age {
+    _age = age; 
+}
+
+// getter 实现
+- (int)age {
+    return _age;
+}
+
+@end
+</code></pre>
+
+<pre><code class="objectivec">Demo *demo = [Demo new];
+[demo setAge:25];     // setter
+int age = [demo age]; // getter
+</code></pre>
+
+<h2>点语法</h2>
+
+<ul>
+<li>如果实例属性提供了 setter、getter 方法，那么访问属性又多了一种访问方式: <strong>点语法</strong></li>
+<li>点语法的本质是调用了 setter/getter (C++ 中的点可以直接访问实例变量)</li>
+<li>点语法是一个编译器特性，实际并不是 OC 的语法
+
+<ul>
+<li>会在程序翻译成二进制时，将点语法自动转换为 setter/getter</li>
+</ul>
+</li>
+<li>点语法的注意点:
+
+<ul>
+<li>点语法一般用于给实例变量赋值，如果不是给实例变量赋值一般情况不建议使用</li>
+<li>因为其是编译器特性，会将 <code>a.b</code> 翻译成 <code>[a b]</code> 所以也可以调用一些实例方法，但不要使用</li>
+<li><code>请将点语法当成是便捷版的实例变量 getter/setter 的使用方式，其他情况下请不要使用</code></li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">Demo *demo = [Demo new];
+demo.age = 25; // 相当于 setter "[demo setAge:25];"
+int age = demo.age; // 相当于 getter "int age = [demo age];"
+</code></pre>
+
+<h1><h2 id="o2">继承</h2></h1>
+
+<ul>
+<li>OC 是单继承</li>
+<li>A 类继承了 B 类，那么 B 类就拥有了 A 类所有属性和方法</li>
+</ul>
+
+
+<pre><code class="objectivec">// Demo 继承了 NSObject
+@interface Demo : NSObject
+@end
+
+@impletation Demo
+@end
+</code></pre>
+
+<ul>
+<li>如子类中有和父类同名的方法，称之为 <strong>方法重写</strong></li>
+<li>继承中的方法调用顺序: 自己有就调用自己的，自己无就调用父类的，以此类推，逐级往上
+
+<ul>
+<li>如一直找到 NSObject 类都没有找到，那么就会报错</li>
+</ul>
+</li>
+<li>继承的优点:
+
+<ol>
+<li>提高了代码的复用性</li>
+<li>让类与类之间产生了关系，这才有了多态</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>super</h2>
+
+<ul>
+<li>super 和 self 指向的是相同的消息接收者</li>
+<li>作用:
+
+<ol>
+<li>直接调用父类中的某个方法</li>
+<li>super 在实例方法中，会调用父类的实例方法</li>
+<li>super 在类方法中，会调用父类的类方法</li>
+</ol>
+</li>
+<li>使用场景:
+
+<ol>
+<li>子类重写父类的方法时，想保留父类的一些行为</li>
+</ol>
+</li>
+</ul>
+
+
+<h1><h2 id="o3">多态</h2></h1>
+
+<ul>
+<li>多态: 事物的多种表现形态</li>
+<li>OC 不同于传统程序设计语言，它可以在运行时加入新的数据类型和新的程序模块: 动态类型识别、动态绑定、动态加载</li>
+<li>多态的条件:
+
+<ol>
+<li>有继承关系</li>
+<li>子类重写父类方法</li>
+<li>父类指针指向子类对象</li>
+</ol>
+</li>
+<li>表现: 当父类指针指向不同对象的时候，通过父类指针调用被重写的方法时，会执行指正所指向</li>
+<li>优点:
+
+<ol>
+<li>提高了代码的拓展性</li>
+</ol>
+</li>
+<li>注意点:
+
+<ol>
+<li>如父类指针指向子类对象，如需调用<strong>子类特有</strong>的方法，必须先强制类型转换为子类才能调用</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// 实现多态
+// Animal 是父类，子类有 Cat 和 Dog，分别重写了父类的 eat 方法
+// 那么实例化时，可这样:
+Animal *animal = nil;
+
+// 实例化 Dog
+animal = [Dog new];
+[animal eat]; // Dog 的 eat
+// 实例化 Cat
+animal = [Cat new];
+[animal eat]; // Cat 的 eat
+</code></pre>
+
+<h2>动态类型</h2>
+
+<ul>
+<li>在编译时编译器只会检查当前类型中有没有需要调用的方法</li>
+<li>运行时，才会去判断对象的真实类型</li>
+</ul>
+
+
+<pre><code class="objectivec">Animal *a = [Dog new];
+
+// 1
+// 首先由于 a 是 Animal 类型，所以编译时会在去 Animal 里找是否已 eat 方法，无, 会编译失败
+// 然后在运行时，系统判断出了 a 的真实类型是 Dog 类型
+// 因此这里调用的是 Dog 类的 eat 方法，而不是 Animal 类
+[a eat];
+
+// 2
+// 如果想调用子类特有的方法，必须强制类型转换为子类才能调用
+// 如子类 Dog 特有方法 dogEat，Animal 类没有这个方法
+[a dogEat]; // 报错，因为编译阶段发现 Animal 中没有这个方法
+
+Dog *dog = (Dog *)a;
+[dog dogEat]; // 正确
+</code></pre>
+
+<h2>id 类型</h2>
+
+<p>id 类型: 通用对象指针类型，弱类型，编译时不进行类型检查</p>
+
+<h2>应用场景</h2>
+
+<pre><code class="objectivec">@interface Person: NSObject
++ (void)food:(Animal *)animal;
+@end
+
+@implementation Person
++ (void)food:(Animal *)animal {
+    // 运行时会动态监测 animal 的真实类型，从而调用对应类型的方法
+    // 这样就不用创建针对于不同类型的 food 方法啦
+    // 如果真实类型没有 eat 方法，这会找到 Animal 类，调用其的 eat 方法
+    // 注意这里 Animal 类得有 eat 方法，因为编译时会做检测
+    // 运行时才会确定真实类型
+    [animal eat];
+}
+@end
+
+// 使用
+// Cat Dog 继承与 Animal
+// Animal 有 eat 方法
+// Cat Dog 都各自重写了父类的 eat 方法
+Dog *d = [Dog new];
+Cat *c = [Cat new];
+
+[Person food:d]; // 调用的是 Dog 的 eat 方法
+[Person food:c]; // 调用的是 Cat 的 eat 方法
+</code></pre>
+
+<h2>注意点</h2>
+
+<p>如果存在多态，父类是可以访问子类特有的方法。否则不能直接调用</p>
+
+<pre><code class="objectivec">// 子类特有方法 bark
+[dog bark];
+
+Animal *animal = [Dog new];
+[(Dog *)animal bark]; // 把父类的指针，强制类型转换
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(一)]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/04/oc-oop-basic/"/>
+    <updated>2018-02-04T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/04/oc-oop-basic</id>
     <content type="html"><![CDATA[<!-- more -->
 
 
@@ -800,730 +1521,6 @@ __block int a = 3;
 void (^block)() = ^{ NSLog(@"%d", a); };
 a = 5;
 block(); // 5
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - SEL, Id]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/02/oc-sel-id/"/>
-    <updated>2018-02-02T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/02/oc-sel-id</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#sel">SEL</a></li>
-<li><a href="#id">id</a></li>
-</ul>
-
-
-<h1><h2 id="sel">选择器类型 SEL</h2></h1>
-
-<ul>
-<li>SEL 类型代表着方法的签名，在类对象的方法列表中存储着该签名与方法代码的对应关系</li>
-<li>每个类的方法列表都存储在类对象中</li>
-<li>每个方法都有一个与之对应的 SEL 类型的对象</li>
-<li>根据一个 SEL 对象就可以找到方法的地址，进而调用方法</li>
-<li>SEL 类型的定义: <code>typedef struct obj_selector *SEL;</code></li>
-</ul>
-
-
-<pre><code class="objectivec">[p test];
-/*
-1. 首先把 test 这个方法名包装成 SEL 类型的数据
-2. 根据 SEL 数据到该类的类对象上去找对应的方法的代码，找到就执行该代码
-3. 没找到则根据类对象上父类的类对象指针，去父类的类对象中查找，找到则执行父类的代码
-4. 如还没找到，一直向上找，直到基类 NSObject
-5. 如都没找到就报错
-
-**这个操作过程中有缓存，第一次找是一个个的找，很耗性能，之后再用，直接从缓存中取用
-*/
-</code></pre>
-
-<p>SEL 的作用 1: 配合对象/类来检查对象/类中有没有实现某一个方法</p>
-
-<pre><code class="objectivec">SEL sel = @selector(setAge:);
-Person *p = [Person new];
-// 判断对象 p 中有没实现实例方法 "setAge:"
-BOOL flag = [p respondsToSelector:sel];
-
-// respondsToSelector 注意点
-// 1. 如果是通过一个对象来调用该方法那么会判断该对象有没实现该实例方法
-// 2. 如果是通过类来调用，那么会判断该类有没实现这个类方法
-
-flag = [Person respondsToSelector:sel];
-</code></pre>
-
-<p>SEL 的作用 2: 配合对象/类来调用某一个 SEL 方法</p>
-
-<pre><code class="objectivec">// 调用无参方法
-SEL sel = @selector(demo);
-Person *p = [Person new];
-// 调用 p 对象中 sel 类型对应的方法，即 demo 方法
-[p performSelector:sel]; // 相当于 [p demo]
-
-// 调用单参方法
-SEL sel2 = @selector(demo:);
-[p performSelector:sel2 withObject:@"123"]; // withObject 就是要传递的参数
-// 如用 performSelector 调用有参方法，那么参数必须是对象类型
-//    即方法的形参必须是一个对象，因为 withObject 只能传递一个对象
-
-// 调用多参方法 (performSelector 最多只能传递 2 个参数)
-SEL sel3 = @selector(demo:andOther:);
-[p performSelector:sel3 withObject:@"123" withObject:@"456"];
-</code></pre>
-
-<p>SEL 的作用 3: 配合对象将 SEL 类型作为方法的形参</p>
-
-<pre><code class="objectivec">@interface Demo : NSObject
-// 调用传入对象的指定方法
-- (void)useSel:(id)obj andSel:(SEL)sel;
-@end
-
-@implementation Demo
-- (void)useSel:(id)obj andSel:(SEL)sel {
-    [obj performSelector:sel];
-}
-@end
-
-// 使用
-Demo *demo = [Demo new];
-//     调用 obj1 的 test 方法
-[demo useSel:obj1 andSel:@selector(test)];
-</code></pre>
-
-<h1><h2 id="id">id</h2></h1>
-
-<ul>
-<li>id 是一个数据类型，并且是一个动态数据类型 (万能指针)</li>
-</ul>
-
-
-<h3>静态类型</h3>
-
-<p>将一个指针变量定义为特定类的对象时，使用的是静态类型，在编译时就知道这个指针变量所属的类。这个变量总是存储特定类的对象</p>
-
-<p>编译时已经知道类中有哪些属性和方法，如访问了不属于该静态类型的属性和方法，编译器会报错</p>
-
-<pre><code class="objectivec">Person *p = [Person new];
-</code></pre>
-
-<h3>动态类型</h3>
-
-<p>这一特性是程序直到执行时才确定对象所属的类</p>
-
-<p>编译时不知道其真实类型，在运行时才知道其真实类型。并且通过动态类型定义变量，如访问了不属于该动态类型的属性和方法，编译器不会报错 (躲过了编译器的检查)</p>
-
-<pre><code class="objectivec">// id 的定义中，已经包好了 *，所以自己不用写
-// id 指针只能指向 OC 中的对象
-// 当 id 指向的变量调用了本项目中所有类都没有的方法，编译器会报错
-// id 类型不能使用 . 语法。因为 . 语法是编译时特性，id 是运行时特性
-id obj = [Person new];
-</code></pre>
-
-<ul>
-<li><code>id == NSObject *</code>，但是数据类型不一样
-
-<ol>
-<li>id 是动态类型</li>
-<li><code>NSObject *</code> 是静态类型</li>
-</ol>
-</li>
-</ul>
-
-
-<h3>动态类型的作用</h3>
-
-<ol>
-<li>调用子类方法而不用强转
-
-<ol>
-<li>通过静态类型定义变量，不能调用子类特有的方法(除非强转成子类)
- <code>objectivec
- id obj = [Father new];
- [obj child_function]; // 可调用子类特有的方法
-</code></li>
-<li>通过动态类型定义变量，可以调用子类特有的方法(不用强转)</li>
-</ol>
-</li>
-<li>可通过动态数据类型调用私有方法(即只有实现没有声明的方法)</li>
-</ol>
-
-
-<h3>动态类型的缺点</h3>
-
-<ul>
-<li>由于动态类型可调用任意方法，所以有可能调用到不属于自己的方法，而编译不会报错，所以可能导致运行时报错</li>
-<li>虽说 id 类型可存储任何类型的对象，但不要养成滥用这种通用类型的习惯
-
-<ol>
-<li>如没使用<strong>多态</strong>尽量使用静态类型
-
-<ul>
-<li>用于多态，可减少代码量，避免调用子类特有的方法需要强制类型转换</li>
-</ul>
-</li>
-<li>静态类型可以更早的发现错误 (在编译阶段而不是运行阶段)】</li>
-<li>静态类型可提高程序的可读性</li>
-<li><strong>使用动态类型前最好判断其真实类型</strong> (避免运行时错误)</li>
-</ol>
-</li>
-</ul>
-
-
-<h3>动态类型判断真实类型</h3>
-
-<pre><code class="objectivec">// 
-// 方法1: isKindOfClass:classObj 判断实例对象是否是这个类或者这个类的子类的实例
-Person *p = [Person new];
-Student *stu = [Student new];
-
-BOOL res = [p isKindOfClass:[Person class]]; // YES
-res = [stu isKindOfClass:[Person class]];    // YES
-</code></pre>
-
-<pre><code class="objectivec">// isMemberOfClass:classObj 判断是否是这个类的实例
-Person *p = [Person new];
-Student *stu = [Student new];
-
-BOOL res = [p isMemberOfClass:[Person class]]; // YES
-res = [stu isMemberOfClass:[Person class]];    // NO (是子类不是实例)
-</code></pre>
-
-<pre><code class="objectivec">// 使用
-id obj = [Person new];
-if ([obj isKindOfClass:[Person class]]) {
-    [obj person_function];
-}
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - 基础]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/01/oc-basic/"/>
-    <updated>2018-02-01T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/01/oc-basic</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#c">OC vs. C</a></li>
-<li><a href="#type">数据类型</a></li>
-<li><a href="#if-loop">流程语句</a></li>
-<li><a href="#function">函数</a></li>
-<li><a href="#oop">面向对象</a></li>
-<li><a href="#catch">异常处理</a></li>
-<li><a href="#import">import</a></li>
-<li><a href="#output">输入输出</a></li>
-<li><a href="#hello">Hello World</a></li>
-</ul>
-
-
-<h1><h2 id="c">OC vs. C</h2></h1>
-
-<ul>
-<li>Objective-C 是一门面向对象的计算机语言</li>
-<li>它在 C 语言的基础上增加了一层最小的面向对象语法</li>
-<li>OC 完全兼容 C 语言，可在 OC 代码中混入 C/C++ 代码
-
-<ul>
-<li>并且可将 C 语言的源文件和 OC 的源文件组合在一起生成可执行文件</li>
-</ul>
-</li>
-</ul>
-
-
-<p>源代码文件拓展名对比</p>
-
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">  </th>
-<th style="text-align:center;"> 头文件 </th>
-<th style="text-align:left;"> 实现文件 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;"> c </td>
-<td style="text-align:center;"> .h </td>
-<td style="text-align:left;"> .c </td>
-</tr>
-<tr>
-<td style="text-align:right;"> c++ </td>
-<td style="text-align:center;"> .h </td>
-<td style="text-align:left;"> .cpp </td>
-</tr>
-<tr>
-<td style="text-align:right;"> oc </td>
-<td style="text-align:center;"> .h </td>
-<td style="text-align:left;"> .m </td>
-</tr>
-<tr>
-<td style="text-align:right;"> oc &amp; c++ </td>
-<td style="text-align:center;"> .h </td>
-<td style="text-align:left;"> .mm </td>
-</tr>
-</tbody>
-</table>
-
-
-<p>OC 与 C</p>
-
-<table>
-<thead>
-<tr>
-<th>OC </th>
-<th> C</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>面向对象 </td>
-<td> 数据类型</td>
-</tr>
-<tr>
-<td>@property 与 @synthesize </td>
-<td> 常量变量</td>
-</tr>
-<tr>
-<td>类方法与实例方法 </td>
-<td> 运算符</td>
-</tr>
-<tr>
-<td>self 关键字 </td>
-<td> 流程语句</td>
-</tr>
-<tr>
-<td>点语法、@selector </td>
-<td> 函数</td>
-</tr>
-<tr>
-<td>category </td>
-<td> 进制</td>
-</tr>
-<tr>
-<td>protocol </td>
-<td> 一维/多维数组</td>
-</tr>
-<tr>
-<td>copy </td>
-<td> 指针</td>
-</tr>
-<tr>
-<td>block </td>
-<td> 结构体</td>
-</tr>
-<tr>
-<td>autoreleasepool </td>
-<td> 预处理指令</td>
-</tr>
-<tr>
-<td>Foundation </td>
-<td> 文件操作</td>
-</tr>
-<tr>
-<td>常用结构体 </td>
-<td> &hellip;</td>
-</tr>
-<tr>
-<td>KVC、KVO </td>
-<td> /</td>
-</tr>
-<tr>
-<td>&hellip; </td>
-<td> /</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>关键字 (OC 中新增的关键字大部分都以 @ 符号开头)</p>
-
-<table>
-<thead>
-<tr>
-<th>OC </th>
-<th> C</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>@interface </td>
-<td> auto</td>
-</tr>
-<tr>
-<td>@implementation </td>
-<td> double</td>
-</tr>
-<tr>
-<td>@end </td>
-<td> int</td>
-</tr>
-<tr>
-<td>@public </td>
-<td> struct</td>
-</tr>
-<tr>
-<td>@protected </td>
-<td> break</td>
-</tr>
-<tr>
-<td>@private </td>
-<td> else</td>
-</tr>
-<tr>
-<td>@selector </td>
-<td> long</td>
-</tr>
-<tr>
-<td>@try </td>
-<td> switch</td>
-</tr>
-<tr>
-<td>@catch </td>
-<td> case</td>
-</tr>
-<tr>
-<td>@throw </td>
-<td> enum</td>
-</tr>
-<tr>
-<td>@finally </td>
-<td> register</td>
-</tr>
-<tr>
-<td>@protocol </td>
-<td> typedef</td>
-</tr>
-<tr>
-<td>@optional </td>
-<td> char</td>
-</tr>
-<tr>
-<td>@required </td>
-<td> extern</td>
-</tr>
-<tr>
-<td>@class </td>
-<td> return</td>
-</tr>
-<tr>
-<td>@property </td>
-<td> union</td>
-</tr>
-<tr>
-<td>@synthesize </td>
-<td> const</td>
-</tr>
-<tr>
-<td>@dynamic </td>
-<td> float</td>
-</tr>
-<tr>
-<td>BOOL </td>
-<td> short</td>
-</tr>
-<tr>
-<td>Class </td>
-<td> unsigned</td>
-</tr>
-<tr>
-<td>SEL </td>
-<td> continue</td>
-</tr>
-<tr>
-<td>YES </td>
-<td> for</td>
-</tr>
-<tr>
-<td>NO </td>
-<td> signed</td>
-</tr>
-<tr>
-<td>id </td>
-<td> void</td>
-</tr>
-<tr>
-<td>self </td>
-<td> default</td>
-</tr>
-<tr>
-<td>super </td>
-<td> goto</td>
-</tr>
-<tr>
-<td>nil </td>
-<td> sizeof</td>
-</tr>
-<tr>
-<td>atomic </td>
-<td> volatile</td>
-</tr>
-<tr>
-<td>nonatomic </td>
-<td> do</td>
-</tr>
-<tr>
-<td>retain </td>
-<td> if</td>
-</tr>
-<tr>
-<td>assign </td>
-<td> while</td>
-</tr>
-<tr>
-<td>copy </td>
-<td> static</td>
-</tr>
-<tr>
-<td>block </td>
-<td> /</td>
-</tr>
-<tr>
-<td>_ </td>
-<td> /</td>
-</tr>
-</tbody>
-</table>
-
-
-<h1><h2 id="type">数据类型</h2></h1>
-
-<blockquote><p>加粗为 OC 相对于 C 新增的</p></blockquote>
-
-<h2>基本数据类型</h2>
-
-<ul>
-<li>整型 (short int long <strong>BOOL</strong>)
-
-<ul>
-<li>布尔型 BOOL: 取值为 YES(1)、NO(0)</li>
-</ul>
-</li>
-<li>字符型 (char)</li>
-<li>浮点型 (float double)</li>
-</ul>
-
-
-<h2>Block 类型 (OC 新增)</h2>
-
-<ul>
-<li><strong>block</strong> (代码块数据类型)</li>
-</ul>
-
-
-<h2>构造类型</h2>
-
-<p>数组、结构体、枚举、共用体</p>
-
-<h2>指针类型</h2>
-
-<ul>
-<li><strong>class</strong></li>
-<li><strong>id</strong> (动态对象类型、万能指针)</li>
-<li><strong>NSObject</strong> (对象类型)</li>
-</ul>
-
-
-<h2>空类型 void</h2>
-
-<h2>特殊类型 (OC 新增)</h2>
-
-<ul>
-<li><strong>SEL</strong> (选择器类型)</li>
-<li><strong>nil</strong></li>
-</ul>
-
-
-<h1><h2 id="if-loop">流程语句</h2></h1>
-
-<ul>
-<li>C 语言中使用的流程语句 OC 都可使用
-
-<ul>
-<li>if switch while do-while for break continue &hellip;</li>
-</ul>
-</li>
-</ul>
-
-
-<p>新增语句</p>
-
-<pre><code class="objectivec">// 增强型 for 循环
-for (NSString *name in arr) {
-    NSLog(@"%@", name);
-}
-</code></pre>
-
-<h1><h2 id="function">函数</h2></h1>
-
-<ul>
-<li>C 语言中函数的声明与实现
-
-<ul>
-<li>声明: <code>int sum(int a, int b);</code></li>
-<li>实现: <code>int sum(int a, int b) { return a + b }</code></li>
-</ul>
-</li>
-<li>OC 中函数的声明与实现
-
-<ul>
-<li>声明: <code>- (int)sum:(int)a andB:(int)b;</code></li>
-<li>实现: <code>- (int)sum:(int)a andB:(int)b { return a + b  }</code></li>
-</ul>
-</li>
-<li><strong>注意:</strong> 方法只能写在类里面，而函数可以写在任何地方</li>
-</ul>
-
-
-<h1><h2 id="oop">面向对象</h2></h1>
-
-<blockquote><p>仅介绍特殊语法</p></blockquote>
-
-<h2>属性生成器</h2>
-
-<ul>
-<li>@property</li>
-<li>@synthesize</li>
-</ul>
-
-
-<pre><code class="objectivec">// 声明属性
-@property (nonatomic, strong)NSString *name;
-
-// 合成属性
-@synthesize name = _name;
-</code></pre>
-
-<h2>分类</h2>
-
-<ul>
-<li>分类是横向拓展、继承是竖向扩展</li>
-<li>使用分类拓展类，无需子类化</li>
-</ul>
-
-
-<pre><code class="objectivec">@interface NSString (MyNSString)
-- (NSString *)encryptWithMD5;
-@end
-</code></pre>
-
-<h2>协议</h2>
-
-<ul>
-<li>类似 C#、Java 中的接口</li>
-</ul>
-
-
-<pre><code class="objectivec">@protocol MyProtocol
-- (void)myProtocolMethod;
-@end
-</code></pre>
-
-<h1><h2 id="import">异常处理</h2></h1>
-
-<pre><code class="objectivec">@try {
-
-} @catch(NSException *e) {
-
-} @finally {
-
-}
-</code></pre>
-
-<h1><h2 id="import">import</h2></h1>
-
-<pre><code class="objectivec">// C
-#include &lt;stdio.h&gt;
-
-// OC
-// 和 include 功能一样，将文件拷贝到 import 的位置
-// import 同一个文件多次也只会导入一次
-#import &lt;Foundation/Foundation.h&gt;
-#import &lt;Foundation/Foundation.h&gt;
-#import &lt;Foundation/Foundation.h&gt;
-</code></pre>
-
-<ul>
-<li>import 功能和 include 一样，但 import 更强大</li>
-<li>import 可防止重复导入，可不用像使用 C 的 include 一样，程序员得去写头文件卫士来预防这个问题</li>
-<li><code>#import</code> 导入的文件名需要加上双引号或尖括号
-
-<ul>
-<li>双引号: 编译器会先在项目目录下查找相应的头文件</li>
-<li>尖括号: 编译器会先在预先设定好的标准目录下查找相应的头文件</li>
-</ul>
-</li>
-</ul>
-
-
-<h1><h2 id="output">输入输出</h2></h1>
-
-<h2>输入</h2>
-
-<pre><code class="objectivec">// 接收用户控制台的输入信息
-// 获取整型数据
-int userSelect = 0;
-scanf("%d",&amp;userSelect);
-
-// 获取字符串类型
-char ans = 'a';
-rewind(stdin);
-scanf("%c",&amp;ans);
-</code></pre>
-
-<h2>log</h2>
-
-<ul>
-<li>NSLog 支持 C 语言的字符串，但支持得不是很好
-
-<ul>
-<li>如打印中文的 C 语言字符串，可能输出乱码，或输出空白</li>
-</ul>
-</li>
-</ul>
-
-
-<p>打印类型时可用如 NSStringFromCGPoint 这些函数辅助，CGRect 等类型同</p>
-
-<pre><code class="objectivec">CGPoint point = CGPointMake(0, 0);
-NSLog(@"%@", NSStringFromCGPoint(point));
-</code></pre>
-
-<p>在函数内打印时可使用 <strong>func</strong> 打印出当前函数名</p>
-
-<pre><code class="objectivec">printf("Hello C!");
-NSLog(@"Hello OC!");
-
-// 输出 C 语言字符串
-char *content = "lalala"；
-NSLog(@"%s", content);
-</code></pre>
-
-<p>去除控制台输出运行的时间和项目名称</p>
-
-<pre><code class="objectivec">#define NSLog(FORMAT, ...) fprintf(stderr,"%s",[[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String])
-</code></pre>
-
-<h1><h2 id="hello">Hello World</h2></h1>
-
-<pre><code class="objectivec">#include &lt;stdio.h&gt;
-#import &lt;Foundation/Foundation.h&gt;
-
-int main (int argc, const char * argv[]) {
-    // 可见 OC 是兼容 C 的
-    printf("Hello C!");
-
-    // NSLog 会自动换行
-    // NSLog 在输出时会附加一些系统信息
-    // NSLog 和 printf 接收的参数不一样
-    NSLog(@"Hello OC!");
-
-    return 0;
-}
 </code></pre>
 ]]></content>
   </entry>

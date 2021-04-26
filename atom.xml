@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-25T18:07:05+08:00</updated>
+  <updated>2021-04-26T10:42:16+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -14,10 +14,1037 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ObjectiveC - 面向对象基础]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/03/oc-oop-basic/"/>
-    <updated>2018-02-03T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/03/oc-oop-basic</id>
+    <title type="html"><![CDATA[ObjectiveC - Protocol]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/07/oc-protocol/"/>
+    <updated>2018-02-07T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/07/oc-protocol</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">基础</a></li>
+<li><a href="#o2">使用场景</a></li>
+</ul>
+
+
+<h1><h2 id="o1">基础</h2></h1>
+
+<ul>
+<li>Java 中有 interface 接口。而 OC 中 interface 是类的头文件声明，OC 的接口由 protocol 实现</li>
+<li>protocol 可<strong>声明一些必须实现的方法和选择实现的方法</strong></li>
+<li>protocol 的作用
+
+<ol>
+<li>用来声明一些方法</li>
+</ol>
+</li>
+<li>protocol 是由一系列的方法声明组成的</li>
+<li><strong>类遵守 protocol</strong>
+
+<ol>
+<li>一个类可以遵守一个或多个 protocol</li>
+<li>任何类只要遵守了 protocol，就相当于拥有了 protocol 的所有方法声明</li>
+</ol>
+</li>
+<li><strong>协议和继承的区别</strong>
+
+<ol>
+<li>继承后默认就有实现，而协议只有声明没有实现</li>
+<li>相同类型的类可以使用继承，但是不同类型的类只能使用协议</li>
+<li>协议可用于存储方法的声明，可以将多个类中共同的方法抽取出来，以后让这些类遵守协议即可</li>
+</ol>
+</li>
+<li><strong>协议的注意事项</strong>
+
+<ol>
+<li>协议只能声明方法，不能声明属性</li>
+<li>父类遵守了某个协议，那么子类也会自动遵守这个协议</li>
+<li>OC 中一个类可以遵守一个或多个协议</li>
+<li>OC 中的协议可遵守其他协议，只要一个协议遵守了其他协议，那么这个协议中就会自动包含其他协议的声明</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>定义</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 定义 protocol</span>
+</span><span class='line'><span class="k">@protocol</span> <span class="err">协议名称</span>
+</span><span class='line'><span class="c1">// 方法声明列表</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 类遵守 protocol</span>
+</span><span class='line'><span class="k">@interface</span> <span class="err">类名 : 父类 &lt;协议1, 协议2, ...&gt;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>基协议 NSObject</h2>
+
+<ul>
+<li>NSObject 是一个基类，最根本最基本的类，任何其他类都要继承自它</li>
+<li>还有个协议也叫 NSObject，它是一个基协议，最根本最基本的协议</li>
+<li>NSObject 协议中声明了很多最基本的方法
+
+<ol>
+<li>description</li>
+<li>retain</li>
+<li>release</li>
+</ol>
+</li>
+<li>建议每个新的协议都要遵守 NSObject 基协议</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@protocol</span> <span class="nc">DemoProtocol</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>@required &amp; @optional</h2>
+
+<ul>
+<li>@require: (默认) 这个方法必须实现，不实现会有警告，但不会报错</li>
+<li>@optional: 这个方法不一定要实现</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@protocol</span> <span class="nc">DemoProtocol</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> func0、func1、func2 不实现会有警告</span>
+</span><span class='line'><span class="cm"> func3 可以不实现</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">func0</span><span class="p">;</span> <span class="c1">// 默认是 required</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@required</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">func1</span><span class="p">;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">func2</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@optional</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">func3</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o2">使用场景</h2></h1>
+
+<h2>类型限制</h2>
+
+<ul>
+<li>通过协议来限制类型</li>
+<li><code>数据类型&lt;协议名称&gt; 变量名</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@protocol</span> <span class="nc">Animal</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">eat</span><span class="p">;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">run</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 如果 dog 没有遵守 Animal 协议就会报警告</span>
+</span><span class='line'><span class="n">Dog</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Dog</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Dog</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 限制 property 的类型需要遵守 Animal 协议</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="n">Puppy</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">puppy1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 这个 property 无论是何类都可，但是得遵守 Animal 协议</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">strong</span><span class="p">)</span> <span class="kt">id</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">son</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注意:</strong> 虽然在对对象进行了类型限定(限定它必须实现某个协议)，但并不意味着这个对象就真正的实现了该方法(不实现只是由警告无报错)。所以在调用对象的协议方法时，应该进行判断</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Dog</span><span class="o">&lt;</span><span class="n">Animal</span><span class="o">&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Dog</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 判断 dog 是否能响应 eat 消息 (即是否有实现这个方法)</span>
+</span><span class='line'><span class="k">if</span> <span class="p">([</span><span class="n">dog</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">eat</span><span class="p">)])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">dog</span> <span class="n">eat</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>委托代理</h2>
+
+<p>详见类之间通信的笔记</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Constructor]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/06/oc-constructor/"/>
+    <updated>2018-02-06T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/06/oc-constructor</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">new &amp; init</a></li>
+<li><a href="#o2">instancetype &amp; id</a></li>
+<li><a href="#o3">自定义构造方法</a></li>
+<li><a href="#o4">自定义类工厂方法</a></li>
+<li><a href="#o5">类的本质</a></li>
+</ul>
+
+
+<blockquote><p>OC 中的构造方法实际上并不是传统意义上的构造方法</p></blockquote>
+
+<h1><h2 id="o1">new &amp; init</h2></h1>
+
+<h2>new</h2>
+
+<ul>
+<li>new 做了三件事情
+
+<ol>
+<li>开辟存储空间</li>
+<li>初始化所有的属性(实例变量)</li>
+<li>返回对象的地址</li>
+</ol>
+</li>
+<li>new 相当于是 alloc 和 init 的组合</li>
+<li><strong>推荐使用 alloc + init 的方式</strong>
+
+<ol>
+<li>能够统一编码格式能够统一的对代码进行初始化 (使用 new 不方便使用自定义构造方法)</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="c1">// 相当于下面</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">alloc 做的事</span>
+</span><span class='line'><span class="cm">    1. 开辟存储空间 </span>
+</span><span class='line'><span class="cm">    2. 将所有的属性设置为 0 (无论属性是何类型)</span>
+</span><span class='line'><span class="cm">    3. 返回当前实例对象的地址</span>
+</span><span class='line'><span class="cm">init 做的事</span>
+</span><span class='line'><span class="cm">    1. 初始化成员变量，但是默认情况下 init 的实现是什么都没有做</span>
+</span><span class='line'><span class="cm">    2. 返回初始化后的实例变量</span>
+</span><span class='line'><span class="cm">    </span>
+</span><span class='line'><span class="cm">注意: alloc 返回的地址，和 init 返回的地址是同一个地址</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">];</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p2</span> <span class="o">=</span> <span class="p">[</span><span class="n">p1</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%p %p&quot;</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">);</span> <span class="c1">// 相同</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>init</h2>
+
+<ul>
+<li>OC 中以 init 开头的方法，称之为构造方法</li>
+<li>用途: 用于初始化一个对象，让某个对象一创建出来就拥有某些属性和值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 重写 init 方法，在 init 方法中初始化实例变量</span>
+</span><span class='line'><span class="c1">// 注意: 重写 init 方法必须按苹果规定的格式重写，不这样会引发一些未知的错误</span>
+</span><span class='line'><span class="c1">//    1. 先初始化父类，再初始化子类</span>
+</span><span class='line'><span class="c1">//    2. 判断父类是否初始化成功，只有父类初始化成功才能继续初始化子类</span>
+</span><span class='line'><span class="c1">//    3. 返回当前对象的地址</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">init</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. 初始化父类</span>
+</span><span class='line'>    <span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="n">init</span><span class="p">];</span> <span class="c1">// 初始化成功返回对应地址，失败返回 nil</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. 判断是否初始化成功</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 2.1 初始化子类 (如设置实例变量的值)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. 返回地址</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o2">instancetype &amp; id</h2></h1>
+
+<ul>
+<li>instancetype 和 id 一样都是万能指针</li>
+<li>如果构造函数返回值是 instancetype，那么将返回值赋值给一个其他的对象会报一个警告；id 类型则不会</li>
+<li>instancetype 在编译时可判断对象的真实类型，id 则不能</li>
+<li>id 可用来定义变量，可以作为返回值，可以作为形参。instancetype 只能作为返回值</li>
+<li><strong>注意:</strong> 定义构造方法，返回值尽量使用 instancetype，不要使用 id</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">init</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="n">init</span><span class="p">])</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 报警告！将 instancetype 赋给其他对象了</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">p2</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">init</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="n">init</span><span class="p">])</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="c1">// 不会报警告，因为返回值是 id 类型 (新版本 xcode 也会警告了)</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o3">自定义构造方法</h2></h1>
+
+<ul>
+<li>一个类可以有 0 个或者多个自定义构造方法</li>
+<li>其实就是自定义一个 init 方法
+
+<ol>
+<li>一定是实例方法</li>
+<li>一定返回 id/instancetype (建议 instancetype)</li>
+<li>方法名一定以 init 开头，之后有参数的 <code>initWithXXX</code>，W 一定要大写 (苹果硬性规定)
+
+<ul>
+<li>initwithxxx W 小写的话，不认为其是自定义构造方法，其内不能调用 <code>[super init]</code></li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Person.h</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Person</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Person.m</span>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">init</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="n">init</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">_age</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 自定义构造方法</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">initWithAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="n">init</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithAge</span><span class="p">:</span><span class="mi">25</span><span class="p">];</span>
+</span><span class='line'><span class="n">p</span><span class="p">.</span><span class="n">age</span><span class="p">;</span> <span class="c1">// 25</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o4">自定义类工厂方法</h2></h1>
+
+<ul>
+<li>类工厂方法是一种用于分配、初始化实例并返回一个它自己的实例的类方法</li>
+<li>类工厂方法规范
+
+<ol>
+<li>一定是类方法</li>
+<li>返回值一般是 instancetype 类型</li>
+<li>方面名以类名开头，首字母小写</li>
+<li>类工厂中创建对象不要使用类名创建，应该使用 self 来创建</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">personWithAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 不能是 [Person alloc]，否则继承时会有问题</span>
+</span><span class='line'>    <span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">self</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">p</span> <span class="nl">setAge</span><span class="p">:</span><span class="n">age</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="nl">personWithAge</span><span class="p">:</span><span class="mi">25</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o5">类的本质</h2></h1>
+
+<ul>
+<li>类的本质其实也是一个对象 (类对象)</li>
+<li>程序中第一次使用该类的时候被创建，在整个程序中只有一份</li>
+<li>此后每次使用都是这个类对象，它在程序运行时一直存在</li>
+<li>类对象是一种数据结构，存储类的基本信息: 类大小、类名称、类的版本、继承层次、以及消息与函数的映射表等</li>
+<li>类对象代表类，Class 类型，对象方法属于类对象</li>
+<li>如果消息的接收者是类名，则类名代表类对象</li>
+<li>所有类的实例都由类对象生成，类对象会把实例的 isa 的值修改成自己的地址，每个实例的 isa 都指向该实例的类对象</li>
+</ul>
+
+
+<h2>获取类对象</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 1. 通过实例对象</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="kt">Class</span> <span class="n">c1</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">class</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 通过类名获取 (类名其实就是类对象)</span>
+</span><span class='line'><span class="kt">Class</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="n">Person</span> <span class="k">class</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 应用场景</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 1. 用于创建实例对象</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span> <span class="o">=</span> <span class="p">[[</span><span class="n">c1</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 2. 用于调用类方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">c1</span> <span class="n">test</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>类的启动过程</h2>
+
+<p>只要程序启动就会将类的代码加载到内存中，放到代码区</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="p">@</span><span class="n">inplementation</span> <span class="n">Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// load 方法会在当前类被加载到内存时调用，仅会被调用一次</span>
+</span><span class='line'><span class="c1">// 如存在继承关系，会先调用父类的 load 方法，再调用子类的 load 方法</span>
+</span><span class='line'><span class="o">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">load</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;类被加载到内存中了...&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 当前类第一次被使用时会调用 (创建类对象的时候)</span>
+</span><span class='line'><span class="c1">// 在整个程序的运行过程中只会被调用一次，无论你使用多少次这个类都只会调用一次</span>
+</span><span class='line'><span class="c1">// 用于对某一个类进行一次性的初始化</span>
+</span><span class='line'><span class="c1">// 如存在继承关系，会先调用父类的 initialize 方法，再调用子类的 initialize 方法</span>
+</span><span class='line'><span class="o">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">initialize</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;类第一次被使用啦&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(二)]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/05/oc-oop-features/"/>
+    <updated>2018-02-05T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/05/oc-oop-features</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#o1">封装</a></li>
+<li><a href="#o2">继承</a></li>
+<li><a href="#o3">多态</a></li>
+</ul>
+
+
+<h1><h2 id="o1">封装</h2></h1>
+
+<ul>
+<li>屏蔽内部实现的细节，仅对外提供公有的方法/接口</li>
+<li>优点: 保证数据的安全性，将变化隔离</li>
+</ul>
+
+
+<h2>实例变量的封装</h2>
+
+<h3>未封装的实例变量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'><span class="k">@public</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">demo</span><span class="o">-&gt;</span><span class="n">_age</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">demo</span><span class="o">-&gt;</span><span class="n">age</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用 getter/setter 封装实例变量</h3>
+
+<ul>
+<li>二者写法格式是固定的</li>
+<li><strong>setter</strong>
+
+<ol>
+<li>作用: 设置实例变量的值</li>
+<li>一定是实例方法且无返回值</li>
+<li>一定有参数，参数类型和需设置的实例变量类型相同，且名称是实例变量的名称去掉下划线</li>
+<li>命名一定是 &ldquo;set + 实例变量&rdquo; (实例变量名去掉开头下划线，且首字母大写)</li>
+</ol>
+</li>
+<li><strong>getter</strong>
+
+<ol>
+<li>获取实例变量的值</li>
+<li>一定是实例方法且有返回值</li>
+<li>返回值和获取的实例变量的类型一致</li>
+<li>一定无参数</li>
+<li>命名是获取的实例变量的名称去掉下划线</li>
+</ol>
+</li>
+<li>只读属性: 私有实例变量只提供了 getter</li>
+<li>只写属性: 私有实例变量只提供了 setter</li>
+<li>可读可写属性: 私有实例变量只提供了 getter、setter</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// setter 声明</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// getter 声明</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// setter 实现</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">setAge</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="n">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// getter 实现</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">demo</span> <span class="nl">setAge</span><span class="p">:</span><span class="mi">25</span><span class="p">];</span>     <span class="c1">// setter</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="n">demo</span> <span class="n">age</span><span class="p">];</span> <span class="c1">// getter</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>点语法</h2>
+
+<ul>
+<li>如果实例属性提供了 setter、getter 方法，那么访问属性又多了一种访问方式: <strong>点语法</strong></li>
+<li>点语法的本质是调用了 setter/getter (C++ 中的点可以直接访问实例变量)</li>
+<li>点语法是一个编译器特性，实际并不是 OC 的语法
+
+<ul>
+<li>会在程序翻译成二进制时，将点语法自动转换为 setter/getter</li>
+</ul>
+</li>
+<li>点语法的注意点:
+
+<ul>
+<li>点语法一般用于给实例变量赋值，如果不是给实例变量赋值一般情况不建议使用</li>
+<li>因为其是编译器特性，会将 <code>a.b</code> 翻译成 <code>[a b]</code> 所以也可以调用一些实例方法，但不要使用</li>
+<li><code>请将点语法当成是便捷版的实例变量 getter/setter 的使用方式，其他情况下请不要使用</code></li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">demo</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span> <span class="c1">// 相当于 setter &quot;[demo setAge:25];&quot;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">demo</span><span class="p">.</span><span class="n">age</span><span class="p">;</span> <span class="c1">// 相当于 getter &quot;int age = [demo age];&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o2">继承</h2></h1>
+
+<ul>
+<li>OC 是单继承</li>
+<li>A 类继承了 B 类，那么 B 类就拥有了 A 类所有属性和方法</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Demo 继承了 NSObject</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>如子类中有和父类同名的方法，称之为 <strong>方法重写</strong></li>
+<li>继承中的方法调用顺序: 自己有就调用自己的，自己无就调用父类的，以此类推，逐级往上
+
+<ul>
+<li>如一直找到 NSObject 类都没有找到，那么就会报错</li>
+</ul>
+</li>
+<li>继承的优点:
+
+<ol>
+<li>提高了代码的复用性</li>
+<li>让类与类之间产生了关系，这才有了多态</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>super</h2>
+
+<ul>
+<li>super 和 self 指向的是相同的消息接收者</li>
+<li>作用:
+
+<ol>
+<li>直接调用父类中的某个方法</li>
+<li>super 在实例方法中，会调用父类的实例方法</li>
+<li>super 在类方法中，会调用父类的类方法</li>
+</ol>
+</li>
+<li>使用场景:
+
+<ol>
+<li>子类重写父类的方法时，想保留父类的一些行为</li>
+</ol>
+</li>
+</ul>
+
+
+<h1><h2 id="o3">多态</h2></h1>
+
+<ul>
+<li>多态: 事物的多种表现形态</li>
+<li>OC 不同于传统程序设计语言，它可以在运行时加入新的数据类型和新的程序模块: 动态类型识别、动态绑定、动态加载</li>
+<li>多态的条件:
+
+<ol>
+<li>有继承关系</li>
+<li>子类重写父类方法</li>
+<li>父类指针指向子类对象</li>
+</ol>
+</li>
+<li>表现: 当父类指针指向不同对象的时候，通过父类指针调用被重写的方法时，会执行指正所指向</li>
+<li>优点:
+
+<ol>
+<li>提高了代码的拓展性</li>
+</ol>
+</li>
+<li>注意点:
+
+<ol>
+<li>如父类指针指向子类对象，如需调用<strong>子类特有</strong>的方法，必须先强制类型转换为子类才能调用</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 实现多态</span>
+</span><span class='line'><span class="c1">// Animal 是父类，子类有 Cat 和 Dog，分别重写了父类的 eat 方法</span>
+</span><span class='line'><span class="c1">// 那么实例化时，可这样:</span>
+</span><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">animal</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 实例化 Dog</span>
+</span><span class='line'><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span> <span class="c1">// Dog 的 eat</span>
+</span><span class='line'><span class="c1">// 实例化 Cat</span>
+</span><span class='line'><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cat</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span> <span class="c1">// Cat 的 eat</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>动态类型</h2>
+
+<ul>
+<li>在编译时编译器只会检查当前类型中有没有需要调用的方法</li>
+<li>运行时，才会去判断对象的真实类型</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 1</span>
+</span><span class='line'><span class="c1">// 首先由于 a 是 Animal 类型，所以编译时会在去 Animal 里找是否已 eat 方法，无, 会编译失败</span>
+</span><span class='line'><span class="c1">// 然后在运行时，系统判断出了 a 的真实类型是 Dog 类型</span>
+</span><span class='line'><span class="c1">// 因此这里调用的是 Dog 类的 eat 方法，而不是 Animal 类</span>
+</span><span class='line'><span class="p">[</span><span class="n">a</span> <span class="n">eat</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 2</span>
+</span><span class='line'><span class="c1">// 如果想调用子类特有的方法，必须强制类型转换为子类才能调用</span>
+</span><span class='line'><span class="c1">// 如子类 Dog 特有方法 dogEat，Animal 类没有这个方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">a</span> <span class="n">dogEat</span><span class="p">];</span> <span class="c1">// 报错，因为编译阶段发现 Animal 中没有这个方法</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Dog</span> <span class="o">*</span><span class="n">dog</span> <span class="o">=</span> <span class="p">(</span><span class="n">Dog</span> <span class="o">*</span><span class="p">)</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">dog</span> <span class="n">dogEat</span><span class="p">];</span> <span class="c1">// 正确</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>id 类型</h2>
+
+<p>id 类型: 通用对象指针类型，弱类型，编译时不进行类型检查</p>
+
+<h2>应用场景</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span>: <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">food:</span><span class="p">(</span><span class="n">Animal</span> <span class="o">*</span><span class="p">)</span><span class="nv">animal</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">food:</span><span class="p">(</span><span class="n">Animal</span> <span class="o">*</span><span class="p">)</span><span class="nv">animal</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 运行时会动态监测 animal 的真实类型，从而调用对应类型的方法</span>
+</span><span class='line'>    <span class="c1">// 这样就不用创建针对于不同类型的 food 方法啦</span>
+</span><span class='line'>    <span class="c1">// 如果真实类型没有 eat 方法，这会找到 Animal 类，调用其的 eat 方法</span>
+</span><span class='line'>    <span class="c1">// 注意这里 Animal 类得有 eat 方法，因为编译时会做检测</span>
+</span><span class='line'>    <span class="c1">// 运行时才会确定真实类型</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="c1">// Cat Dog 继承与 Animal</span>
+</span><span class='line'><span class="c1">// Animal 有 eat 方法</span>
+</span><span class='line'><span class="c1">// Cat Dog 都各自重写了父类的 eat 方法</span>
+</span><span class='line'><span class="n">Dog</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">Cat</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cat</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">Person</span> <span class="nl">food</span><span class="p">:</span><span class="n">d</span><span class="p">];</span> <span class="c1">// 调用的是 Dog 的 eat 方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">Person</span> <span class="nl">food</span><span class="p">:</span><span class="n">c</span><span class="p">];</span> <span class="c1">// 调用的是 Cat 的 eat 方法</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>注意点</h2>
+
+<p>如果存在多态，父类是可以访问子类特有的方法。否则不能直接调用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 子类特有方法 bark</span>
+</span><span class='line'><span class="p">[</span><span class="n">dog</span> <span class="n">bark</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[(</span><span class="n">Dog</span> <span class="o">*</span><span class="p">)</span><span class="n">animal</span> <span class="n">bark</span><span class="p">];</span> <span class="c1">// 把父类的指针，强制类型转换</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 面向对象基础(一)]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/04/oc-oop-basic/"/>
+    <updated>2018-02-04T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/04/oc-oop-basic</id>
     <content type="html"><![CDATA[<!-- more -->
 
 
@@ -2055,6 +3082,1079 @@
 </span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[从零开始实现前端模板引擎]]></title>
+    <link href="http://away0x.github.io/blog/2017/05/17/fd-template/"/>
+    <updated>2017-05-17T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2017/05/17/fd-template</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<blockquote><p>本文总结了 3 种实现模板引擎的方式，最后将编写一个 类似于 underscore.template 的模板插件</p></blockquote>
+
+<ul>
+<li><a href="#replace">replace</a></li>
+<li><a href="#tplstr">模板字符串</a></li>
+<li><a href="#function">new Function</a></li>
+<li><a href="https://github.com/Away0x/learning-template">github</a></li>
+</ul>
+
+
+<h1><h2 id="replace">replace</h2></h1>
+
+<h2>介绍</h2>
+
+<p>replace 是字符串提供的一个超级强大的方法，这里只介绍简单的使用，更多详细的语法参见下面提供的链接
+- 一参可为 <code>字符串</code> 或 <code>正则</code>:
+    - 为正则时有两种情况: <code>普通匹配模式</code> 和 <code>全局匹配模式</code>:
+        - 全局匹配模式下，若二参为函数，则该函数在每次匹配时都会被调用
+- 二参可为 <code>字符串</code> 或 <code>一个用于生成字符串的函数</code>:
+    - 当为字符串时:
+        - 可在字符串中使用 特殊替换字符 ($n &hellip;)
+    - 当为函数时:
+        - 函数中不能用 特殊替换字符
+        - 一参为正则匹配的文本
+        - 倒数第二参为匹配到的子字符串在原字符串中的偏移量
+        - 最后一参为被匹配的原始字符串
+        - 其余参数为正则中每个分组匹配到的文本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">replacer</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">,</span> <span class="nx">p3</span><span class="p">,</span> <span class="nx">offset</span><span class="p">,</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// match 为 &#39;abc12345#$*%&#39;        : 正则匹配的文本</span>
+</span><span class='line'>    <span class="c1">// p1,p2,p3 分别为 abc 12345 #$*% : 即每个小组匹配到的文本, pn 表示有 n 个小组</span>
+</span><span class='line'>    <span class="c1">// offset 为 0                    : 匹配到的子字符串在原字符串中的偏移量。</span>
+</span><span class='line'>    <span class="c1">//      （比如，如果原字符串是&#39;abcd&#39;，匹配到的子字符串时&#39;bc&#39;，那么这个参数将是1）</span>
+</span><span class='line'>    <span class="c1">// string 为 &#39;abc12345#$*%&#39;       : 被匹配的原始字符串</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">,</span> <span class="nx">p3</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; - &#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 注意正则中的 括号 ，这里分有 3个组</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">newString</span> <span class="o">=</span> <span class="s1">&#39;abc12345#$*%&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/([^\d]*)(\d*)([^\w]*)/</span><span class="p">,</span> <span class="nx">replacer</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// newString =&gt; &#39;abc - 12345 - #$*%&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下是各种情况下的具体案例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 最基础的使用</span>
+</span><span class='line'><span class="s1">&#39;123&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span> <span class="c1">// &#39;A23&#39;</span>
+</span><span class='line'><span class="s1">&#39;lalala 2Away0x2&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/2(.*)2/</span><span class="p">,</span> <span class="s1">&#39;$1&#39;</span><span class="p">)</span> <span class="c1">// &#39;lalala Away0x&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// trim</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">trim</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/(^\s*)|(\s*$)/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">trim</span><span class="p">(</span><span class="s1">&#39;  abc    &#39;</span><span class="p">)</span> <span class="c1">// &#39;abc&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// format</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">=&gt;</span>
+</span><span class='line'>    <span class="p">(...</span><span class="nx">args</span><span class="p">)</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/{(\d+)}/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">args</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;lalal{0}wowowo{1}hahah{2}&#39;</span><span class="p">)(</span><span class="s1">&#39;-A-&#39;</span><span class="p">,</span> <span class="s1">&#39;-B-&#39;</span><span class="p">,</span> <span class="s1">&#39;-C&#39;</span><span class="p">)</span> <span class="c1">// lala-A-wowo-B-haha-C</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>原理</h2>
+
+<p>先在模板中预留占位(  )，再将对应的数据填入</p>
+
+<h2>实现</h2>
+
+<p>要求1: 可填充简单数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">//g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">data</span><span class="p">[</span><span class="nx">p</span><span class="p">])</span>
+</span><span class='line'><span class="nx">tpl</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;tpl&#39;</span><span class="p">})</span> <span class="c1">// &#39;&lt;div&gt;tpl&lt;/div&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要求2: 可填充嵌套数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 可根据占位符  中的 &quot;.&quot; 来获得数据的依赖路径，从而得到对应的数据</span>
+</span><span class='line'><span class="c1">// 由于 使用 &quot;.&quot; 连接，所以其前后应为合法的变量名，因此需重新构造正则</span>
+</span><span class='line'><span class="cm">/* 合法变量名</span>
+</span><span class='line'><span class="cm">*    - 开头可为字符和少量特殊字符: [a-zA-Z$_]</span>
+</span><span class='line'><span class="cm">*    - 余部还可是数字:            [a-zA-Z$_0-9]</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="c1">// 除开头外还需匹配 连接符 &quot;.&quot; ,因此最终正则为: //g</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">//g</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 全局匹配模式下，replace 的回调在每次匹配时都会执行,</span>
+</span><span class='line'>    <span class="c1">// p 为占位符中的变量,该例为 data.a</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">reg</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">paths</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="c1">// [&#39;data&#39;, &#39;a&#39;]</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="nx">result</span>  <span class="o">=</span> <span class="nx">data</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nx">paths</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="nx">result</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span> <span class="p">]</span> <span class="c1">// 得到路径最末端的数据</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">||</span> <span class="nx">match</span> <span class="c1">// 需转成字符串，因为可能遇到 0, null 等数据</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">tpl</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="p">{</span><span class="nx">a</span><span class="o">:</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}})</span> <span class="c1">// &#39;&lt;div&gt;tpl&lt;/div&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终代码:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">//g</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">reg</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">paths</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="nx">result</span>  <span class="o">=</span> <span class="nx">data</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nx">paths</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="nx">result</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span> <span class="p">]</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">||</span> <span class="nx">match</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>优缺点</h3>
+
+<ul>
+<li>优点: 简单</li>
+<li>缺点: 无法在模板中使用表达式，所有数据都得事先计算好再填入，且填充的数据应为基础类型，灵活性差，难以满足复杂的需求</li>
+</ul>
+
+
+<h3>资料</h3>
+
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace">详细语法</a></p>
+
+<h1><h2 id="tplstr">模板字符串</h2></h1>
+
+<h2>介绍</h2>
+
+<ul>
+<li>模板字符串包裹在 反引号(Esc按钮下面那个) 中，其中可通过 ${} 的语法进行插值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 特性一:多行</span>
+</span><span class='line'><span class="err">`</span><span class="mi">123123</span>
+</span><span class='line'> <span class="mi">23213</span><span class="err">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 特性二: 字符串中可插值</span>
+</span><span class='line'><span class="cm">/* 作为一门伪函数式编程语言，js 的很多语法都可以返回数据:</span>
+</span><span class='line'><span class="cm">*    - 表达式: 各种运算符表达式，三目(可用来替代简单的判断语句)</span>
+</span><span class='line'><span class="cm">*    - 函数:  封装各种复杂的逻辑，最后返回一个值即可</span>
+</span><span class='line'><span class="cm">*    - 方法:  如一些有返回值的数据方法</span>
+</span><span class='line'><span class="cm">*       - 最强大的如数组的 map, filter ...</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="c1">// 以下字符串都等于 &#39;123tpl456&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str1</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="s1">&#39;tpl&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str2</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="kc">false</span> <span class="o">||</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str3</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="kc">true</span> <span class="o">?</span> <span class="s1">&#39;tpl&#39;</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str4</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}())</span> <span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">&#39;tpl&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str5</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str6</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">].</span><span class="nx">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">str1</span><span class="p">,</span> <span class="nx">str2</span><span class="p">,</span> <span class="nx">str3</span><span class="p">,</span> <span class="nx">str4</span><span class="p">,</span> <span class="nx">str5</span><span class="p">,</span> <span class="nx">str6</span><span class="p">].</span><span class="nx">every</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span> <span class="o">===</span> <span class="s1">&#39;123tpl456&#39;</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 特性三: 模板函数</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tag</span> <span class="p">(</span><span class="nx">strArr</span><span class="p">,</span> <span class="p">...</span><span class="nx">vals</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">strArr</span><span class="p">,</span> <span class="nx">vals</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">tag</span><span class="err">`</span><span class="nx">Hello</span> <span class="nx">$</span><span class="p">{</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="p">}</span> <span class="nx">world</span> <span class="nx">$</span><span class="p">{</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">b</span><span class="p">}</span><span class="err">`</span>
+</span><span class='line'><span class="c1">// strArr =&gt; [&#39;Hello &#39;, &#39; world &#39;, &#39;&#39;]</span>
+</span><span class='line'><span class="c1">// vals   =&gt; [15, 30]  (${}里的值)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>案例</h2>
+
+<ul>
+<li>由于直接用模板字符串当模板引擎了，所以就直接写个组件吧
+
+<ul>
+<li><a href="http://codepen.io/Away0x/pen/dvEGpL">演示</a></li>
+<li><a href="https://github.com/Away0x/learning-template/blob/master/src/tplstr.pagination/page.js">代码</a></li>
+</ul>
+</li>
+<li>用这种方法写模板需注意的是一定要细分组件(很函数式，有种写 jsx 的既视感)</li>
+</ul>
+
+
+<h3>资料</h3>
+
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings">详细语法</a></li>
+<li><a href="http://www.pdosgk.com/index.php/home/news/show/id/80442.html">相关文章</a></li>
+</ul>
+
+
+<h1><h2 id="function">new Function</h2></h1>
+
+<h2>介绍</h2>
+
+<ul>
+<li>Function 是 js 提供的一个用于构造 Function 对象的构造函数</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 普通函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">log</span> <span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Away0x&#39;</span><span class="p">,</span> <span class="s1">&#39;lalala&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="c1">// Function 构造函数</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">log</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;msg&#39;</span><span class="p">,</span> <span class="s1">&#39;console.log(user, msg)&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Away0x&#39;</span><span class="p">,</span> <span class="s1">&#39;lalala&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>实现</h2>
+
+<ul>
+<li>大多数前端模板引擎都是用这种方式实现的，其原理在于运用了 js Function 对象可将字符串解析为函数的能力。</li>
+<li>一个普通模板引擎的工作步骤大致如下</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 1. 编写模板</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="k">if</span><span class="p">(</span> <span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">ifififififif</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">elseelseelseelse</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 2. 由模板生成函数体字符串</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">functionbody</span> <span class="o">=</span> <span class="err">`</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">tpl</span> <span class="o">+=</span> <span class="s1">&#39;&lt;p&gt;ifififififif&lt;/p&gt;&#39;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">tpl</span> <span class="o">+=</span> <span class="s1">&#39;&lt;p&gt;ifififififif&lt;/p&gt;&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">tpl</span>
+</span><span class='line'><span class="err">`</span>
+</span><span class='line'><span class="c1">// 3. 通过 Function 解析字符串并生成函数</span>
+</span><span class='line'><span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="nx">functionbody</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>由此可见，只要将 {@  @} 里的字符串内容生成 js 语句，而其余内容之前加上 一个 &lsquo;tpl += &rsquo; 即可。</li>
+</ul>
+
+
+<p>实现代码如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">tplStr</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\n/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">//g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+(${p})+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/{@(.+?)@}/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;; ${p}; tpl += &#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="err">`</span><span class="kd">var</span> <span class="nx">tpl</span><span class="o">=</span><span class="s1">&#39;${tplStr}&#39;</span><span class="p">;</span> <span class="k">return</span> <span class="nx">tpl</span><span class="p">;</span><span class="err">`</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 测试</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="err">`</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="k">if</span><span class="p">(</span> <span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">ifififififif</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">elseelseelseelse</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span> <span class="o">:</span> <span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="nx">con</span><span class="o">:</span><span class="mi">21</span><span class="p">,</span> <span class="nx">list</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">76</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">tpl</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="c1">// &lt;p&gt;ifififififif&lt;/p&gt;</span>
+</span><span class='line'><span class="c1">// &lt;p&gt;0 : 1&lt;/p&gt;&lt;p&gt;1 : 2&lt;/p&gt;&lt;p&gt;2 : 3&lt;/p&gt;&lt;p&gt;3 : 4&lt;/p&gt;&lt;p&gt;4 : 5&lt;/p&gt;&lt;p&gt;5 : 76&lt;/p&gt;&lt;p&gt;6 : 87&lt;/p&gt;&lt;p&gt;7 : 8&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ok, 一个最最简单的模板引擎就已经完成了，支持在模板中嵌入 js 语句，虽然只有不到10行，但还是挺强大的对不。</p>
+
+<h2>拓展</h2>
+
+<h3>实现模板类</h3>
+
+<p>为了能够更好的使用，将前面的代码抽成一个类。
+- 需求:
+    - 标识符格式有可能和后端模板引擎冲突，因此应实现成可配置的
+    - <code>{@  @}</code>: 用于嵌套逻辑语句
+    - <code>`: 用于嵌套变量或表达式
+    - 在模板中应能添加注释，注释有两种:
+        -</code><!-- --><code>: 会输出
+        -</code>{#  #}`: 这种注释会在编译时被忽略，即只在模板中可见</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">Tpl</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">constructor</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">defaultConfig</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">signs</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">varSign</span><span class="o">:</span>       <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>    <span class="c1">// 变量/表达式</span>
+</span><span class='line'>              <span class="nx">evalSign</span><span class="o">:</span>      <span class="p">[</span><span class="s1">&#39;{@&#39;</span><span class="p">,</span> <span class="s1">&#39;@}&#39;</span><span class="p">],</span>    <span class="c1">// 语句</span>
+</span><span class='line'>                <span class="nx">commentSign</span><span class="o">:</span>   <span class="p">[</span><span class="s1">&#39;&lt;!--&#39;</span><span class="p">,</span> <span class="s1">&#39;--&gt;&#39;</span><span class="p">],</span> <span class="c1">// 普通注释</span>
+</span><span class='line'>                <span class="nx">noCommentSign</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;{#&#39;</span><span class="p">,</span> <span class="s1">&#39;#}&#39;</span><span class="p">]</span>     <span class="c1">// 忽略注释</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// 可通过配置来修改标识符</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">defaultConfig</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span>
+</span><span class='line'>        <span class="c1">// [&#39;&#39;] =&gt; //g 构造正则</span>
+</span><span class='line'>        <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">key</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;(.+?)&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">})</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 模板解析</span>
+</span><span class='line'>    <span class="nx">_compile</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>      <span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\n/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 注释</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">noCommentSign</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">commentSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+&#39;</span><span class="c">&lt;!--</span> <span class="nx">$</span><span class="p">{</span><span class="nx">p</span><span class="p">}</span> <span class="o">--&gt;</span><span class="s1">&#39;+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 表达式/变量</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">varSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+(${p})+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 语句</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">evalSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>                <span class="kd">let</span>  <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;; ${exp}; tpl += &#39;</span><span class="err">`</span>
+</span><span class='line'>          <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="err">`</span><span class="kd">var</span> <span class="nx">tpl</span><span class="o">=</span><span class="s1">&#39;${tpl}&#39;</span><span class="p">;</span> <span class="k">return</span> <span class="nx">tpl</span><span class="p">;</span><span class="err">`</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 入口</span>
+</span><span class='line'>    <span class="nx">compile</span> <span class="p">(</span><span class="nx">tplStr</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_compile</span><span class="p">(</span><span class="nx">tplStr</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nx">Tpl</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">tpl</span><span class="p">().</span><span class="nx">compile</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">)</span> <span class="c1">// 得到</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>注释的 BUG</h3>
+
+<p>上面的代码在解析一些特殊模板注释(如下)时会出错 <code>&lt;!--  --&gt;</code> (由于注释中有标识符，因此会将 a 作为变量解析，会报未定义错误)</p>
+
+<p>解决: 在解析注释时，如注释里有标识符，则将其先替换成其他符号，等语句变量的解析完成时，再替换回来</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">commentSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\{\&lt;\}\&gt;]/g</span><span class="p">,</span> <span class="nx">match</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="o">&amp;*&amp;</span><span class="nx">$</span><span class="p">{</span><span class="nx">match</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">()}</span><span class="o">&amp;*&amp;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;+&#39;</span><span class="c">&lt;!--</span> <span class="nx">$</span><span class="p">{</span><span class="nx">exp</span><span class="p">}</span> <span class="o">--&gt;</span><span class="s1">&#39;+&#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="c1">// ... 解析变量和语句</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\&amp;\*\&amp;(.*?)\&amp;\*\&amp;/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span>  <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">p</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>语法模式</h3>
+
+<p>在模板里写 js 好烦呀，各种 &lsquo;{&rsquo; 乱飞，有些模板提供了更好看的语法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{@ if data.con &gt; 20 @} // if (data.con &gt; 20) {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>ifififififif<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{@ elif data.con === 20 @} // } else if (data.con === 20) {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>elseelseelseelseifififififif<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{@ else @} // } else {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>elseelseelseelse<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{/@ if @} // }
+</span><span class='line'>// for (var index = 0; index <span class="nt">&lt; data.list.length</span><span class="err">;</span> <span class="na">index</span><span class="err">++)</span> <span class="err">{</span> <span class="na">var</span> <span class="na">item =</span><span class="err"> </span><span class="s">data.list[index]</span>
+</span><span class='line'><span class="err">{@</span> <span class="na">each</span> <span class="na">data</span><span class="err">.</span><span class="na">list</span> <span class="na">as</span> <span class="na">item</span> <span class="err">@}</span>
+</span><span class='line'>    <span class="err">&lt;</span><span class="na">p</span><span class="nt">&gt;</span>循环  次: <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{/@ each @}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实就是在解析语句时多做一些处理而已:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 配置中增加 syntax 属性，默认 false, 其为 true 是开启 语法模式</span>
+</span><span class='line'><span class="c1">// 配置中增加语法模式结束语句的标识符: endEvalSign: [&#39;{/@&#39;, &#39;@}&#39;]</span>
+</span><span class='line'><span class="c1">// 给 Tpl 类添加方法，用于 语法模式 的语句解析</span>
+</span><span class='line'><span class="nx">_syntax</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">trim</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">str</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;if&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// if (xx) {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="k">if</span> <span class="p">(</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)}</span> <span class="p">)</span> <span class="p">{</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;else&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// } else {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="s1">&#39;} else {&#39;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;elif&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// } else if (xx) {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)}</span> <span class="p">)</span> <span class="p">{</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;each&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// for (var index = 0, len = xx.length; index &lt; len; index++) { var item = xx[index]</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]}.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">index</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span><span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]}[</span><span class="nx">index</span><span class="p">]</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">exp</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 修改 _compile 解析语句的 replace</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">evalSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span>  <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">)</span>
+</span><span class='line'>                               <span class="c1">// 语法模式</span>
+</span><span class='line'>    <span class="nx">exp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">syntax</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">_syntax</span><span class="p">(</span><span class="nx">exp</span><span class="p">)</span> <span class="o">:</span> <span class="nx">exp</span>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;; ${exp}; tpl += &#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="c1">// 增加结束标识的解析 {/@ if @}  {/@ each @}</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">endEvalSign</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s2">&quot;&#39;} tpl += &#39;&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>过滤器</h3>
+
+<ul>
+<li>很多模板引擎中都有提供很多好用的过滤器:
+
+<ul>
+<li>字符串转大写的过滤器: <code>&lt;p&gt;tpl&lt;/p&gt; =&gt; &lt;p&gt;TPL&lt;/p&gt;</code></li>
+<li>字符串转大写的过滤器(支持流式): <code>&lt;p&gt;tpl&lt;/p&gt;</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p>现在我们来编写这个拓展</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 由于过滤器是对于变量的操作，所以只需在解析变量标识符的过程中做一下处理即可</span>
+</span><span class='line'><span class="c1">//  =&gt; 无过滤器直接返回，  有过滤器则调用 Filters 类中对应的过滤器函数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 过滤器函数</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">Filters</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">upper</span><span class="o">:</span> <span class="nx">str</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解析 </span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">varSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">filterIndex</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">p</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">filterIndex</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 有过滤器</span>
+</span><span class='line'>        <span class="kr">const</span>
+</span><span class='line'>            <span class="nx">arr</span>     <span class="o">=</span> <span class="nx">val</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">trim</span><span class="p">()),</span>
+</span><span class='line'>            <span class="nx">filters</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">[],</span>
+</span><span class='line'>            <span class="nx">oldVal</span>  <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">val</span> <span class="o">=</span> <span class="nx">filters</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">curVal</span><span class="p">,</span> <span class="nx">filterName</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nx">Filters</span><span class="p">[</span><span class="nx">filterName</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="err">`没有</span> <span class="nx">$</span><span class="p">{</span><span class="nx">filterName</span><span class="p">}</span> <span class="err">过滤器`</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">return</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="err">`</span><span class="nx">Filters</span><span class="p">[</span><span class="s1">&#39;${filterName}&#39;</span><span class="p">](</span><span class="nx">$</span><span class="p">{</span><span class="nx">curVal</span><span class="p">})</span><span class="err">`</span>
+</span><span class='line'>        <span class="p">},</span> <span class="nx">oldVal</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;+(${val})+&#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="c1">// &lt;h1&gt;&lt;/h1&gt; // =&gt; &#39;LPT&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>至此该模板引擎就完成了，总结下功能:
+
+<ul>
+<li>支持在模板中使用 js 语句</li>
+<li>支持自定义标识符</li>
+<li>支持更简洁的语法模式</li>
+<li>支持过滤器</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>其他</h3>
+
+<ul>
+<li>虽然这个模板工具还是有点简陋，比如没有个很友善的报错机制，不支持 include 等功能，但日常跑跑小项目什么的已经足够强大了</li>
+<li><a href="http://codepen.io/Away0x/pen/JWqgLw">演示</a></li>
+<li><a href="https://github.com/Away0x/learning-template/blob/master/src/eval/tpl.js">代码</a></li>
+</ul>
+
+
+<h3>资料</h3>
+
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function">详细语法</a></li>
+<li><a href="http://blog.jobbole.com/56689/">只有20行Javascript代码！手把手教你写一个页面模板引擎</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[从零开始实现前端表单验证插件]]></title>
+    <link href="http://away0x.github.io/blog/2017/03/11/fd-form-validator/"/>
+    <updated>2017-03-11T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2017/03/11/fd-form-validator</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<blockquote><p>本文使用 es6、不依赖任何第三方库实现一个简单的表单验证插件 <a href="https://github.com/Away0x/baidu-ife/blob/master/yaoyao/lesson_2/index.html">github</a></p></blockquote>
+
+<h1>效果</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;form_group tel&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>手机<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;tel&quot;</span> <span class="na">name=</span><span class="s">&quot;tel&quot;</span> <span class="na">id=</span><span class="s">&quot;tel&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;message&quot;</span><span class="nt">&gt;&lt;/p&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 配置</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;#tel&#39;</span><span class="p">,</span> <span class="c1">// 验证目标</span>
+</span><span class='line'>  <span class="nx">message</span><span class="o">:</span> <span class="p">{</span> <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;.tel p&#39;</span><span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="s1">&#39;手机格式正确&#39;</span> <span class="p">},</span> <span class="c1">// 验证信息显示的地方</span>
+</span><span class='line'>  <span class="nx">validators</span><span class="o">:</span> <span class="p">[</span> <span class="c1">// 验证规则数组</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;tel&#39;</span><span class="p">,</span> <span class="nx">args</span><span class="o">:</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;手机格式错误&#39;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>代码结构</h1>
+
+<ul>
+<li>验证插件分为 <code>验证类Validator</code>，和 <code>验证规则validators</code>
+
+<ul>
+<li><code>验证类Validator</code>: 为主逻辑，负责接受表单的配置并对表单执行相应的验证规则。</li>
+<li><code>验证规则validators</code>: 其内封装了大量的验证规则，供表单选用。</li>
+</ul>
+</li>
+</ul>
+
+
+<p>每个验证规则有着相同的结构，它们接收 表单的 value 返回验证结果和报错信息。例子如下:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 针对手机号的验证规则</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">tel</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">}</span><span class="o">=</span><span class="p">{})</span> <span class="o">=&gt;</span>
+</span><span class='line'><span class="p">({</span>
+</span><span class='line'>  <span class="nx">status</span><span class="o">:</span> <span class="sr">/^1[3|4|5|7|8][0-9]{9}$/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">),</span> <span class="c1">// 验证状态</span>
+</span><span class='line'>  <span class="nx">message</span> <span class="c1">// 报错信息</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>验证类 Validator</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">Validator</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// 接受配置 validatorConfig: 验证器配置, targetConfig: 针对于表单的配置</span>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm">  * validatorConfig {}</span>
+</span><span class='line'><span class="cm">  *   - error   每个表单验证失败时的函数   Function</span>
+</span><span class='line'><span class="cm">  *   - success 每个表单验证成功时的函数   Function</span>
+</span><span class='line'><span class="cm">  *   - reset   对表单执行重置操作时的函数 Function</span>
+</span><span class='line'><span class="cm">  * targetConfig [{}, {}, ...] -&gt; 各个表单的配置</span>
+</span><span class='line'><span class="cm">  *   - target        验证目标的选择器  String(Selector)</span>
+</span><span class='line'><span class="cm">  *   - message       验证信息的配置  Object</span>
+</span><span class='line'><span class="cm">  *     - target      验证信息显示位置的选择器  String(Selector)</span>
+</span><span class='line'><span class="cm">  *  - placeholder 验证信息的默认值，重置时会显示该文本 String</span>
+</span><span class='line'><span class="cm">  *  - success     验证成功时会显示该文本   String</span>
+</span><span class='line'><span class="cm">  *  - validators    验证规则的配置  [{}, {}, ...] -&gt; 各个验证规则的配置</span>
+</span><span class='line'><span class="cm">  *    - name        验证规则的名字 (validators[key])  String</span>
+</span><span class='line'><span class="cm">  *    - args        验证规则的配置参数  Object</span>
+</span><span class='line'><span class="cm">  *      - message   必有 该规则验证失败的显示文本  String</span>
+</span><span class='line'><span class="cm">  *      - ...       该验证规则的其他配置参数  Any (各验证规则不同)</span>
+</span><span class='line'><span class="cm">  */</span>
+</span><span class='line'>  <span class="nx">constructor</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="c1">// 验证主逻辑</span>
+</span><span class='line'>  <span class="nx">_check</span> <span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="c1">// 单个表单的验证 (只对单个表单执行 _check)</span>
+</span><span class='line'>  <span class="nx">run</span> <span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="c1">// 执行全部表单的验证 (对所有要验证的表单执行 _check)</span>
+</span><span class='line'>  <span class="nx">runAll</span> <span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="c1">// 重置表单为初始状态</span>
+</span><span class='line'>  <span class="nx">reset</span> <span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>验证主逻辑 _check</h3>
+
+<p>其接受 验证表单的配置，并执行相应验证逻辑
+如接受了以下配置:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nx">target</span><span class="o">:</span>  <span class="s1">&#39;#tel&#39;</span><span class="p">,</span> <span class="c1">// 验证目标</span>
+</span><span class='line'>  <span class="c1">// 验证信息显示的地方</span>
+</span><span class='line'>  <span class="nx">message</span><span class="o">:</span>  <span class="p">{</span> <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;.tel p&#39;</span><span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="s1">&#39;手机格式正确&#39;</span> <span class="p">},</span>
+</span><span class='line'>  <span class="nx">validators</span><span class="o">:</span> <span class="p">[</span> <span class="c1">// 验证规则数组</span>
+</span><span class='line'>    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;tel&#39;</span><span class="p">,</span> <span class="nx">args</span><span class="o">:</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;手机格式错误&#39;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>需实现功能如下:</p>
+
+<ol>
+<li>对目标表单(target)执行配置中指定的验证规则 (validators: 此次配置中只有一个验证规则)</li>
+<li>如验证规则中有 required ，则说明该表单为必填项，必须进行表单验证。</li>
+<li>如验证规则中无 required ，则说明该表单为选填项，只在有输入时才进行表单验证。(该例配置为选填)</li>
+<li>当验证成功时需在 message.target 处显示 message.success 的文本。</li>
+<li>当验证失败时需在 message.target 处显示 验证规则中的指定 的文本。</li>
+<li>失败文本显示优先级同验证规则配置的先后顺序。</li>
+</ol>
+
+
+<p>以下是具体实现:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">_check</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span>
+</span><span class='line'>      <span class="nx">validatorCfg</span>  <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_validatorConfig</span><span class="p">,</span>    <span class="c1">// 验证器配置</span>
+</span><span class='line'>      <span class="nx">$target</span>       <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">target</span><span class="p">),</span>         <span class="c1">// 验证的表单</span>
+</span><span class='line'>      <span class="nx">val</span>           <span class="o">=</span> <span class="nx">$target</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>            <span class="c1">// 验证的 value</span>
+</span><span class='line'>      <span class="nx">$message</span>      <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">target</span><span class="p">),</span> <span class="c1">// 验证信息显示的地方</span>
+</span><span class='line'>      <span class="nx">ownValidators</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">validators</span><span class="p">,</span>        <span class="c1">// 所有验证规则</span>
+</span><span class='line'>      <span class="nx">result</span>        <span class="o">=</span> <span class="p">[]</span>                        <span class="c1">// 失败信息数组</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="nx">required</span> <span class="o">=</span> <span class="kc">false</span> <span class="c1">// 不是必填项的话，只在有输入内容时进行检查 (默认为不必填)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 遍历执行验证器</span>
+</span><span class='line'>    <span class="nx">ownValidators</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">validator</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">validator</span><span class="p">.</span><span class="nx">name</span> <span class="o">==</span> <span class="s1">&#39;required&#39;</span><span class="p">)</span> <span class="nx">required</span> <span class="o">=</span> <span class="kc">true</span> <span class="c1">// 必填</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kr">const</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">Validators</span><span class="p">[</span><span class="nx">validator</span><span class="p">.</span><span class="nx">name</span><span class="p">](</span><span class="nx">val</span><span class="p">,</span> <span class="nx">validator</span><span class="p">.</span><span class="nx">args</span><span class="p">)</span> <span class="c1">// 执行验证器</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// 如验证失败，则存储失败信息</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nx">temp</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span> <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">temp</span><span class="p">.</span><span class="nx">message</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="c1">// 可跳过检验</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 有错误信息</span>
+</span><span class='line'>      <span class="nx">validatorCfg</span><span class="p">.</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="nx">validatorCfg</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">$target</span><span class="p">)</span> <span class="c1">// 失败回调</span>
+</span><span class='line'>      <span class="nx">$message</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span> <span class="c1">// 验证通过</span>
+</span><span class='line'>      <span class="nx">validatorCfg</span><span class="p">.</span><span class="nx">success</span> <span class="o">&amp;&amp;</span> <span class="nx">validatorCfg</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">$target</span><span class="p">)</span> <span class="c1">// 成功回调</span>
+</span><span class='line'>      <span class="nx">$message</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">success</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 单个验证 需传入要验证 input 的 id</span>
+</span><span class='line'><span class="nx">run</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// 得到当前要验证的表单的配置</span>
+</span><span class='line'>  <span class="kr">const</span> <span class="nx">curConfig</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_targetConfig</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">config</span> <span class="o">=&gt;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">target</span> <span class="o">===</span> <span class="err">`#</span><span class="nx">$</span><span class="p">{</span><span class="nx">target</span><span class="p">}</span><span class="err">`</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">_check</span><span class="p">(</span><span class="nx">curConfig</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 执行全局验证</span>
+</span><span class='line'><span class="nx">runAll</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">_targetConfig</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_check</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 重置表单</span>
+</span><span class='line'><span class="nx">reset</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">_targetConfig</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">config</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span>
+</span><span class='line'>      <span class="nx">$target</span>  <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">target</span><span class="p">),</span>
+</span><span class='line'>      <span class="nx">$message</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$target</span><span class="p">.</span><span class="nx">value</span>        <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="nx">$message</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">placeholder</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">_validatorConfig</span><span class="p">.</span><span class="nx">reset</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">_allTarget</span> <span class="p">)</span> <span class="c1">// 重置回调</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>自此我们的验证插件就写完了，可自行在 validators 中编写更多的验证规则</p>
+
+<h1>继续优化</h1>
+
+<ul>
+<li>提交表单时应需得到所有表单的验证状态，全通过则提交。</li>
+<li>目前失败信息提示过于单一。</li>
+<li>如表单验证中需与后台通信(如验证用户名是否注册),那么验证器应该支持异步的验证规则。</li>
+<li>目前会执行所有验证规则，可选择在验证规则失败时，就不再往下继续验证了，以提高性能。</li>
+</ul>
 
 ]]></content>
   </entry>

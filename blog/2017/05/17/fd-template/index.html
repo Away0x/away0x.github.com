@@ -1,0 +1,966 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>从零开始实现前端模板引擎 - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="本文总结了 3 种实现模板引擎的方式，最后将编写一个 类似于 underscore.template 的模板插件 replace
+模板字符串
+new Function
+github replace 介绍 replace 是字符串提供的一个超级强大的方法，这里只介绍简单的使用， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2017/05/17/fd-template">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">从零开始实现前端模板引擎</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-17T08:00:00+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<blockquote><p>本文总结了 3 种实现模板引擎的方式，最后将编写一个 类似于 underscore.template 的模板插件</p></blockquote>
+
+<ul>
+<li><a href="#replace">replace</a></li>
+<li><a href="#tplstr">模板字符串</a></li>
+<li><a href="#function">new Function</a></li>
+<li><a href="https://github.com/Away0x/learning-template">github</a></li>
+</ul>
+
+
+<h1><h2 id="replace">replace</h2></h1>
+
+<h2>介绍</h2>
+
+<p>replace 是字符串提供的一个超级强大的方法，这里只介绍简单的使用，更多详细的语法参见下面提供的链接
+- 一参可为 <code>字符串</code> 或 <code>正则</code>:
+    - 为正则时有两种情况: <code>普通匹配模式</code> 和 <code>全局匹配模式</code>:
+        - 全局匹配模式下，若二参为函数，则该函数在每次匹配时都会被调用
+- 二参可为 <code>字符串</code> 或 <code>一个用于生成字符串的函数</code>:
+    - 当为字符串时:
+        - 可在字符串中使用 特殊替换字符 ($n &hellip;)
+    - 当为函数时:
+        - 函数中不能用 特殊替换字符
+        - 一参为正则匹配的文本
+        - 倒数第二参为匹配到的子字符串在原字符串中的偏移量
+        - 最后一参为被匹配的原始字符串
+        - 其余参数为正则中每个分组匹配到的文本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">replacer</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">,</span> <span class="nx">p3</span><span class="p">,</span> <span class="nx">offset</span><span class="p">,</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// match 为 &#39;abc12345#$*%&#39;        : 正则匹配的文本</span>
+</span><span class='line'>    <span class="c1">// p1,p2,p3 分别为 abc 12345 #$*% : 即每个小组匹配到的文本, pn 表示有 n 个小组</span>
+</span><span class='line'>    <span class="c1">// offset 为 0                    : 匹配到的子字符串在原字符串中的偏移量。</span>
+</span><span class='line'>    <span class="c1">//      （比如，如果原字符串是&#39;abcd&#39;，匹配到的子字符串时&#39;bc&#39;，那么这个参数将是1）</span>
+</span><span class='line'>    <span class="c1">// string 为 &#39;abc12345#$*%&#39;       : 被匹配的原始字符串</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">,</span> <span class="nx">p3</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; - &#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 注意正则中的 括号 ，这里分有 3个组</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">newString</span> <span class="o">=</span> <span class="s1">&#39;abc12345#$*%&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/([^\d]*)(\d*)([^\w]*)/</span><span class="p">,</span> <span class="nx">replacer</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// newString =&gt; &#39;abc - 12345 - #$*%&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下是各种情况下的具体案例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 最基础的使用</span>
+</span><span class='line'><span class="s1">&#39;123&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span> <span class="c1">// &#39;A23&#39;</span>
+</span><span class='line'><span class="s1">&#39;lalala 2Away0x2&#39;</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/2(.*)2/</span><span class="p">,</span> <span class="s1">&#39;$1&#39;</span><span class="p">)</span> <span class="c1">// &#39;lalala Away0x&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// trim</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">trim</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/(^\s*)|(\s*$)/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">trim</span><span class="p">(</span><span class="s1">&#39;  abc    &#39;</span><span class="p">)</span> <span class="c1">// &#39;abc&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// format</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="nx">str</span> <span class="o">=&gt;</span>
+</span><span class='line'>    <span class="p">(...</span><span class="nx">args</span><span class="p">)</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/{(\d+)}/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">args</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;lalal{0}wowowo{1}hahah{2}&#39;</span><span class="p">)(</span><span class="s1">&#39;-A-&#39;</span><span class="p">,</span> <span class="s1">&#39;-B-&#39;</span><span class="p">,</span> <span class="s1">&#39;-C&#39;</span><span class="p">)</span> <span class="c1">// lala-A-wowo-B-haha-C</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>原理</h2>
+
+<p>先在模板中预留占位(  )，再将对应的数据填入</p>
+
+<h2>实现</h2>
+
+<p>要求1: 可填充简单数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">//g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">data</span><span class="p">[</span><span class="nx">p</span><span class="p">])</span>
+</span><span class='line'><span class="nx">tpl</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;tpl&#39;</span><span class="p">})</span> <span class="c1">// &#39;&lt;div&gt;tpl&lt;/div&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要求2: 可填充嵌套数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 可根据占位符  中的 &quot;.&quot; 来获得数据的依赖路径，从而得到对应的数据</span>
+</span><span class='line'><span class="c1">// 由于 使用 &quot;.&quot; 连接，所以其前后应为合法的变量名，因此需重新构造正则</span>
+</span><span class='line'><span class="cm">/* 合法变量名</span>
+</span><span class='line'><span class="cm">*    - 开头可为字符和少量特殊字符: [a-zA-Z$_]</span>
+</span><span class='line'><span class="cm">*    - 余部还可是数字:            [a-zA-Z$_0-9]</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="c1">// 除开头外还需匹配 连接符 &quot;.&quot; ,因此最终正则为: //g</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">//g</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 全局匹配模式下，replace 的回调在每次匹配时都会执行,</span>
+</span><span class='line'>    <span class="c1">// p 为占位符中的变量,该例为 data.a</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">reg</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">paths</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="c1">// [&#39;data&#39;, &#39;a&#39;]</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="nx">result</span>  <span class="o">=</span> <span class="nx">data</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nx">paths</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="nx">result</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span> <span class="p">]</span> <span class="c1">// 得到路径最末端的数据</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">||</span> <span class="nx">match</span> <span class="c1">// 需转成字符串，因为可能遇到 0, null 等数据</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">tpl</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="p">{</span><span class="nx">a</span><span class="o">:</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}})</span> <span class="c1">// &#39;&lt;div&gt;tpl&lt;/div&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终代码:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">reg</span> <span class="o">=</span> <span class="sr">//g</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">reg</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">paths</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="nx">result</span>  <span class="o">=</span> <span class="nx">data</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="nx">paths</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="nx">result</span> <span class="o">=</span> <span class="nx">result</span><span class="p">[</span> <span class="nx">paths</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span> <span class="p">]</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">String</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">||</span> <span class="nx">match</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>优缺点</h3>
+
+<ul>
+<li>优点: 简单</li>
+<li>缺点: 无法在模板中使用表达式，所有数据都得事先计算好再填入，且填充的数据应为基础类型，灵活性差，难以满足复杂的需求</li>
+</ul>
+
+
+<h3>资料</h3>
+
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace">详细语法</a></p>
+
+<h1><h2 id="tplstr">模板字符串</h2></h1>
+
+<h2>介绍</h2>
+
+<ul>
+<li>模板字符串包裹在 反引号(Esc按钮下面那个) 中，其中可通过 ${} 的语法进行插值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 特性一:多行</span>
+</span><span class='line'><span class="err">`</span><span class="mi">123123</span>
+</span><span class='line'> <span class="mi">23213</span><span class="err">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 特性二: 字符串中可插值</span>
+</span><span class='line'><span class="cm">/* 作为一门伪函数式编程语言，js 的很多语法都可以返回数据:</span>
+</span><span class='line'><span class="cm">*    - 表达式: 各种运算符表达式，三目(可用来替代简单的判断语句)</span>
+</span><span class='line'><span class="cm">*    - 函数:  封装各种复杂的逻辑，最后返回一个值即可</span>
+</span><span class='line'><span class="cm">*    - 方法:  如一些有返回值的数据方法</span>
+</span><span class='line'><span class="cm">*       - 最强大的如数组的 map, filter ...</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="c1">// 以下字符串都等于 &#39;123tpl456&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str1</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="s1">&#39;tpl&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str2</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="kc">false</span> <span class="o">||</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str3</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span><span class="kc">true</span> <span class="o">?</span> <span class="s1">&#39;tpl&#39;</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str4</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="s1">&#39;tpl&#39;</span><span class="p">}())</span> <span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">&#39;tpl&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str5</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str6</span> <span class="o">=</span> <span class="err">`</span><span class="mi">123</span><span class="nx">$</span><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">].</span><span class="nx">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span><span class="mi">456</span><span class="err">`</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">str1</span><span class="p">,</span> <span class="nx">str2</span><span class="p">,</span> <span class="nx">str3</span><span class="p">,</span> <span class="nx">str4</span><span class="p">,</span> <span class="nx">str5</span><span class="p">,</span> <span class="nx">str6</span><span class="p">].</span><span class="nx">every</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span> <span class="o">===</span> <span class="s1">&#39;123tpl456&#39;</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 特性三: 模板函数</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tag</span> <span class="p">(</span><span class="nx">strArr</span><span class="p">,</span> <span class="p">...</span><span class="nx">vals</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">strArr</span><span class="p">,</span> <span class="nx">vals</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">tag</span><span class="err">`</span><span class="nx">Hello</span> <span class="nx">$</span><span class="p">{</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="p">}</span> <span class="nx">world</span> <span class="nx">$</span><span class="p">{</span><span class="nx">a</span> <span class="o">*</span> <span class="nx">b</span><span class="p">}</span><span class="err">`</span>
+</span><span class='line'><span class="c1">// strArr =&gt; [&#39;Hello &#39;, &#39; world &#39;, &#39;&#39;]</span>
+</span><span class='line'><span class="c1">// vals   =&gt; [15, 30]  (${}里的值)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>案例</h2>
+
+<ul>
+<li>由于直接用模板字符串当模板引擎了，所以就直接写个组件吧
+
+<ul>
+<li><a href="http://codepen.io/Away0x/pen/dvEGpL">演示</a></li>
+<li><a href="https://github.com/Away0x/learning-template/blob/master/src/tplstr.pagination/page.js">代码</a></li>
+</ul>
+</li>
+<li>用这种方法写模板需注意的是一定要细分组件(很函数式，有种写 jsx 的既视感)</li>
+</ul>
+
+
+<h3>资料</h3>
+
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings">详细语法</a></li>
+<li><a href="http://www.pdosgk.com/index.php/home/news/show/id/80442.html">相关文章</a></li>
+</ul>
+
+
+<h1><h2 id="function">new Function</h2></h1>
+
+<h2>介绍</h2>
+
+<ul>
+<li>Function 是 js 提供的一个用于构造 Function 对象的构造函数</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 普通函数</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">log</span> <span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Away0x&#39;</span><span class="p">,</span> <span class="s1">&#39;lalala&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="c1">// Function 构造函数</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">log</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;msg&#39;</span><span class="p">,</span> <span class="s1">&#39;console.log(user, msg)&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Away0x&#39;</span><span class="p">,</span> <span class="s1">&#39;lalala&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>实现</h2>
+
+<ul>
+<li>大多数前端模板引擎都是用这种方式实现的，其原理在于运用了 js Function 对象可将字符串解析为函数的能力。</li>
+<li>一个普通模板引擎的工作步骤大致如下</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 1. 编写模板</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="k">if</span><span class="p">(</span> <span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">ifififififif</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">elseelseelseelse</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'><span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 2. 由模板生成函数体字符串</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">functionbody</span> <span class="o">=</span> <span class="err">`</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">tpl</span> <span class="o">+=</span> <span class="s1">&#39;&lt;p&gt;ifififififif&lt;/p&gt;&#39;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">tpl</span> <span class="o">+=</span> <span class="s1">&#39;&lt;p&gt;ifififififif&lt;/p&gt;&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">tpl</span>
+</span><span class='line'><span class="err">`</span>
+</span><span class='line'><span class="c1">// 3. 通过 Function 解析字符串并生成函数</span>
+</span><span class='line'><span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="nx">functionbody</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>由此可见，只要将 {@  @} 里的字符串内容生成 js 语句，而其余内容之前加上 一个 &lsquo;tpl += &rsquo; 即可。</li>
+</ul>
+
+
+<p>实现代码如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">tplStr</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\n/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">//g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+(${p})+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/{@(.+?)@}/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;; ${p}; tpl += &#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="err">`</span><span class="kd">var</span> <span class="nx">tpl</span><span class="o">=</span><span class="s1">&#39;${tplStr}&#39;</span><span class="p">;</span> <span class="k">return</span> <span class="nx">tpl</span><span class="p">;</span><span class="err">`</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 测试</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="err">`</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="k">if</span><span class="p">(</span> <span class="nx">data</span><span class="p">.</span><span class="nx">con</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">ifififififif</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">elseelseelseelse</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span> <span class="o">:</span> <span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="err">@</span> <span class="p">}</span> <span class="err">@</span><span class="p">}</span>
+</span><span class='line'><span class="err">`</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span><span class="nx">con</span><span class="o">:</span><span class="mi">21</span><span class="p">,</span> <span class="nx">list</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">76</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">tpl</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="c1">// &lt;p&gt;ifififififif&lt;/p&gt;</span>
+</span><span class='line'><span class="c1">// &lt;p&gt;0 : 1&lt;/p&gt;&lt;p&gt;1 : 2&lt;/p&gt;&lt;p&gt;2 : 3&lt;/p&gt;&lt;p&gt;3 : 4&lt;/p&gt;&lt;p&gt;4 : 5&lt;/p&gt;&lt;p&gt;5 : 76&lt;/p&gt;&lt;p&gt;6 : 87&lt;/p&gt;&lt;p&gt;7 : 8&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ok, 一个最最简单的模板引擎就已经完成了，支持在模板中嵌入 js 语句，虽然只有不到10行，但还是挺强大的对不。</p>
+
+<h2>拓展</h2>
+
+<h3>实现模板类</h3>
+
+<p>为了能够更好的使用，将前面的代码抽成一个类。
+- 需求:
+    - 标识符格式有可能和后端模板引擎冲突，因此应实现成可配置的
+    - <code>{@  @}</code>: 用于嵌套逻辑语句
+    - <code>`: 用于嵌套变量或表达式
+    - 在模板中应能添加注释，注释有两种:
+        -</code><!-- --><code>: 会输出
+        -</code>{#  #}`: 这种注释会在编译时被忽略，即只在模板中可见</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">Tpl</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">constructor</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">const</span> <span class="nx">defaultConfig</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">signs</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">varSign</span><span class="o">:</span>       <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>    <span class="c1">// 变量/表达式</span>
+</span><span class='line'>              <span class="nx">evalSign</span><span class="o">:</span>      <span class="p">[</span><span class="s1">&#39;{@&#39;</span><span class="p">,</span> <span class="s1">&#39;@}&#39;</span><span class="p">],</span>    <span class="c1">// 语句</span>
+</span><span class='line'>                <span class="nx">commentSign</span><span class="o">:</span>   <span class="p">[</span><span class="s1">&#39;&lt;!--&#39;</span><span class="p">,</span> <span class="s1">&#39;--&gt;&#39;</span><span class="p">],</span> <span class="c1">// 普通注释</span>
+</span><span class='line'>                <span class="nx">noCommentSign</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;{#&#39;</span><span class="p">,</span> <span class="s1">&#39;#}&#39;</span><span class="p">]</span>     <span class="c1">// 忽略注释</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// 可通过配置来修改标识符</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">config</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">({},</span> <span class="nx">defaultConfig</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span>
+</span><span class='line'>        <span class="c1">// [&#39;&#39;] =&gt; //g 构造正则</span>
+</span><span class='line'>        <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">key</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;(.+?)&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">})</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 模板解析</span>
+</span><span class='line'>    <span class="nx">_compile</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>      <span class="kr">const</span> <span class="nx">tpl</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\n/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 注释</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">noCommentSign</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">commentSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+&#39;</span><span class="c">&lt;!--</span> <span class="nx">$</span><span class="p">{</span><span class="nx">p</span><span class="p">}</span> <span class="o">--&gt;</span><span class="s1">&#39;+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 表达式/变量</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">varSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="s1">&#39;+(${p})+&#39;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>            <span class="c1">// 语句</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">evalSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>                <span class="kd">let</span>  <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;; ${exp}; tpl += &#39;</span><span class="err">`</span>
+</span><span class='line'>          <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nb">Function</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="err">`</span><span class="kd">var</span> <span class="nx">tpl</span><span class="o">=</span><span class="s1">&#39;${tpl}&#39;</span><span class="p">;</span> <span class="k">return</span> <span class="nx">tpl</span><span class="p">;</span><span class="err">`</span><span class="p">)(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 入口</span>
+</span><span class='line'>    <span class="nx">compile</span> <span class="p">(</span><span class="nx">tplStr</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_compile</span><span class="p">(</span><span class="nx">tplStr</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">tpl</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nx">Tpl</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="nx">tpl</span><span class="p">().</span><span class="nx">compile</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">)</span> <span class="c1">// 得到</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>注释的 BUG</h3>
+
+<p>上面的代码在解析一些特殊模板注释(如下)时会出错 <code>&lt;!--  --&gt;</code> (由于注释中有标识符，因此会将 a 作为变量解析，会报未定义错误)</p>
+
+<p>解决: 在解析注释时，如注释里有标识符，则将其先替换成其他符号，等语句变量的解析完成时，再替换回来</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">commentSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\{\&lt;\}\&gt;]/g</span><span class="p">,</span> <span class="nx">match</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="o">&amp;*&amp;</span><span class="nx">$</span><span class="p">{</span><span class="nx">match</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">()}</span><span class="o">&amp;*&amp;</span><span class="err">`</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;+&#39;</span><span class="c">&lt;!--</span> <span class="nx">$</span><span class="p">{</span><span class="nx">exp</span><span class="p">}</span> <span class="o">--&gt;</span><span class="s1">&#39;+&#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="c1">// ... 解析变量和语句</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\&amp;\*\&amp;(.*?)\&amp;\*\&amp;/g</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span>  <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">p</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>语法模式</h3>
+
+<p>在模板里写 js 好烦呀，各种 &lsquo;{&rsquo; 乱飞，有些模板提供了更好看的语法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{@ if data.con &gt; 20 @} // if (data.con &gt; 20) {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>ifififififif<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{@ elif data.con === 20 @} // } else if (data.con === 20) {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>elseelseelseelseifififififif<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{@ else @} // } else {
+</span><span class='line'>    <span class="nt">&lt;p&gt;</span>elseelseelseelse<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{/@ if @} // }
+</span><span class='line'>// for (var index = 0; index <span class="nt">&lt; data.list.length</span><span class="err">;</span> <span class="na">index</span><span class="err">++)</span> <span class="err">{</span> <span class="na">var</span> <span class="na">item =</span><span class="err"> </span><span class="s">data.list[index]</span>
+</span><span class='line'><span class="err">{@</span> <span class="na">each</span> <span class="na">data</span><span class="err">.</span><span class="na">list</span> <span class="na">as</span> <span class="na">item</span> <span class="err">@}</span>
+</span><span class='line'>    <span class="err">&lt;</span><span class="na">p</span><span class="nt">&gt;</span>循环  次: <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>{/@ each @}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实就是在解析语句时多做一些处理而已:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 配置中增加 syntax 属性，默认 false, 其为 true 是开启 语法模式</span>
+</span><span class='line'><span class="c1">// 配置中增加语法模式结束语句的标识符: endEvalSign: [&#39;{/@&#39;, &#39;@}&#39;]</span>
+</span><span class='line'><span class="c1">// 给 Tpl 类添加方法，用于 语法模式 的语句解析</span>
+</span><span class='line'><span class="nx">_syntax</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">trim</span><span class="p">().</span><span class="nx">split</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="nx">exp</span> <span class="o">=</span> <span class="nx">str</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;if&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// if (xx) {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="k">if</span> <span class="p">(</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)}</span> <span class="p">)</span> <span class="p">{</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;else&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// } else {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="s1">&#39;} else {&#39;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;elif&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// } else if (xx) {</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)}</span> <span class="p">)</span> <span class="p">{</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;each&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// for (var index = 0, len = xx.length; index &lt; len; index++) { var item = xx[index]</span>
+</span><span class='line'>        <span class="nx">exp</span> <span class="o">=</span> <span class="err">`</span><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]}.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">index</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span><span class="kd">var</span> <span class="nx">item</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]}[</span><span class="nx">index</span><span class="p">]</span><span class="err">`</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">exp</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 修改 _compile 解析语句的 replace</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">evalSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span>  <span class="nx">exp</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;&amp;lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">)</span>
+</span><span class='line'>                               <span class="c1">// 语法模式</span>
+</span><span class='line'>    <span class="nx">exp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">syntax</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">_syntax</span><span class="p">(</span><span class="nx">exp</span><span class="p">)</span> <span class="o">:</span> <span class="nx">exp</span>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;; ${exp}; tpl += &#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="c1">// 增加结束标识的解析 {/@ if @}  {/@ each @}</span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">endEvalSign</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s2">&quot;&#39;} tpl += &#39;&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>过滤器</h3>
+
+<ul>
+<li>很多模板引擎中都有提供很多好用的过滤器:
+
+<ul>
+<li>字符串转大写的过滤器: <code>&lt;p&gt;tpl&lt;/p&gt; =&gt; &lt;p&gt;TPL&lt;/p&gt;</code></li>
+<li>字符串转大写的过滤器(支持流式): <code>&lt;p&gt;tpl&lt;/p&gt;</code></li>
+</ul>
+</li>
+</ul>
+
+
+<p>现在我们来编写这个拓展</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// 由于过滤器是对于变量的操作，所以只需在解析变量标识符的过程中做一下处理即可</span>
+</span><span class='line'><span class="c1">//  =&gt; 无过滤器直接返回，  有过滤器则调用 Filters 类中对应的过滤器函数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 过滤器函数</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">Filters</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">upper</span><span class="o">:</span> <span class="nx">str</span> <span class="o">=&gt;</span> <span class="nx">str</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 解析 </span>
+</span><span class='line'><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">signs</span><span class="p">.</span><span class="nx">varSign</span><span class="p">,</span> <span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">const</span> <span class="nx">filterIndex</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">p</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">filterIndex</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 有过滤器</span>
+</span><span class='line'>        <span class="kr">const</span>
+</span><span class='line'>            <span class="nx">arr</span>     <span class="o">=</span> <span class="nx">val</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="nx">s</span><span class="p">.</span><span class="nx">trim</span><span class="p">()),</span>
+</span><span class='line'>            <span class="nx">filters</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="p">[],</span>
+</span><span class='line'>            <span class="nx">oldVal</span>  <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">val</span> <span class="o">=</span> <span class="nx">filters</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">curVal</span><span class="p">,</span> <span class="nx">filterName</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="nx">Filters</span><span class="p">[</span><span class="nx">filterName</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="err">`没有</span> <span class="nx">$</span><span class="p">{</span><span class="nx">filterName</span><span class="p">}</span> <span class="err">过滤器`</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">return</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="err">`</span><span class="nx">Filters</span><span class="p">[</span><span class="s1">&#39;${filterName}&#39;</span><span class="p">](</span><span class="nx">$</span><span class="p">{</span><span class="nx">curVal</span><span class="p">})</span><span class="err">`</span>
+</span><span class='line'>        <span class="p">},</span> <span class="nx">oldVal</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="err">`</span><span class="s1">&#39;+(${val})+&#39;</span><span class="err">`</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="c1">// &lt;h1&gt;&lt;/h1&gt; // =&gt; &#39;LPT&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>至此该模板引擎就完成了，总结下功能:
+
+<ul>
+<li>支持在模板中使用 js 语句</li>
+<li>支持自定义标识符</li>
+<li>支持更简洁的语法模式</li>
+<li>支持过滤器</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>其他</h3>
+
+<ul>
+<li>虽然这个模板工具还是有点简陋，比如没有个很友善的报错机制，不支持 include 等功能，但日常跑跑小项目什么的已经足够强大了</li>
+<li><a href="http://codepen.io/Away0x/pen/JWqgLw">演示</a></li>
+<li><a href="https://github.com/Away0x/learning-template/blob/master/src/eval/tpl.js">代码</a></li>
+</ul>
+
+
+<h3>资料</h3>
+
+<ul>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function">详细语法</a></li>
+<li><a href="http://blog.jobbole.com/56689/">只有20行Javascript代码！手把手教你写一个页面模板引擎</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-05-17T08:00:00+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/frontend/'>frontend</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2017/05/17/fd-template/" data-via="" data-counturl="http://away0x.github.io/blog/2017/05/17/fd-template/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/03/11/fd-form-validator/" title="Previous Post: 从零开始实现前端表单验证插件">&laquo; 从零开始实现前端表单验证插件</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/02/01/oc-basic/" title="Next Post: ObjectiveC - 基础">ObjectiveC - 基础 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

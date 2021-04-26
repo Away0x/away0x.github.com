@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ObjectiveC - 面向对象基础(二) - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="封装
+继承
+多态 封装 屏蔽内部实现的细节，仅对外提供公有的方法/接口
+优点: 保证数据的安全性，将变化隔离 实例变量的封装 未封装的实例变量 1
+2
+3
+4
+5
+6
+7
+8
+@interface Demo : NSObject {
+@public int _age;
+}
+@end @ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/02/05/oc-oop-features">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">ObjectiveC - 面向对象基础(二)</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-05T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#o1">封装</a></li>
+<li><a href="#o2">继承</a></li>
+<li><a href="#o3">多态</a></li>
+</ul>
+
+
+<h1><h2 id="o1">封装</h2></h1>
+
+<ul>
+<li>屏蔽内部实现的细节，仅对外提供公有的方法/接口</li>
+<li>优点: 保证数据的安全性，将变化隔离</li>
+</ul>
+
+
+<h2>实例变量的封装</h2>
+
+<h3>未封装的实例变量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'><span class="k">@public</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">demo</span><span class="o">-&gt;</span><span class="n">_age</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">demo</span><span class="o">-&gt;</span><span class="n">age</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用 getter/setter 封装实例变量</h3>
+
+<ul>
+<li>二者写法格式是固定的</li>
+<li><strong>setter</strong>
+
+<ol>
+<li>作用: 设置实例变量的值</li>
+<li>一定是实例方法且无返回值</li>
+<li>一定有参数，参数类型和需设置的实例变量类型相同，且名称是实例变量的名称去掉下划线</li>
+<li>命名一定是 &ldquo;set + 实例变量&rdquo; (实例变量名去掉开头下划线，且首字母大写)</li>
+</ol>
+</li>
+<li><strong>getter</strong>
+
+<ol>
+<li>获取实例变量的值</li>
+<li>一定是实例方法且有返回值</li>
+<li>返回值和获取的实例变量的类型一致</li>
+<li>一定无参数</li>
+<li>命名是获取的实例变量的名称去掉下划线</li>
+</ol>
+</li>
+<li>只读属性: 私有实例变量只提供了 getter</li>
+<li>只写属性: 私有实例变量只提供了 setter</li>
+<li>可读可写属性: 私有实例变量只提供了 getter、setter</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// setter 声明</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setAge:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// getter 声明</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">age</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// setter 实现</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">setAge</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="n">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// getter 实现</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">age</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_age</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">demo</span> <span class="nl">setAge</span><span class="p">:</span><span class="mi">25</span><span class="p">];</span>     <span class="c1">// setter</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="p">[</span><span class="n">demo</span> <span class="n">age</span><span class="p">];</span> <span class="c1">// getter</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>点语法</h2>
+
+<ul>
+<li>如果实例属性提供了 setter、getter 方法，那么访问属性又多了一种访问方式: <strong>点语法</strong></li>
+<li>点语法的本质是调用了 setter/getter (C++ 中的点可以直接访问实例变量)</li>
+<li>点语法是一个编译器特性，实际并不是 OC 的语法
+
+<ul>
+<li>会在程序翻译成二进制时，将点语法自动转换为 setter/getter</li>
+</ul>
+</li>
+<li>点语法的注意点:
+
+<ul>
+<li>点语法一般用于给实例变量赋值，如果不是给实例变量赋值一般情况不建议使用</li>
+<li>因为其是编译器特性，会将 <code>a.b</code> 翻译成 <code>[a b]</code> 所以也可以调用一些实例方法，但不要使用</li>
+<li><code>请将点语法当成是便捷版的实例变量 getter/setter 的使用方式，其他情况下请不要使用</code></li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">demo</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">demo</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span> <span class="c1">// 相当于 setter &quot;[demo setAge:25];&quot;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">demo</span><span class="p">.</span><span class="n">age</span><span class="p">;</span> <span class="c1">// 相当于 getter &quot;int age = [demo age];&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="o2">继承</h2></h1>
+
+<ul>
+<li>OC 是单继承</li>
+<li>A 类继承了 B 类，那么 B 类就拥有了 A 类所有属性和方法</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// Demo 继承了 NSObject</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">@</span><span class="n">impletation</span> <span class="n">Demo</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>如子类中有和父类同名的方法，称之为 <strong>方法重写</strong></li>
+<li>继承中的方法调用顺序: 自己有就调用自己的，自己无就调用父类的，以此类推，逐级往上
+
+<ul>
+<li>如一直找到 NSObject 类都没有找到，那么就会报错</li>
+</ul>
+</li>
+<li>继承的优点:
+
+<ol>
+<li>提高了代码的复用性</li>
+<li>让类与类之间产生了关系，这才有了多态</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>super</h2>
+
+<ul>
+<li>super 和 self 指向的是相同的消息接收者</li>
+<li>作用:
+
+<ol>
+<li>直接调用父类中的某个方法</li>
+<li>super 在实例方法中，会调用父类的实例方法</li>
+<li>super 在类方法中，会调用父类的类方法</li>
+</ol>
+</li>
+<li>使用场景:
+
+<ol>
+<li>子类重写父类的方法时，想保留父类的一些行为</li>
+</ol>
+</li>
+</ul>
+
+
+<h1><h2 id="o3">多态</h2></h1>
+
+<ul>
+<li>多态: 事物的多种表现形态</li>
+<li>OC 不同于传统程序设计语言，它可以在运行时加入新的数据类型和新的程序模块: 动态类型识别、动态绑定、动态加载</li>
+<li>多态的条件:
+
+<ol>
+<li>有继承关系</li>
+<li>子类重写父类方法</li>
+<li>父类指针指向子类对象</li>
+</ol>
+</li>
+<li>表现: 当父类指针指向不同对象的时候，通过父类指针调用被重写的方法时，会执行指正所指向</li>
+<li>优点:
+
+<ol>
+<li>提高了代码的拓展性</li>
+</ol>
+</li>
+<li>注意点:
+
+<ol>
+<li>如父类指针指向子类对象，如需调用<strong>子类特有</strong>的方法，必须先强制类型转换为子类才能调用</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 实现多态</span>
+</span><span class='line'><span class="c1">// Animal 是父类，子类有 Cat 和 Dog，分别重写了父类的 eat 方法</span>
+</span><span class='line'><span class="c1">// 那么实例化时，可这样:</span>
+</span><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">animal</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 实例化 Dog</span>
+</span><span class='line'><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span> <span class="c1">// Dog 的 eat</span>
+</span><span class='line'><span class="c1">// 实例化 Cat</span>
+</span><span class='line'><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cat</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span> <span class="c1">// Cat 的 eat</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>动态类型</h2>
+
+<ul>
+<li>在编译时编译器只会检查当前类型中有没有需要调用的方法</li>
+<li>运行时，才会去判断对象的真实类型</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 1</span>
+</span><span class='line'><span class="c1">// 首先由于 a 是 Animal 类型，所以编译时会在去 Animal 里找是否已 eat 方法，无, 会编译失败</span>
+</span><span class='line'><span class="c1">// 然后在运行时，系统判断出了 a 的真实类型是 Dog 类型</span>
+</span><span class='line'><span class="c1">// 因此这里调用的是 Dog 类的 eat 方法，而不是 Animal 类</span>
+</span><span class='line'><span class="p">[</span><span class="n">a</span> <span class="n">eat</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 2</span>
+</span><span class='line'><span class="c1">// 如果想调用子类特有的方法，必须强制类型转换为子类才能调用</span>
+</span><span class='line'><span class="c1">// 如子类 Dog 特有方法 dogEat，Animal 类没有这个方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">a</span> <span class="n">dogEat</span><span class="p">];</span> <span class="c1">// 报错，因为编译阶段发现 Animal 中没有这个方法</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Dog</span> <span class="o">*</span><span class="n">dog</span> <span class="o">=</span> <span class="p">(</span><span class="n">Dog</span> <span class="o">*</span><span class="p">)</span><span class="n">a</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">dog</span> <span class="n">dogEat</span><span class="p">];</span> <span class="c1">// 正确</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>id 类型</h2>
+
+<p>id 类型: 通用对象指针类型，弱类型，编译时不进行类型检查</p>
+
+<h2>应用场景</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Person</span>: <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">food:</span><span class="p">(</span><span class="n">Animal</span> <span class="o">*</span><span class="p">)</span><span class="nv">animal</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">food:</span><span class="p">(</span><span class="n">Animal</span> <span class="o">*</span><span class="p">)</span><span class="nv">animal</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 运行时会动态监测 animal 的真实类型，从而调用对应类型的方法</span>
+</span><span class='line'>    <span class="c1">// 这样就不用创建针对于不同类型的 food 方法啦</span>
+</span><span class='line'>    <span class="c1">// 如果真实类型没有 eat 方法，这会找到 Animal 类，调用其的 eat 方法</span>
+</span><span class='line'>    <span class="c1">// 注意这里 Animal 类得有 eat 方法，因为编译时会做检测</span>
+</span><span class='line'>    <span class="c1">// 运行时才会确定真实类型</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">animal</span> <span class="n">eat</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'><span class="c1">// Cat Dog 继承与 Animal</span>
+</span><span class='line'><span class="c1">// Animal 有 eat 方法</span>
+</span><span class='line'><span class="c1">// Cat Dog 都各自重写了父类的 eat 方法</span>
+</span><span class='line'><span class="n">Dog</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">Cat</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">Cat</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">Person</span> <span class="nl">food</span><span class="p">:</span><span class="n">d</span><span class="p">];</span> <span class="c1">// 调用的是 Dog 的 eat 方法</span>
+</span><span class='line'><span class="p">[</span><span class="n">Person</span> <span class="nl">food</span><span class="p">:</span><span class="n">c</span><span class="p">];</span> <span class="c1">// 调用的是 Cat 的 eat 方法</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>注意点</h2>
+
+<p>如果存在多态，父类是可以访问子类特有的方法。否则不能直接调用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 子类特有方法 bark</span>
+</span><span class='line'><span class="p">[</span><span class="n">dog</span> <span class="n">bark</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Animal</span> <span class="o">*</span><span class="n">animal</span> <span class="o">=</span> <span class="p">[</span><span class="n">Dog</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="p">[(</span><span class="n">Dog</span> <span class="o">*</span><span class="p">)</span><span class="n">animal</span> <span class="n">bark</span><span class="p">];</span> <span class="c1">// 把父类的指针，强制类型转换</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-05T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objectivec/'>objectivec</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/02/05/oc-oop-features/" data-via="" data-counturl="http://away0x.github.io/blog/2018/02/05/oc-oop-features/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/04/oc-oop-basic/" title="Previous Post: ObjectiveC - 面向对象基础(一)">&laquo; ObjectiveC - 面向对象基础(一)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/02/06/oc-constructor/" title="Next Post: ObjectiveC - Constructor">ObjectiveC - Constructor &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

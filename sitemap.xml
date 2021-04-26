@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://away0x.github.io/blog/2018/02/03/oc-oop-basic/</loc>
-<lastmod>2018-02-03T08:00:00+08:00</lastmod>
+<loc>http://away0x.github.io/blog/2018/02/07/oc-protocol/</loc>
+<lastmod>2018-02-07T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/06/oc-constructor/</loc>
+<lastmod>2018-02-06T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/05/oc-oop-features/</loc>
+<lastmod>2018-02-05T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2018/02/04/oc-oop-basic/</loc>
+<lastmod>2018-02-04T08:00:00+08:00</lastmod>
 </url>
 <url>
 <loc>http://away0x.github.io/blog/2018/02/03/oc-block/</loc>
@@ -17,10 +29,21 @@
 <lastmod>2018-02-01T08:00:00+08:00</lastmod>
 </url>
 <url>
+<loc>http://away0x.github.io/blog/2017/05/17/fd-template/</loc>
+<lastmod>2017-05-17T08:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/2017/03/11/fd-form-validator/</loc>
+<lastmod>2017-03-11T08:00:00+08:00</lastmod>
+</url>
+<url>
 <loc>http://away0x.github.io/</loc>
 </url>
 <url>
 <loc>http://away0x.github.io/blog/archives/</loc>
+</url>
+<url>
+<loc>http://away0x.github.io/blog/categories/frontend/</loc>
 </url>
 <url>
 <loc>http://away0x.github.io/blog/categories/objectivec/</loc>
