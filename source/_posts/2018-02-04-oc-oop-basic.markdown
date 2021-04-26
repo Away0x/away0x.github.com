@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "ObjectiveC - 面向对象基础"
-date: 2018-02-03 08:00:00 +0800
+title: "ObjectiveC - 面向对象基础(一)"
+date: 2018-02-04 08:00:00 +0800
 comments: true
 categories: objectivec
 ---
