@@ -1,0 +1,290 @@
+---
+layout: post
+title: "ObjectiveC - Tricks"
+date: 2018-02-15 08:00:00 +0800
+comments: true
+categories: objectivec
+---
+
+<!-- more -->
+
+* [写类时的常见错误](#clserror)
+* [预编译](#precompile)
+* [super & superclass & class](#ssc)
+* [懒加载](#lazy)
+* [foreach](#foreach)
+* [timer](#timer)
+* [predicate](#predicate)
+* [expression closures](#ec)
+
+# <h2 id="clserror">写类时的常见错误</h2>
+1. 只有类的声明没有实现
+2. 漏了 @end
+3. @interface 和 @implementation 嵌套
+4. 实例变量没有写在声明的大括号内
+5. 方法的声明写在了大括号内
+6. 实例变量不能再大括号内初始化、和访问权限的问题
+7. 方法不能当做函数一样调用
+8. OC 方法不能独立于类存在
+9. C 函数不属于类，C 函数只归定义函数的文件所有
+10. C 函数不能访问 OC 对象的成员
+11. 方法有声明，但实现时写成了函数
+12. static 不能用在实例变量和方法上，不要和 C 语言混淆
+
+
+
+# <h2 id="precompile">预编译</h2>
+```objectivec
+// 只在 mac 系统下输出
+#if TARGET_OS_MAC
+    NSLog(@"这是 mac 系统");
+#endif
+
+#define DEBUG_MODE 1
+#if DEBUG_MODE
+    NSLog(@"当前是调试模式"); // 输出这条
+#else
+    NSLog(@"当前不是调试模式");
+#endif
+
+#ifdef XX
+    // 如果定义了 XX ，才会执行这里的代码
+#endif
+```
+
+
+
+# <h2 id="ssc">super & superclass & class</h2>
+- class: 获取当前方法调用者的类
+- superclass: 获取当前方法调用者的父类
+- super: 仅仅是一个编译指示器，就是给编译器看的，不是一个指针
+    - 这和 super 不一样，self 是一个指针
+    - `NSLog(@"%@ %@", self, super)` 所以打印 self 可以，但是打印 super 会报错
+    - 只要编译器看到 super 这个标志，就会让当前对象去调用父类方法，**本质还是当前对象在调用**
+        - 所以 `[super class]` 等同于 `[self class]`
+
+```objectivec
+// SubPerson 继承了 Person
+
+@implementation SubPerson
+
+- (void)test {
+    NSLog(
+        @"%@ %@ %@ %@",
+        [self class],      // SubPerson
+        [self superclass], // Person
+        [super class],     // SubPerson
+        [super superclass] // Person
+    );
+}
+
+@end
+```
+
+
+
+# <h2 id="lazy">懒加载</h2>
+- 本质是重写 getter 方法。用到时候再加载，而且只加载一次
+- 代码创建 UI 常用懒加载
+
+```objectivec
+// 以懒加载一个UIImageView控件为例
+- (UIImageView *)imageView {
+    if ( ! _imageView) {
+        _imageView = [[UIImageView alloc]init];
+        // 设置 属性
+    }
+    return _imageView;
+}
+```
+
+
+
+# <h2 id="foreach">foreach</h2>
+```objectivec
+// 让数组中的每个元素都执行 removeFromSuperview 该方法
+[self.view.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+```
+
+
+
+# <h2 id="timer">timer</h2>
+```objectivec
+// ---------------- 头文件 ----------------------
+@interface MyTimer : NSObject
+- (void) testTimer;
+@end
+
+// ---------------- 实现文件 ----------------------
+// 定义定时器
+@interface MyTimer() {
+    NSTimer *timer1;
+    NSTimer *timer2;
+}
+
+@end
+
+@implementation MyTimer
+- (void) testTimer {
+    // 1. 手动添加到 RunLoop
+    // 参数1：中断间隔，参数2：响应方法对象，参数3：响应方法，参数4：传递参数，参数5：是否重复
+    timer1 = [NSTimer timerWithTimeInterval: 1 target: self selector: @selector(myLog) userInfo:
+        nil repeats: false];
+    [[NSRunLoop currentRunLoop] addTimer: timer1 forMode: NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] run];
+    
+    // 2. 自动添加到 RunLoop + 带参定时器
+    // 用这个方法的话，如当前线程中有 RunLoop，则会自动添加进去
+    timer2 = [NSTimer scheduledTimerWithTimeInterval: 1 target: self selector: @selector(myLog:)
+        userInfo: @"world" repeats: false];
+    [timer2 fire];
+    
+    // 3. 定时精度 0.01s = 10ms = 0.01 * 1000 只能粗略的计算
+    timer1 = [NSTimer timerWithTimeInterval: 0.01 target: self selector: @selector(myLog) userInfo:
+        nil repeats: true];
+    [[NSRunLoop currentRunLoop] addTimer: timer1 forMode: NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] run];
+    
+    // 4. 如何快速的打印出当前代码的执行时间
+    NSDate *timerMark = [NSDate date]; // 当前时间
+    // 要执行的代码放这中间......
+    NSTimeInterval timerInterval = [timeMark timeIntervalSinceNow]; // 执行结束时间
+    float timeNow = 0 - timeInterval; // 时间转为正数
+    NSLog(@"timeNow=%f", timeNow);
+}
+- (void) myLog {
+    NSLog(@"我是一个定时器");
+}
+// 带参数的定时器
+- (void) myLog:(NSTimer*)timer {
+    NSLog(@"hello %@", timer2.userInfo); // "hello world"
+}
+@end
+
+// ---------------- 执行文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        MyTimer *timer = [[MyTimer alloc] init];
+        [timer testTimer];
+    }
+}
+```
+
+
+
+# <h2 id="predicate">predicate</h2>
+按一定的条件对数据进行处理和过滤
+
+```objectivec
+// 对数组中的元素进行过滤
+
+NSArray *arr1 = [[NSArray
+    alloc] initWithObjects:@"ios",@"android",@"wp", nil];
+
+// 1. 创建谓词对象 2. 指定过滤条件
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF == 'android'"]; // SELF 是数组的每一项
+// 3. 过滤条件应用到对象上
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%@", item); // android
+}
+```
+```objectivec
+// 得到数组中大于 10 的元素
+
+NSString *num1 = [NSString stringWithFormat:@"%d", 3];
+NSString *num2 = [NSString stringWithFormat:@"%d", 15];
+
+NSArray *arr1 = [[NSArray alloc] initWithObjects:num1,num2, nil];
+
+// 使用谓词
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF.initValue > 10"];
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%d", item.initValue); // 15
+}
+```
+```objectivec
+// 谓词关键词
+// 数组中是否包含某个元素(使用关键词)
+
+NSArray *arr1 = [[NSArray alloc] initWithObjects:@"abc",@"def", nil];
+
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF CONTAINS %@",@"def"]; // CONTAINS: SELF 包含某些内容
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%@", item); // "def"
+}
+```
+```objectivec
+// 过滤对象
+// 过滤出 age 属性为 10 的对象
+Person *p1 = [[Person alloc] init];
+p1.age = 10;
+Person *p2 = [[Person alloc] init];
+p2.age = 30;
+
+NSMutableArray *arr1 = [[NSMutableArray alloc] init];
+[arr1 addObject:p1];
+[arr1 addObject:p2];
+NSLog(@"%p %p", p1, p2); // 打印地址
+
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"age == %d",10];
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (Person *p in arr2) {
+    NSLog(@"%p", p); // 打印地址
+}
+```
+
+
+
+# <h2 id="ec">expression closures</h2>
+```objectivec
+// 会将代码块 ({}) 里最后一个表达式 return 出来
+
+#define ScreenWidth [UIScreen mainScreen].bounds.size.width
+static NSString * const ID = @"cell";
+
+// UICollectionView 布局
+UICollectionViewFlowLayout *layout = ({
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
+    layout.itemSize = CGSizeMake(160, 160);
+    layout.minimumLineSpacing = 50; // 最小行间距
+    // layout.minimumInteritemSpacing = 0; // item 的最小间距
+    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal; // 滚动方向
+    // 内边距
+    CGFloat margin = (ScreenWidth - 160) * 0.5;
+    layout.sectionInset = UIEdgeInsetsMake(0, margin, 0, margin);
+    
+    layout; // 相当于将这个值 return 出去了
+});
+
+// UICollectionView 创建
+UICollectionView *collectionView = ({
+    UICollectionView *collectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:layout];
+    collectionView.backgroundColor = [UIColor brownColor];
+    collectionView.center = self.view.center;
+    collectionView.bounds = CGRectMake(0, 0, self.view.bounds.size.width, 200);
+    collectionView.dataSource = self;
+    collectionView.showsHorizontalScrollIndicator = NO; // 隐藏水平滚动条
+    
+    collectionView; // 相当于将这个值 return 出去了
+});
+
+// 注册 cell
+[collectionView
+    registerNib:[UINib nibWithNibName:
+        NSStringFromClass([MyCollectionViewCell class]) bundle:nil]
+    forCellWithReuseIdentifier:ID];
+
+[self.view addSubview:collectionView];
+```
+

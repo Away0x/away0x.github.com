@@ -434,5 +434,4 @@ const Filters = {
 
 ### 资料
 - [详细语法](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function)
-- [只有20行Javascript代码！手把手教你写一个页面模板引擎](http://blog.jobbole.com/56689/)
 
