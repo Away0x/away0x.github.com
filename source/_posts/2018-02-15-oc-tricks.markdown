@@ -9,6 +9,7 @@ categories: objectivec
 <!-- more -->
 
 * [写类时的常见错误](#clserror)
+* [常量](#const)
 * [预编译](#precompile)
 * [super & superclass & class](#ssc)
 * [懒加载](#lazy)
@@ -30,6 +31,16 @@ categories: objectivec
 10. C 函数不能访问 OC 对象的成员
 11. 方法有声明，但实现时写成了函数
 12. static 不能用在实例变量和方法上，不要和 C 语言混淆
+
+
+
+# <h2 id="const">常量</h2>
+尽量使用类型常量，而不是使用宏定义
+
+```objectivec
+// 定义字符串常量
+static NSString * const STMProjectName = @"GCDFetchFeed";
+```
 
 
 
