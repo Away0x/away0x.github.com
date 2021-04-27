@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ObjectiveC - Tricks - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="写类时的常见错误
+预编译
+super &amp; superclass &amp; class
+懒加载
+foreach
+timer
+predicate
+expression closures 写类时的常见错误 只有类的声明没有实现
+漏了 @end
+@interface 和 @ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/02/15/oc-tricks">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">ObjectiveC - Tricks</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-15T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#clserror">写类时的常见错误</a></li>
+<li><a href="#precompile">预编译</a></li>
+<li><a href="#ssc">super &amp; superclass &amp; class</a></li>
+<li><a href="#lazy">懒加载</a></li>
+<li><a href="#foreach">foreach</a></li>
+<li><a href="#timer">timer</a></li>
+<li><a href="#predicate">predicate</a></li>
+<li><a href="#ec">expression closures</a></li>
+</ul>
+
+
+<h1><h2 id="clserror">写类时的常见错误</h2></h1>
+
+<ol>
+<li>只有类的声明没有实现</li>
+<li>漏了 @end</li>
+<li>@interface 和 @implementation 嵌套</li>
+<li>实例变量没有写在声明的大括号内</li>
+<li>方法的声明写在了大括号内</li>
+<li>实例变量不能再大括号内初始化、和访问权限的问题</li>
+<li>方法不能当做函数一样调用</li>
+<li>OC 方法不能独立于类存在</li>
+<li>C 函数不属于类，C 函数只归定义函数的文件所有</li>
+<li>C 函数不能访问 OC 对象的成员</li>
+<li>方法有声明，但实现时写成了函数</li>
+<li>static 不能用在实例变量和方法上，不要和 C 语言混淆</li>
+</ol>
+
+
+<h1><h2 id="precompile">预编译</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 只在 mac 系统下输出</span>
+</span><span class='line'><span class="cp">#if TARGET_OS_MAC</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;这是 mac 系统&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define DEBUG_MODE 1</span>
+</span><span class='line'><span class="cp">#if DEBUG_MODE</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;当前是调试模式&quot;</span><span class="p">);</span> <span class="c1">// 输出这条</span>
+</span><span class='line'><span class="cp">#else</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;当前不是调试模式&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#ifdef XX</span>
+</span><span class='line'>    <span class="c1">// 如果定义了 XX ，才会执行这里的代码</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="ssc">super &amp; superclass &amp; class</h2></h1>
+
+<ul>
+<li>class: 获取当前方法调用者的类</li>
+<li>superclass: 获取当前方法调用者的父类</li>
+<li>super: 仅仅是一个编译指示器，就是给编译器看的，不是一个指针
+
+<ul>
+<li>这和 super 不一样，self 是一个指针</li>
+<li><code>NSLog(@"%@ %@", self, super)</code> 所以打印 self 可以，但是打印 super 会报错</li>
+<li>只要编译器看到 super 这个标志，就会让当前对象去调用父类方法，<strong>本质还是当前对象在调用</strong>
+
+<ul>
+<li>所以 <code>[super class]</code> 等同于 <code>[self class]</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// SubPerson 继承了 Person</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">SubPerson</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">test</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span>
+</span><span class='line'>        <span class="s">@&quot;%@ %@ %@ %@&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">[</span><span class="nb">self</span> <span class="k">class</span><span class="p">],</span>      <span class="c1">// SubPerson</span>
+</span><span class='line'>        <span class="p">[</span><span class="nb">self</span> <span class="n">superclass</span><span class="p">],</span> <span class="c1">// Person</span>
+</span><span class='line'>        <span class="p">[</span><span class="nb">super</span> <span class="k">class</span><span class="p">],</span>     <span class="c1">// SubPerson</span>
+</span><span class='line'>        <span class="p">[</span><span class="nb">super</span> <span class="n">superclass</span><span class="p">]</span> <span class="c1">// Person</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="lazy">懒加载</h2></h1>
+
+<ul>
+<li>本质是重写 getter 方法。用到时候再加载，而且只加载一次</li>
+<li>代码创建 UI 常用懒加载</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 以懒加载一个UIImageView控件为例</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">UIImageView</span> <span class="o">*</span><span class="p">)</span><span class="nf">imageView</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="n">_imageView</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">_imageView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'>        <span class="c1">// 设置 属性</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_imageView</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="foreach">foreach</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 让数组中的每个元素都执行 removeFromSuperview 该方法</span>
+</span><span class='line'><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">subviews</span> <span class="nl">makeObjectsPerformSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">removeFromSuperview</span><span class="p">)];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="timer">timer</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// ---------------- 头文件 ----------------------</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">MyTimer</span> : <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">testTimer</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ---------------- 实现文件 ----------------------</span>
+</span><span class='line'><span class="c1">// 定义定时器</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">MyTimer</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="bp">NSTimer</span> <span class="o">*</span><span class="n">timer1</span><span class="p">;</span>
+</span><span class='line'>    <span class="bp">NSTimer</span> <span class="o">*</span><span class="n">timer2</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">MyTimer</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">testTimer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. 手动添加到 RunLoop</span>
+</span><span class='line'>    <span class="c1">// 参数1：中断间隔，参数2：响应方法对象，参数3：响应方法，参数4：传递参数，参数5：是否重复</span>
+</span><span class='line'>    <span class="n">timer1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSTimer</span> <span class="nl">timerWithTimeInterval</span><span class="p">:</span> <span class="mi">1</span> <span class="nl">target</span><span class="p">:</span> <span class="nb">self</span> <span class="nl">selector</span><span class="p">:</span> <span class="k">@selector</span><span class="p">(</span><span class="n">myLog</span><span class="p">)</span> <span class="nl">userInfo</span><span class="p">:</span>
+</span><span class='line'>        <span class="nb">nil</span> <span class="nl">repeats</span><span class="p">:</span> <span class="nb">false</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">NSRunLoop</span> <span class="n">currentRunLoop</span><span class="p">]</span> <span class="nl">addTimer</span><span class="p">:</span> <span class="n">timer1</span> <span class="nl">forMode</span><span class="p">:</span> <span class="n">NSDefaultRunLoopMode</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">NSRunLoop</span> <span class="n">currentRunLoop</span><span class="p">]</span> <span class="n">run</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. 自动添加到 RunLoop + 带参定时器</span>
+</span><span class='line'>    <span class="c1">// 用这个方法的话，如当前线程中有 RunLoop，则会自动添加进去</span>
+</span><span class='line'>    <span class="n">timer2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSTimer</span> <span class="nl">scheduledTimerWithTimeInterval</span><span class="p">:</span> <span class="mi">1</span> <span class="nl">target</span><span class="p">:</span> <span class="nb">self</span> <span class="nl">selector</span><span class="p">:</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">myLog</span><span class="p">:)</span>
+</span><span class='line'>        <span class="nl">userInfo</span><span class="p">:</span> <span class="s">@&quot;world&quot;</span> <span class="nl">repeats</span><span class="p">:</span> <span class="nb">false</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">timer2</span> <span class="n">fire</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. 定时精度 0.01s = 10ms = 0.01 * 1000 只能粗略的计算</span>
+</span><span class='line'>    <span class="n">timer1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSTimer</span> <span class="nl">timerWithTimeInterval</span><span class="p">:</span> <span class="mf">0.01</span> <span class="nl">target</span><span class="p">:</span> <span class="nb">self</span> <span class="nl">selector</span><span class="p">:</span> <span class="k">@selector</span><span class="p">(</span><span class="n">myLog</span><span class="p">)</span> <span class="nl">userInfo</span><span class="p">:</span>
+</span><span class='line'>        <span class="nb">nil</span> <span class="nl">repeats</span><span class="p">:</span> <span class="nb">true</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">NSRunLoop</span> <span class="n">currentRunLoop</span><span class="p">]</span> <span class="nl">addTimer</span><span class="p">:</span> <span class="n">timer1</span> <span class="nl">forMode</span><span class="p">:</span> <span class="n">NSDefaultRunLoopMode</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">NSRunLoop</span> <span class="n">currentRunLoop</span><span class="p">]</span> <span class="n">run</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 4. 如何快速的打印出当前代码的执行时间</span>
+</span><span class='line'>    <span class="bp">NSDate</span> <span class="o">*</span><span class="n">timerMark</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDate</span> <span class="n">date</span><span class="p">];</span> <span class="c1">// 当前时间</span>
+</span><span class='line'>    <span class="c1">// 要执行的代码放这中间......</span>
+</span><span class='line'>    <span class="n">NSTimeInterval</span> <span class="n">timerInterval</span> <span class="o">=</span> <span class="p">[</span><span class="n">timeMark</span> <span class="n">timeIntervalSinceNow</span><span class="p">];</span> <span class="c1">// 执行结束时间</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">timeNow</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">-</span> <span class="n">timeInterval</span><span class="p">;</span> <span class="c1">// 时间转为正数</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;timeNow=%f&quot;</span><span class="p">,</span> <span class="n">timeNow</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">myLog</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;我是一个定时器&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 带参数的定时器</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">myLog:</span><span class="p">(</span><span class="bp">NSTimer</span><span class="o">*</span><span class="p">)</span><span class="nv">timer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;hello %@&quot;</span><span class="p">,</span> <span class="n">timer2</span><span class="p">.</span><span class="n">userInfo</span><span class="p">);</span> <span class="c1">// &quot;hello world&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ---------------- 执行文件 ----------------------</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">@autoreleasepool</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">MyTimer</span> <span class="o">*</span><span class="n">timer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">MyTimer</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">timer</span> <span class="n">testTimer</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="predicate">predicate</h2></h1>
+
+<p>按一定的条件对数据进行处理和过滤</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 对数组中的元素进行过滤</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr1</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSArray</span>
+</span><span class='line'>    <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithObjects</span><span class="p">:</span><span class="s">@&quot;ios&quot;</span><span class="p">,</span><span class="s">@&quot;android&quot;</span><span class="p">,</span><span class="s">@&quot;wp&quot;</span><span class="p">,</span> <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 1. 创建谓词对象 2. 指定过滤条件</span>
+</span><span class='line'><span class="bp">NSPredicate</span> <span class="o">*</span><span class="n">pre1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSPredicate</span>
+</span><span class='line'>    <span class="nl">predicateWithFormat</span><span class="p">:</span><span class="s">@&quot;SELF == &#39;android&#39;&quot;</span><span class="p">];</span> <span class="c1">// SELF 是数组的每一项</span>
+</span><span class='line'><span class="c1">// 3. 过滤条件应用到对象上</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr2</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr1</span> <span class="nl">filteredArrayUsingPredicate</span><span class="p">:</span><span class="n">pre1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">item</span> <span class="k">in</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">);</span> <span class="c1">// android</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 得到数组中大于 10 的元素</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">num1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">num2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr1</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSArray</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithObjects</span><span class="p">:</span><span class="n">num1</span><span class="p">,</span><span class="n">num2</span><span class="p">,</span> <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用谓词</span>
+</span><span class='line'><span class="bp">NSPredicate</span> <span class="o">*</span><span class="n">pre1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSPredicate</span>
+</span><span class='line'>    <span class="nl">predicateWithFormat</span><span class="p">:</span><span class="s">@&quot;SELF.initValue &gt; 10&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr2</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr1</span> <span class="nl">filteredArrayUsingPredicate</span><span class="p">:</span><span class="n">pre1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">item</span> <span class="k">in</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">.</span><span class="n">initValue</span><span class="p">);</span> <span class="c1">// 15</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 谓词关键词</span>
+</span><span class='line'><span class="c1">// 数组中是否包含某个元素(使用关键词)</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr1</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSArray</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithObjects</span><span class="p">:</span><span class="s">@&quot;abc&quot;</span><span class="p">,</span><span class="s">@&quot;def&quot;</span><span class="p">,</span> <span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSPredicate</span> <span class="o">*</span><span class="n">pre1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSPredicate</span>
+</span><span class='line'>    <span class="nl">predicateWithFormat</span><span class="p">:</span><span class="s">@&quot;SELF CONTAINS %@&quot;</span><span class="p">,</span><span class="s">@&quot;def&quot;</span><span class="p">];</span> <span class="c1">// CONTAINS: SELF 包含某些内容</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr2</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr1</span> <span class="nl">filteredArrayUsingPredicate</span><span class="p">:</span><span class="n">pre1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">item</span> <span class="k">in</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">);</span> <span class="c1">// &quot;def&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 过滤对象</span>
+</span><span class='line'><span class="c1">// 过滤出 age 属性为 10 的对象</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p1</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">p1</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="n">Person</span> <span class="o">*</span><span class="n">p2</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Person</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">p2</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">arr1</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSMutableArray</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">arr1</span> <span class="nl">addObject</span><span class="p">:</span><span class="n">p1</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">arr1</span> <span class="nl">addObject</span><span class="p">:</span><span class="n">p2</span><span class="p">];</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%p %p&quot;</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">);</span> <span class="c1">// 打印地址</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSPredicate</span> <span class="o">*</span><span class="n">pre1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSPredicate</span>
+</span><span class='line'>    <span class="nl">predicateWithFormat</span><span class="p">:</span><span class="s">@&quot;age == %d&quot;</span><span class="p">,</span><span class="mi">10</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">arr2</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr1</span> <span class="nl">filteredArrayUsingPredicate</span><span class="p">:</span><span class="n">pre1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="k">in</span> <span class="n">arr2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%p&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span> <span class="c1">// 打印地址</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="ec">expression closures</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 会将代码块 ({}) 里最后一个表达式 return 出来</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define ScreenWidth [UIScreen mainScreen].bounds.size.width</span>
+</span><span class='line'><span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">ID</span> <span class="o">=</span> <span class="s">@&quot;cell&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// UICollectionView 布局</span>
+</span><span class='line'><span class="bp">UICollectionViewFlowLayout</span> <span class="o">*</span><span class="n">layout</span> <span class="o">=</span> <span class="p">({</span>
+</span><span class='line'>    <span class="bp">UICollectionViewFlowLayout</span> <span class="o">*</span><span class="n">layout</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UICollectionViewFlowLayout</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">layout</span><span class="p">.</span><span class="n">itemSize</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="mi">160</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">layout</span><span class="p">.</span><span class="n">minimumLineSpacing</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span> <span class="c1">// 最小行间距</span>
+</span><span class='line'>    <span class="c1">// layout.minimumInteritemSpacing = 0; // item 的最小间距</span>
+</span><span class='line'>    <span class="n">layout</span><span class="p">.</span><span class="n">scrollDirection</span> <span class="o">=</span> <span class="n">UICollectionViewScrollDirectionHorizontal</span><span class="p">;</span> <span class="c1">// 滚动方向</span>
+</span><span class='line'>    <span class="c1">// 内边距</span>
+</span><span class='line'>    <span class="n">CGFloat</span> <span class="n">margin</span> <span class="o">=</span> <span class="p">(</span><span class="n">ScreenWidth</span> <span class="o">-</span> <span class="mi">160</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">layout</span><span class="p">.</span><span class="n">sectionInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">margin</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">margin</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">layout</span><span class="p">;</span> <span class="c1">// 相当于将这个值 return 出去了</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// UICollectionView 创建</span>
+</span><span class='line'><span class="bp">UICollectionView</span> <span class="o">*</span><span class="n">collectionView</span> <span class="o">=</span> <span class="p">({</span>
+</span><span class='line'>    <span class="bp">UICollectionView</span> <span class="o">*</span><span class="n">collectionView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UICollectionView</span> <span class="n">alloc</span><span class="p">]</span><span class="nl">initWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">collectionViewLayout</span><span class="p">:</span><span class="n">layout</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIColor</span> <span class="n">brownColor</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">center</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">.</span><span class="n">showsHorizontalScrollIndicator</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="c1">// 隐藏水平滚动条</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">collectionView</span><span class="p">;</span> <span class="c1">// 相当于将这个值 return 出去了</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 注册 cell</span>
+</span><span class='line'><span class="p">[</span><span class="n">collectionView</span>
+</span><span class='line'>    <span class="nl">registerNib</span><span class="p">:[</span><span class="bp">UINib</span> <span class="nl">nibWithNibName</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">NSStringFromClass</span><span class="p">([</span><span class="n">MyCollectionViewCell</span> <span class="k">class</span><span class="p">])</span> <span class="nl">bundle</span><span class="p">:</span><span class="nb">nil</span><span class="p">]</span>
+</span><span class='line'>    <span class="nl">forCellWithReuseIdentifier</span><span class="p">:</span><span class="n">ID</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview</span><span class="p">:</span><span class="n">collectionView</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-15T08:00:00+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objectivec/'>objectivec</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/02/15/oc-tricks/" data-via="" data-counturl="http://away0x.github.io/blog/2018/02/15/oc-tricks/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/11/oc-typedef-generic-enum-class/" title="Previous Post: ObjectiveC - typedef, generic, enum, @class">&laquo; ObjectiveC - typedef, generic, enum, @class</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/10/04/ruby-install-basic/" title="Next Post: Ruby - install, basic">Ruby - install, basic &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objectivec | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/objectivec/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T09:49:21+08:00</updated>
+  <updated>2021-04-27T10:24:48+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,303 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - Tricks]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/15/oc-tricks/"/>
+    <updated>2018-02-15T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/15/oc-tricks</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#clserror">写类时的常见错误</a></li>
+<li><a href="#precompile">预编译</a></li>
+<li><a href="#ssc">super &amp; superclass &amp; class</a></li>
+<li><a href="#lazy">懒加载</a></li>
+<li><a href="#foreach">foreach</a></li>
+<li><a href="#timer">timer</a></li>
+<li><a href="#predicate">predicate</a></li>
+<li><a href="#ec">expression closures</a></li>
+</ul>
+
+
+<h1><h2 id="clserror">写类时的常见错误</h2></h1>
+
+<ol>
+<li>只有类的声明没有实现</li>
+<li>漏了 @end</li>
+<li>@interface 和 @implementation 嵌套</li>
+<li>实例变量没有写在声明的大括号内</li>
+<li>方法的声明写在了大括号内</li>
+<li>实例变量不能再大括号内初始化、和访问权限的问题</li>
+<li>方法不能当做函数一样调用</li>
+<li>OC 方法不能独立于类存在</li>
+<li>C 函数不属于类，C 函数只归定义函数的文件所有</li>
+<li>C 函数不能访问 OC 对象的成员</li>
+<li>方法有声明，但实现时写成了函数</li>
+<li>static 不能用在实例变量和方法上，不要和 C 语言混淆</li>
+</ol>
+
+
+<h1><h2 id="precompile">预编译</h2></h1>
+
+<pre><code class="objectivec">// 只在 mac 系统下输出
+#if TARGET_OS_MAC
+    NSLog(@"这是 mac 系统");
+#endif
+
+#define DEBUG_MODE 1
+#if DEBUG_MODE
+    NSLog(@"当前是调试模式"); // 输出这条
+#else
+    NSLog(@"当前不是调试模式");
+#endif
+
+#ifdef XX
+    // 如果定义了 XX ，才会执行这里的代码
+#endif
+</code></pre>
+
+<h1><h2 id="ssc">super &amp; superclass &amp; class</h2></h1>
+
+<ul>
+<li>class: 获取当前方法调用者的类</li>
+<li>superclass: 获取当前方法调用者的父类</li>
+<li>super: 仅仅是一个编译指示器，就是给编译器看的，不是一个指针
+
+<ul>
+<li>这和 super 不一样，self 是一个指针</li>
+<li><code>NSLog(@"%@ %@", self, super)</code> 所以打印 self 可以，但是打印 super 会报错</li>
+<li>只要编译器看到 super 这个标志，就会让当前对象去调用父类方法，<strong>本质还是当前对象在调用</strong>
+
+<ul>
+<li>所以 <code>[super class]</code> 等同于 <code>[self class]</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// SubPerson 继承了 Person
+
+@implementation SubPerson
+
+- (void)test {
+    NSLog(
+        @"%@ %@ %@ %@",
+        [self class],      // SubPerson
+        [self superclass], // Person
+        [super class],     // SubPerson
+        [super superclass] // Person
+    );
+}
+
+@end
+</code></pre>
+
+<h1><h2 id="lazy">懒加载</h2></h1>
+
+<ul>
+<li>本质是重写 getter 方法。用到时候再加载，而且只加载一次</li>
+<li>代码创建 UI 常用懒加载</li>
+</ul>
+
+
+<pre><code class="objectivec">// 以懒加载一个UIImageView控件为例
+- (UIImageView *)imageView {
+    if ( ! _imageView) {
+        _imageView = [[UIImageView alloc]init];
+        // 设置 属性
+    }
+    return _imageView;
+}
+</code></pre>
+
+<h1><h2 id="foreach">foreach</h2></h1>
+
+<pre><code class="objectivec">// 让数组中的每个元素都执行 removeFromSuperview 该方法
+[self.view.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+</code></pre>
+
+<h1><h2 id="timer">timer</h2></h1>
+
+<pre><code class="objectivec">// ---------------- 头文件 ----------------------
+@interface MyTimer : NSObject
+- (void) testTimer;
+@end
+
+// ---------------- 实现文件 ----------------------
+// 定义定时器
+@interface MyTimer() {
+    NSTimer *timer1;
+    NSTimer *timer2;
+}
+
+@end
+
+@implementation MyTimer
+- (void) testTimer {
+    // 1. 手动添加到 RunLoop
+    // 参数1：中断间隔，参数2：响应方法对象，参数3：响应方法，参数4：传递参数，参数5：是否重复
+    timer1 = [NSTimer timerWithTimeInterval: 1 target: self selector: @selector(myLog) userInfo:
+        nil repeats: false];
+    [[NSRunLoop currentRunLoop] addTimer: timer1 forMode: NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] run];
+
+    // 2. 自动添加到 RunLoop + 带参定时器
+    // 用这个方法的话，如当前线程中有 RunLoop，则会自动添加进去
+    timer2 = [NSTimer scheduledTimerWithTimeInterval: 1 target: self selector: @selector(myLog:)
+        userInfo: @"world" repeats: false];
+    [timer2 fire];
+
+    // 3. 定时精度 0.01s = 10ms = 0.01 * 1000 只能粗略的计算
+    timer1 = [NSTimer timerWithTimeInterval: 0.01 target: self selector: @selector(myLog) userInfo:
+        nil repeats: true];
+    [[NSRunLoop currentRunLoop] addTimer: timer1 forMode: NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] run];
+
+    // 4. 如何快速的打印出当前代码的执行时间
+    NSDate *timerMark = [NSDate date]; // 当前时间
+    // 要执行的代码放这中间......
+    NSTimeInterval timerInterval = [timeMark timeIntervalSinceNow]; // 执行结束时间
+    float timeNow = 0 - timeInterval; // 时间转为正数
+    NSLog(@"timeNow=%f", timeNow);
+}
+- (void) myLog {
+    NSLog(@"我是一个定时器");
+}
+// 带参数的定时器
+- (void) myLog:(NSTimer*)timer {
+    NSLog(@"hello %@", timer2.userInfo); // "hello world"
+}
+@end
+
+// ---------------- 执行文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        MyTimer *timer = [[MyTimer alloc] init];
+        [timer testTimer];
+    }
+}
+</code></pre>
+
+<h1><h2 id="predicate">predicate</h2></h1>
+
+<p>按一定的条件对数据进行处理和过滤</p>
+
+<pre><code class="objectivec">// 对数组中的元素进行过滤
+
+NSArray *arr1 = [[NSArray
+    alloc] initWithObjects:@"ios",@"android",@"wp", nil];
+
+// 1. 创建谓词对象 2. 指定过滤条件
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF == 'android'"]; // SELF 是数组的每一项
+// 3. 过滤条件应用到对象上
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%@", item); // android
+}
+</code></pre>
+
+<pre><code class="objectivec">// 得到数组中大于 10 的元素
+
+NSString *num1 = [NSString stringWithFormat:@"%d", 3];
+NSString *num2 = [NSString stringWithFormat:@"%d", 15];
+
+NSArray *arr1 = [[NSArray alloc] initWithObjects:num1,num2, nil];
+
+// 使用谓词
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF.initValue &gt; 10"];
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%d", item.initValue); // 15
+}
+</code></pre>
+
+<pre><code class="objectivec">// 谓词关键词
+// 数组中是否包含某个元素(使用关键词)
+
+NSArray *arr1 = [[NSArray alloc] initWithObjects:@"abc",@"def", nil];
+
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"SELF CONTAINS %@",@"def"]; // CONTAINS: SELF 包含某些内容
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (NSString *item in arr2) {
+    NSLog(@"%@", item); // "def"
+}
+</code></pre>
+
+<pre><code class="objectivec">// 过滤对象
+// 过滤出 age 属性为 10 的对象
+Person *p1 = [[Person alloc] init];
+p1.age = 10;
+Person *p2 = [[Person alloc] init];
+p2.age = 30;
+
+NSMutableArray *arr1 = [[NSMutableArray alloc] init];
+[arr1 addObject:p1];
+[arr1 addObject:p2];
+NSLog(@"%p %p", p1, p2); // 打印地址
+
+NSPredicate *pre1 = [NSPredicate
+    predicateWithFormat:@"age == %d",10];
+NSArray *arr2 = [arr1 filteredArrayUsingPredicate:pre1];
+
+for (Person *p in arr2) {
+    NSLog(@"%p", p); // 打印地址
+}
+</code></pre>
+
+<h1><h2 id="ec">expression closures</h2></h1>
+
+<pre><code class="objectivec">// 会将代码块 ({}) 里最后一个表达式 return 出来
+
+#define ScreenWidth [UIScreen mainScreen].bounds.size.width
+static NSString * const ID = @"cell";
+
+// UICollectionView 布局
+UICollectionViewFlowLayout *layout = ({
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
+    layout.itemSize = CGSizeMake(160, 160);
+    layout.minimumLineSpacing = 50; // 最小行间距
+    // layout.minimumInteritemSpacing = 0; // item 的最小间距
+    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal; // 滚动方向
+    // 内边距
+    CGFloat margin = (ScreenWidth - 160) * 0.5;
+    layout.sectionInset = UIEdgeInsetsMake(0, margin, 0, margin);
+
+    layout; // 相当于将这个值 return 出去了
+});
+
+// UICollectionView 创建
+UICollectionView *collectionView = ({
+    UICollectionView *collectionView = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:layout];
+    collectionView.backgroundColor = [UIColor brownColor];
+    collectionView.center = self.view.center;
+    collectionView.bounds = CGRectMake(0, 0, self.view.bounds.size.width, 200);
+    collectionView.dataSource = self;
+    collectionView.showsHorizontalScrollIndicator = NO; // 隐藏水平滚动条
+
+    collectionView; // 相当于将这个值 return 出去了
+});
+
+// 注册 cell
+[collectionView
+    registerNib:[UINib nibWithNibName:
+        NSStringFromClass([MyCollectionViewCell class]) bundle:nil]
+    forCellWithReuseIdentifier:ID];
+
+[self.view addSubview:collectionView];
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ObjectiveC - Typedef, Generic, Enum, @class]]></title>
@@ -995,164 +1292,6 @@ NSLog(@"%@", A);
 
 @end
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - Protocol]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/07/oc-protocol/"/>
-    <updated>2018-02-07T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/07/oc-protocol</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<ul>
-<li><a href="#o1">基础</a></li>
-<li><a href="#o2">使用场景</a></li>
-</ul>
-
-
-<h1><h2 id="o1">基础</h2></h1>
-
-<ul>
-<li>Java 中有 interface 接口。而 OC 中 interface 是类的头文件声明，OC 的接口由 protocol 实现</li>
-<li>protocol 可<strong>声明一些必须实现的方法和选择实现的方法</strong></li>
-<li>protocol 的作用
-
-<ol>
-<li>用来声明一些方法</li>
-</ol>
-</li>
-<li>protocol 是由一系列的方法声明组成的</li>
-<li><strong>类遵守 protocol</strong>
-
-<ol>
-<li>一个类可以遵守一个或多个 protocol</li>
-<li>任何类只要遵守了 protocol，就相当于拥有了 protocol 的所有方法声明</li>
-</ol>
-</li>
-<li><strong>协议和继承的区别</strong>
-
-<ol>
-<li>继承后默认就有实现，而协议只有声明没有实现</li>
-<li>相同类型的类可以使用继承，但是不同类型的类只能使用协议</li>
-<li>协议可用于存储方法的声明，可以将多个类中共同的方法抽取出来，以后让这些类遵守协议即可</li>
-</ol>
-</li>
-<li><strong>协议的注意事项</strong>
-
-<ol>
-<li>协议只能声明方法，不能声明属性</li>
-<li>父类遵守了某个协议，那么子类也会自动遵守这个协议</li>
-<li>OC 中一个类可以遵守一个或多个协议</li>
-<li>OC 中的协议可遵守其他协议，只要一个协议遵守了其他协议，那么这个协议中就会自动包含其他协议的声明</li>
-</ol>
-</li>
-</ul>
-
-
-<h2>定义</h2>
-
-<pre><code class="objectivec">// 定义 protocol
-@protocol 协议名称
-// 方法声明列表
-@end
-
-// 类遵守 protocol
-@interface 类名 : 父类 &lt;协议1, 协议2, ...&gt;
-@end
-</code></pre>
-
-<h2>基协议 NSObject</h2>
-
-<ul>
-<li>NSObject 是一个基类，最根本最基本的类，任何其他类都要继承自它</li>
-<li>还有个协议也叫 NSObject，它是一个基协议，最根本最基本的协议</li>
-<li>NSObject 协议中声明了很多最基本的方法
-
-<ol>
-<li>description</li>
-<li>retain</li>
-<li>release</li>
-</ol>
-</li>
-<li>建议每个新的协议都要遵守 NSObject 基协议</li>
-</ul>
-
-
-<pre><code class="objectivec">@protocol DemoProtocol &lt;NSObject&gt;
-@end
-</code></pre>
-
-<h2>@required &amp; @optional</h2>
-
-<ul>
-<li>@require: (默认) 这个方法必须实现，不实现会有警告，但不会报错</li>
-<li>@optional: 这个方法不一定要实现</li>
-</ul>
-
-
-<pre><code class="objectivec">@protocol DemoProtocol &lt;NSObject&gt;
-/*
- func0、func1、func2 不实现会有警告
- func3 可以不实现
-*/
-
-- (void)func0; // 默认是 required
-
-@required
-- (void)func1;
-- (void)func2;
-
-@optional
-- (void)func3;
-
-@end
-</code></pre>
-
-<h1><h2 id="o2">使用场景</h2></h1>
-
-<h2>类型限制</h2>
-
-<ul>
-<li>通过协议来限制类型</li>
-<li><code>数据类型&lt;协议名称&gt; 变量名</code></li>
-</ul>
-
-
-<pre><code class="objectivec">@protocol Animal &lt;NSObject&gt;
-- (void)eat;
-- (void)run;
-@end
-
-// 如果 dog 没有遵守 Animal 协议就会报警告
-Dog&lt;Animal&gt; dog = [[Dog alloc]init];
-</code></pre>
-
-<pre><code class="objectivec">@interface Dog : NSObject
-
-// 限制 property 的类型需要遵守 Animal 协议
-@property (nonatomic, strong) Puppy&lt;Animal&gt; *puppy1;
-
-// 这个 property 无论是何类都可，但是得遵守 Animal 协议
-@property (nonatomic, strong) id&lt;Animal&gt; *son;
-
-@end
-</code></pre>
-
-<p><strong>注意:</strong> 虽然在对对象进行了类型限定(限定它必须实现某个协议)，但并不意味着这个对象就真正的实现了该方法(不实现只是由警告无报错)。所以在调用对象的协议方法时，应该进行判断</p>
-
-<pre><code class="objectivec">Dog&lt;Animal&gt; dog = [[Dog alloc]init];
-
-// 判断 dog 是否能响应 eat 消息 (即是否有实现这个方法)
-if ([dog respondsToSelector:@selector(eat)]) {
-    [dog eat];
-}
-</code></pre>
-
-<h2>委托代理</h2>
-
-<p>详见类之间通信的笔记</p>
 ]]></content>
   </entry>
   
