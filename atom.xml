@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T09:36:14+08:00</updated>
+  <updated>2021-04-27T09:49:21+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -5934,19 +5934,43 @@ end</p>
 
 <h2>介绍</h2>
 
-<p>replace 是字符串提供的一个超级强大的方法，这里只介绍简单的使用，更多详细的语法参见下面提供的链接
-- 一参可为 <code>字符串</code> 或 <code>正则</code>:
-    - 为正则时有两种情况: <code>普通匹配模式</code> 和 <code>全局匹配模式</code>:
-        - 全局匹配模式下，若二参为函数，则该函数在每次匹配时都会被调用
-- 二参可为 <code>字符串</code> 或 <code>一个用于生成字符串的函数</code>:
-    - 当为字符串时:
-        - 可在字符串中使用 特殊替换字符 ($n &hellip;)
-    - 当为函数时:
-        - 函数中不能用 特殊替换字符
-        - 一参为正则匹配的文本
-        - 倒数第二参为匹配到的子字符串在原字符串中的偏移量
-        - 最后一参为被匹配的原始字符串
-        - 其余参数为正则中每个分组匹配到的文本</p>
+<p>replace 是字符串提供的一个超级强大的方法，这里只介绍简单的使用，更多详细的语法参见下面提供的链接</p>
+
+<ul>
+<li>一参可为 <code>字符串</code> 或 <code>正则</code>:
+
+<ul>
+<li>为正则时有两种情况: <code>普通匹配模式</code> 和 <code>全局匹配模式</code>:
+
+<ul>
+<li>全局匹配模式下，若二参为函数，则该函数在每次匹配时都会被调用</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>二参可为 <code>字符串</code> 或 <code>一个用于生成字符串的函数</code>:
+
+<ul>
+<li>当为字符串时:
+
+<ul>
+<li>可在字符串中使用 特殊替换字符 ($n &hellip;)</li>
+</ul>
+</li>
+<li>当为函数时:
+
+<ul>
+<li>函数中不能用 特殊替换字符</li>
+<li>一参为正则匹配的文本</li>
+<li>倒数第二参为匹配到的子字符串在原字符串中的偏移量</li>
+<li>最后一参为被匹配的原始字符串</li>
+<li>其余参数为正则中每个分组匹配到的文本</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -6347,14 +6371,26 @@ end</p>
 
 <h3>实现模板类</h3>
 
-<p>为了能够更好的使用，将前面的代码抽成一个类。
-- 需求:
-    - 标识符格式有可能和后端模板引擎冲突，因此应实现成可配置的
-    - <code>{@  @}</code>: 用于嵌套逻辑语句
-    - <code>`: 用于嵌套变量或表达式
-    - 在模板中应能添加注释，注释有两种:
-        -</code><!-- --><code>: 会输出
-        -</code>{#  #}`: 这种注释会在编译时被忽略，即只在模板中可见</p>
+<p>为了能够更好的使用，将前面的代码抽成一个类。</p>
+
+<ul>
+<li>需求:
+
+<ul>
+<li>标识符格式有可能和后端模板引擎冲突，因此应实现成可配置的</li>
+<li><code>{@  @}</code>: 用于嵌套逻辑语句</li>
+<li>``: 用于嵌套变量或表达式</li>
+<li>在模板中应能添加注释，注释有两种:
+
+<ul>
+<li><code>&lt;!-- --&gt;</code>: 会输出</li>
+<li><code>{#  #}</code>: 这种注释会在编译时被忽略，即只在模板中可见</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
