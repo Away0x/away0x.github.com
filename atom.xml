@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:34:31+08:00</updated>
+  <updated>2021-04-27T10:36:46+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -1376,12 +1376,14 @@ end</p>
     <content type="html"><![CDATA[<!-- more -->
 
 
+<p>单例可以保证在程序运行过程，一个类只有一个实例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源</p>
+
+<p>使用场合: 在整个应用程序中，共享一份资源 (这份资源只需要创建初始化一次)</p>
+
 <ul>
-<li>单例可以保证在程序运行过程，一个类只有一个实例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源</li>
-<li><p>使用场合: 在整个应用程序中，共享一份资源 (这份资源只需要创建初始化一次)</p></li>
-<li><p><a href="#arc">ARC 环境下实现单例模式</a></p></li>
-<li><a href="#mrc">MRC 环境下实现单例模式</a></li>
-<li><a href="#am">ARC 与 MRC 通用的单例</a></li>
+<li><a href="#arc">ARC环境下实现单例模式</a></li>
+<li><a href="#mrc">MRC环境下实现单例模式</a></li>
+<li><a href="#am">ARC与MRC通用的单例</a></li>
 </ul>
 
 
