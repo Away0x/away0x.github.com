@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:24:48+08:00</updated>
+  <updated>2021-04-27T10:34:31+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -1363,6 +1363,413 @@ end</p>
 </span><span class='line'>    <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - 单例]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/16/oc-singleton/"/>
+    <updated>2018-02-16T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/16/oc-singleton</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li>单例可以保证在程序运行过程，一个类只有一个实例，而且该实例易于供外界访问从而方便地控制了实例个数，并节约系统资源</li>
+<li><p>使用场合: 在整个应用程序中，共享一份资源 (这份资源只需要创建初始化一次)</p></li>
+<li><p><a href="#arc">ARC 环境下实现单例模式</a></p></li>
+<li><a href="#mrc">MRC 环境下实现单例模式</a></li>
+<li><a href="#am">ARC 与 MRC 通用的单例</a></li>
+</ul>
+
+
+<h1><h2 id="arc">ARC 环境下实现单例模式</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 懒加载的单例的写法</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 提供全局变量</span>
+</span><span class='line'><span class="k">static</span> <span class="n">Demo</span> <span class="o">*</span><span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">allocWithZone:</span><span class="p">(</span><span class="k">struct</span> <span class="bp">_NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="nb">nil</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">_instance</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">allocWithZone</span><span class="p">:</span><span class="n">zone</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d1</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Demo</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d2</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Demo</span> <span class="n">alloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d3</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;d1:%p d2:%p d3:%p&quot;</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">d3</span><span class="p">);</span> <span class="c1">// 可见地址都一样</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用懒加载的写法，如外界在很多子线程中 alloc，那么会有安全隐患问题</p>
+
+<h2>解决多线程下的隐患</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 方法一: 加互斥锁，解决多线程访问安全问题</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">Demo</span> <span class="o">*</span><span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">allocWithZone:</span><span class="p">(</span><span class="k">struct</span> <span class="bp">_NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">@synchronized</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>       <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="nb">nil</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">_instance</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">allocWithZone</span><span class="p">:</span><span class="n">zone</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 方法二: GCD 一次性代码，保证整个程序运行中，只执行一次，且线程安全</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">Demo</span> <span class="o">*</span><span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">allocWithZone:</span><span class="p">(</span><span class="k">struct</span> <span class="bp">_NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">dispatch_once_t</span> <span class="n">onceToken</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">onceToken</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">_instance</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">allocWithZone</span><span class="p">:</span><span class="n">zone</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>优化</h2>
+
+<ul>
+<li>为了外部方便调用，可像外部提供一个类方法，便于使用单例
+
+<ul>
+<li>方法名: <code>share + 类名</code> | <code>default + 类名</code> | <code>类名</code></li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">shareDemo</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">Demo</span> <span class="o">*</span><span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">allocWithZone:</span><span class="p">(</span><span class="k">struct</span> <span class="bp">_NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">dispatch_once_t</span> <span class="n">onceToken</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">onceToken</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">_instance</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">allocWithZone</span><span class="p">:</span><span class="n">zone</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 提供类方法，方便外界访问</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">shareDemo</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 调用 alloc 时，会调用 allocWithZone</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[[</span><span class="nb">self</span> <span class="n">aloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 严谨: 由于下面这两个方法也可获取到对象</span>
+</span><span class='line'><span class="c1">// 所以也需重写一下，让他们得到的也是单例对象</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">copyWithZone:</span><span class="p">(</span><span class="n">NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">mutableCopyWithZone:</span><span class="p">(</span><span class="n">NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 使用</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d1</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">shareDemo</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d2</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d3</span> <span class="o">=</span> <span class="p">[</span><span class="n">Demo</span> <span class="n">shareDemo</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d4</span> <span class="o">=</span> <span class="p">[</span><span class="n">d1</span> <span class="k">copy</span><span class="p">];</span>
+</span><span class='line'><span class="n">Demo</span> <span class="o">*</span><span class="n">d5</span> <span class="o">=</span> <span class="p">[</span><span class="n">d1</span> <span class="n">mutableCopy</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;d1:%p d2:%p d3:%p d4:%p d5:%p&quot;</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">d3</span><span class="p">,</span> <span class="n">d4</span><span class="p">,</span> <span class="n">d5</span><span class="p">);</span> <span class="c1">// 可见地址都一样</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="mrc">MRC 环境下实现单例模式</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 实现同 ARC 单例</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#pragma mark - MRC中需要覆盖的方法</span>
+</span><span class='line'><span class="c1">// 不需要计数器+1</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">retain</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 不需要，堆区的对象才需要</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">autorelease</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 不需要</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="n">oneway</span> <span class="kt">void</span><span class="p">)</span><span class="nf">release</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 不需要计数器个数， 直接返回最大无符号整数</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSUInteger</span><span class="p">)</span><span class="nf">retainCount</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">UINT_MAX</span><span class="p">;</span>  <span class="c1">// 参照常量区字符串的 retainCount</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="am">ARC 与 MRC 通用的单例</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="k">@interface</span> <span class="nc">Demo</span> : <span class="bp">NSObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">shareDemo</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">Demo</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">Demo</span> <span class="o">*</span><span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">allocWithZone:</span><span class="p">(</span><span class="k">struct</span> <span class="bp">_NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">dispatch_once_t</span> <span class="n">onceToken</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">dispatch_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">onceToken</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">_instance</span> <span class="o">=</span> <span class="p">[</span><span class="nb">super</span> <span class="nl">allocWithZone</span><span class="p">:</span><span class="n">zone</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 提供类方法，方便外界访问</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">instancetype</span><span class="p">)</span><span class="nf">shareDemo</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 调用 alloc 时，会调用 allocWithZone</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[[</span><span class="nb">self</span> <span class="n">aloc</span><span class="p">]</span><span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">copyWithZone:</span><span class="p">(</span><span class="n">NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">mutableCopyWithZone:</span><span class="p">(</span><span class="n">NSZone</span> <span class="o">*</span><span class="p">)</span><span class="nv">zone</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 通过宏定义判断是否为 MRC 环境</span>
+</span><span class='line'><span class="cp">#pragma mark - MRC 中需要覆盖的方法, ARC与MRC的整合  </span>
+</span><span class='line'><span class="cp">#if !__has_feature(objc_arc)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">retain</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">autorelease</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="n">oneway</span> <span class="kt">void</span><span class="p">)</span><span class="nf">release</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSUInteger</span><span class="p">)</span><span class="nf">retainCount</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">UINT_MAX</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
