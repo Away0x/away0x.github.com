@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objectivec | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/objectivec/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:36:46+08:00</updated>
+  <updated>2021-04-27T10:39:58+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -253,6 +253,7 @@ static Demo *_instance;
 
 <ul>
 <li><a href="#clserror">写类时的常见错误</a></li>
+<li><a href="#const">常量</a></li>
 <li><a href="#precompile">预编译</a></li>
 <li><a href="#ssc">super &amp; superclass &amp; class</a></li>
 <li><a href="#lazy">懒加载</a></li>
@@ -280,6 +281,14 @@ static Demo *_instance;
 <li>static 不能用在实例变量和方法上，不要和 C 语言混淆</li>
 </ol>
 
+
+<h1><h2 id="const">常量</h2></h1>
+
+<p>尽量使用类型常量，而不是使用宏定义</p>
+
+<pre><code class="objectivec">// 定义字符串常量
+static NSString * const STMProjectName = @"GCDFetchFeed";
+</code></pre>
 
 <h1><h2 id="precompile">预编译</h2></h1>
 

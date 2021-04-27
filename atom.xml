@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:36:46+08:00</updated>
+  <updated>2021-04-27T10:39:58+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -1787,6 +1787,7 @@ end</p>
 
 <ul>
 <li><a href="#clserror">写类时的常见错误</a></li>
+<li><a href="#const">常量</a></li>
 <li><a href="#precompile">预编译</a></li>
 <li><a href="#ssc">super &amp; superclass &amp; class</a></li>
 <li><a href="#lazy">懒加载</a></li>
@@ -1813,6 +1814,17 @@ end</p>
 <li>方法有声明，但实现时写成了函数</li>
 <li>static 不能用在实例变量和方法上，不要和 C 语言混淆</li>
 </ol>
+
+
+<h1><h2 id="const">常量</h2></h1>
+
+<p>尽量使用类型常量，而不是使用宏定义</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objectivec'><span class='line'><span class="c1">// 定义字符串常量</span>
+</span><span class='line'><span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span> <span class="k">const</span> <span class="n">STMProjectName</span> <span class="o">=</span> <span class="s">@&quot;GCDFetchFeed&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h1><h2 id="precompile">预编译</h2></h1>
