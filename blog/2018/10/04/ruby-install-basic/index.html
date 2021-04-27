@@ -1,0 +1,1554 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby - Install, Basic - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="RubyGem
+RVM
+RBENV
+命令行选项
+预定义变量常量
+基础 RubyGem RubyGems 是一个统一安装和管理 Ruby 的库、程序的 Ruby 标准工具 在 RubyGems 中， 每个单独的库称为 GEM。通过 RubyGems，我们可以搜索 GEM、显示 GEM 相关的信息、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/10/04/ruby-install-basic">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ruby - Install, Basic</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-10-04T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#rubygem">RubyGem</a></li>
+<li><a href="#rvm">RVM</a></li>
+<li><a href="#rbenv">RBENV</a></li>
+<li><a href="#cl">命令行选项</a></li>
+<li><a href="#const">预定义变量常量</a></li>
+<li><a href="#basic">基础</a></li>
+</ul>
+
+
+<h1><h2 id="rubygem">RubyGem</h2></h1>
+
+<p>RubyGems 是一个统一安装和管理 Ruby 的库、程序的 Ruby 标准工具</p>
+
+<p>在 RubyGems 中， 每个单独的库称为 GEM。通过 RubyGems，我们可以搜索 GEM、显示 GEM 相关的信息、安装 或卸载 GEM、升级旧版本的 GEM，以及查看 GEM 的安装进度一览表，等等</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 显示 GEM 的安装进度一览表</span>
+</span><span class='line'>gem list
+</span><span class='line'>
+</span><span class='line'><span class="c"># 用于搜索 GEM 文件，没有指定选项时，会搜索远程仓库的 GEM 文件</span>
+</span><span class='line'>gem search nokogiri
+</span><span class='line'>gem search -l nokogiri <span class="c"># 搜索本地已安装的 GEM</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 安装</span>
+</span><span class='line'>gem install nokogiri
+</span><span class='line'><span class="c"># 安装本地的 GEM 文件时，不是指定 GEM 名，而是指定 GEM 文件名</span>
+</span><span class='line'>gem install nokogiri-1.6.6.2.GEM
+</span><span class='line'>
+</span><span class='line'><span class="c"># 把 GEM 更新为最新版本</span>
+</span><span class='line'>gem update nokogiri
+</span><span class='line'>
+</span><span class='line'><span class="c"># 更新 RubyGems 自身</span>
+</span><span class='line'>gem update --system
+</span><span class='line'>
+</span><span class='line'><span class="c"># 查看某个 gem 的源码</span>
+</span><span class='line'>bundle show gem_name <span class="c"># 然后根据 path 打开源码</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>build </td>
+<td> 根据 gemspec 创建 GEM</td>
+</tr>
+<tr>
+<td>cert </td>
+<td> 管理、签署 RubyGems 的许可证时使用</td>
+</tr>
+<tr>
+<td>check </td>
+<td> 检查 GEM</td>
+</tr>
+<tr>
+<td>cleanup </td>
+<td> 整理已安装的旧版本的 GEM</td>
+</tr>
+<tr>
+<td>contents </td>
+<td> 显示已安装的 GEM 的内容</td>
+</tr>
+<tr>
+<td>dependency </td>
+<td> 显示已安装的 GEM 的依赖关系</td>
+</tr>
+<tr>
+<td>environment </td>
+<td> 显示 RubyGems、Ruby 等相关的环境信息</td>
+</tr>
+<tr>
+<td>fetch </td>
+<td> 把 GEM 文件下载到本地目录，但不安装</td>
+</tr>
+<tr>
+<td>generate_index </td>
+<td> 创建 GEM 服务器所需的索引文件</td>
+</tr>
+<tr>
+<td>help </td>
+<td> 显示 GEM 命令的帮助说明</td>
+</tr>
+<tr>
+<td>install </td>
+<td> 安装 GEM 至本地仓库</td>
+</tr>
+<tr>
+<td>list </td>
+<td> 显示 GEM 的一览表</td>
+</tr>
+<tr>
+<td>lock </td>
+<td> 锁定 GEM 版本，并输出锁定后的 GEM 列表</td>
+</tr>
+<tr>
+<td>mirror </td>
+<td> 创建 GEM 仓库的镜像</td>
+</tr>
+<tr>
+<td>open </td>
+<td> 用编辑器编辑已安装的 GEM</td>
+</tr>
+<tr>
+<td>outdated </td>
+<td> 显示所有需要更新的 GEM 列表</td>
+</tr>
+<tr>
+<td>owner </td>
+<td> 管理 GEM 所有者的资料</td>
+</tr>
+<tr>
+<td>pristine </td>
+<td> 从 GEM 缓存中获取已安装的 GEM，并将其恢复为初始状态</td>
+</tr>
+<tr>
+<td>push </td>
+<td> 向服务器上传 GEM</td>
+</tr>
+<tr>
+<td>query </td>
+<td> 搜索本地或者远程仓库的 GEM 信息</td>
+</tr>
+<tr>
+<td>rdoc </td>
+<td> 生成已安装的 GEM 的 RDoc 文件</td>
+</tr>
+<tr>
+<td>regenerate_binstubs </td>
+<td> 变更用 GEM 安装的命令的 shebang</td>
+</tr>
+<tr>
+<td>search </td>
+<td> 显示名字包含指定字符串的 GEM</td>
+</tr>
+<tr>
+<td>server </td>
+<td> 启动 HTTP 服务器，用于管理 GEM 的文档及仓库</td>
+</tr>
+<tr>
+<td>sources </td>
+<td> 管理搜索 GEM 时所需的 RubyGems 的源以及缓存</td>
+</tr>
+<tr>
+<td>specification </td>
+<td> 以 yaml 形式显示 GEM 的详细信息</td>
+</tr>
+<tr>
+<td>stale </td>
+<td> 按最后访问的时间顺序显示 GEM 的一览表</td>
+</tr>
+<tr>
+<td>uninstall </td>
+<td> 从本地卸载 GEM</td>
+</tr>
+<tr>
+<td>unpack </td>
+<td> 在本地目录解压已安装的 GEM</td>
+</tr>
+<tr>
+<td>update </td>
+<td> 更新指定的 GEM(或者全部 GEM)</td>
+</tr>
+<tr>
+<td>which </td>
+<td> 显示读取 GEM 时引用的类库</td>
+</tr>
+<tr>
+<td>wrappers </td>
+<td> regenerate_binstubs 的别名</td>
+</tr>
+<tr>
+<td>yank </td>
+<td> 撤回已上传到服务器的 GEM 文件</td>
+</tr>
+</tbody>
+</table>
+
+
+<h1><h2 id="rvm">RVM</h2></h1>
+
+<ul>
+<li>RVM 是一个命令行工具,可以提供一个便捷的多版本 Ruby 环境的管理和切换</li>
+<li><a href="http://rvm.io/">安装方法</a></li>
+<li><a href="https://ruby-china.org/wiki/rvm-guide">参考</a></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+</span><span class='line'><span class="se">\c</span>url -sSL https://get.rvm.io <span class="p">|</span> bash -s stable
+</span><span class='line'>:<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1"># 下载命令错误可试试</span>
+</span><span class='line'><span class="s1">curl -L https://raw.githubusercontent.com/wayneeseguin/rvm/master/binscripts/rvm-installer | bash -s stable</span>
+</span><span class='line'><span class="s1">&#39;</span>
+</span><span class='line'><span class="nb">source</span> ~/.bashrc
+</span><span class='line'><span class="nb">source</span> ~/.bash_profile
+</span><span class='line'>
+</span><span class='line'><span class="c"># 修改 RVM 的 Ruby 安装源到 Ruby China 的 Ruby 镜像服务器</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;ruby_url=https://cache.ruby-china.org/pub/ruby&quot;</span> &gt; ~/.rvm/user/db
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 列出已知的 Ruby 版本</span>
+</span><span class='line'>rvm list known
+</span><span class='line'>
+</span><span class='line'><span class="c"># 安装一个 Ruby 版本</span>
+</span><span class='line'>rvm install 2.2.0 --disable-binary
+</span><span class='line'>
+</span><span class='line'><span class="c"># 切换 Ruby 版本</span>
+</span><span class='line'>rvm use 2.2.0
+</span><span class='line'>
+</span><span class='line'><span class="c"># 如果想设置为默认版本，这样一来以后新打开的控制台默认的 Ruby 就是这个版本</span>
+</span><span class='line'>rvm use 2.2.0 --default
+</span><span class='line'>
+</span><span class='line'><span class="c"># 查询已经安装的ruby</span>
+</span><span class='line'>rvm list
+</span><span class='line'>
+</span><span class='line'><span class="c"># 卸载一个已安装版本</span>
+</span><span class='line'>rvm remove 1.8.7
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>gemset</h2>
+
+<p>gemset 可以理解为是一个独立的虚拟 Gem 环境，每一个 gemset 都是相互独立的</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 建立 gemset</span>
+</span><span class='line'>rvm use 1.8.7
+</span><span class='line'>rvm gemset create rails23
+</span><span class='line'>
+</span><span class='line'><span class="c"># use 可以用来切换语言或者 gemset (前提是他们已经被安装(或者建立)。并可以在 list 命令中看到。)</span>
+</span><span class='line'>rvm use 1.8.7
+</span><span class='line'>rvm use 1.8.7@rails23
+</span><span class='line'>
+</span><span class='line'><span class="c"># 列出当前 Ruby 的 gemset</span>
+</span><span class='line'>rvm gemset list
+</span><span class='line'>
+</span><span class='line'><span class="c"># 清空 gemset 中的 Gem</span>
+</span><span class='line'>rvm gemset empty 1.8.7@rails23
+</span><span class='line'>
+</span><span class='line'><span class="c"># 删除一个 gemset</span>
+</span><span class='line'>rvm gemset delete rails2-3
+</span><span class='line'>
+</span><span class='line'><span class="c"># 项目自动加载 gemset</span>
+</span><span class='line'>:<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1"># 项目目录，建立一个 .rvmrc 文件，内容如下</span>
+</span><span class='line'><span class="s1">rvm use 1.9.3@rails313</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">这样，cd 到这个项目的时候，RVM 会帮你加载 Ruby 1.9.3 和 rails313 gemset.</span>
+</span><span class='line'><span class="s1">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="rbenv">RBENV</h2></h1>
+
+<ul>
+<li>类似 RVM，二者选其一即可</li>
+<li><a href="https://ruby-china.org/wiki/rbenv-guide">参考</a></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git://github.com/sstephenson/rbenv.git ~/.rbenv
+</span><span class='line'><span class="c"># 用来编译安装 ruby</span>
+</span><span class='line'>git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</span><span class='line'><span class="c"># 用来管理 gemset, 可选, 因为有 bundler 也没什么必要</span>
+</span><span class='line'>git clone git://github.com/jamis/rbenv-gemset.git  ~/.rbenv/plugins/rbenv-gemset
+</span><span class='line'><span class="c"># 通过 gem 命令安装完 gem 后无需手动输入 rbenv rehash 命令, 推荐</span>
+</span><span class='line'>git clone git://github.com/sstephenson/rbenv-gem-rehash.git ~/.rbenv/plugins/rbenv-gem-rehash
+</span><span class='line'><span class="c"># 通过 rbenv update 命令来更新 rbenv 以及所有插件, 推荐</span>
+</span><span class='line'>git clone git://github.com/rkh/rbenv-update.git ~/.rbenv/plugins/rbenv-update
+</span><span class='line'><span class="c"># 使用 Ruby China 的镜像安装 Ruby, 国内用户推荐</span>
+</span><span class='line'>git clone git://github.com/AndorChen/rbenv-china-mirror.git ~/.rbenv/plugins/rbenv-china-mirror
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bash_profile
+</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; ~/.bash_profile
+</span><span class='line'><span class="nb">source</span> ~/.bash_profile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 安装 ruby</span>
+</span><span class='line'>rbenv install --list         <span class="c"># 列出所有 ruby 版本</span>
+</span><span class='line'>rbenv install 2.4.0          <span class="c"># 安装 2.4.0</span>
+</span><span class='line'>rbenv install jruby-1.7.3    <span class="c"># 安装 jruby-1.7.3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 列出版本</span>
+</span><span class='line'>rbenv versions               <span class="c"># 列出安装的版本</span>
+</span><span class='line'>rbenv version                <span class="c"># 列出正在使用的版本</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 设置版本</span>
+</span><span class='line'>rbenv global 1.9.3-p392      <span class="c"># 默认使用 1.9.3-p392</span>
+</span><span class='line'>rbenv shell 1.9.3-p392       <span class="c"># 当前的 shell 使用 1.9.3-p392, 会设置一个 `RBENV_VERSION` 环境变量</span>
+</span><span class='line'>rbenv <span class="nb">local </span>jruby-1.7.3      <span class="c"># 当前目录使用 jruby-1.7.3, 会生成一个 `.rbenv-version` 文件</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 其他</span>
+</span><span class='line'>rbenv rehash                 <span class="c"># 每当切换 ruby 版本和执行 bundle install 之后必须执行这个命令</span>
+</span><span class='line'>rbenv which irb              <span class="c"># 列出 irb 这个命令的完整路径</span>
+</span><span class='line'>rbenv whence irb             <span class="c"># 列出包含 irb 这个命令的版本</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>gemset</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 创建</span>
+</span><span class='line'><span class="c"># 参数 1 是已安装的 ruby 版本，参数 2 是 gemset 的名字</span>
+</span><span class='line'>rbenv gemset create 1.9.3-p392 ruby-china
+</span><span class='line'>
+</span><span class='line'><span class="c"># 查看当前 gemset</span>
+</span><span class='line'>rbenv gemset active
+</span><span class='line'>
+</span><span class='line'><span class="c">## 删除</span>
+</span><span class='line'>rbenv gemset delete 1.9.3-p392 ruby-china
+</span><span class='line'>
+</span><span class='line'><span class="c"># 使用</span>
+</span><span class='line'>rbenv gemset init ruby-china
+</span><span class='line'>
+</span><span class='line'><span class="c"># 列出所有 gemset</span>
+</span><span class='line'>rbenv gemset list
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="cl">命令行选项</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">ruby</span> <span class="o">-</span><span class="n">v</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<table>
+<thead>
+<tr>
+<th>选项 </th>
+<th> 意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-0octal </td>
+<td> 用八进制指定 IO.gets 等识别的换行符</td>
+</tr>
+<tr>
+<td>-a </td>
+<td> 指定为自动分割模式 ( 与 -n 或者 -p 选项一起使用时则将 $F 设为 $_.split($;))</td>
+</tr>
+<tr>
+<td>-c </td>
+<td> 只检查脚本的语法</td>
+</tr>
+<tr>
+<td>-Cdirectory </td>
+<td> 在脚本执行前，先移动到 directory 目录下</td>
+</tr>
+<tr>
+<td>-d、&ndash;debug </td>
+<td> 使用 debug 模式(将 $DEBUG 设为 true)</td>
+</tr>
+<tr>
+<td>-e &lsquo;command&rsquo; </td>
+<td> 通过 command 指定一行代码的程序。本选项可指定多个</td>
+</tr>
+<tr>
+<td>-Eex[:in]、&ndash;encoding=ex[:in] </td>
+<td> 指定默认的外部编码(ex)以及默认的内部编码(in)</td>
+</tr>
+<tr>
+<td>-Fpattern </td>
+<td> 指定 String#split 方法使用的默认分隔符($;)</td>
+</tr>
+<tr>
+<td>-i[extension] </td>
+<td> 以替换形式编辑 ARGV 文件(指定 extension 时则会生成备份文件)</td>
+</tr>
+<tr>
+<td>-Idirectory </td>
+<td> 指定追加到 $LOAD_PATH 的目录。本选项可指定多个</td>
+</tr>
+<tr>
+<td>-l </td>
+<td> 删除 -n 或者 -p 选项中的 $_ 的换行符</td>
+</tr>
+<tr>
+<td>-n </td>
+<td> 使脚本整体被'while gets();&hellip; end'包围(将gets()的结果设定到$_中)</td>
+</tr>
+<tr>
+<td>-p </td>
+<td> 在 -n 选项的基础上，在每次循环结束时输出 $_</td>
+</tr>
+<tr>
+<td>-rlibrary </td>
+<td> 在执行脚本前通过 require 引用 library</td>
+</tr>
+<tr>
+<td>-s </td>
+<td> 要使脚本解析标志(flag)的功能有效(&lsquo;ruby -s script -abc'，则 $abc 为 true)</td>
+</tr>
+<tr>
+<td>-S </td>
+<td> 从环境变量 PATH 开始搜索可执行的脚本</td>
+</tr>
+<tr>
+<td>-Tlevel </td>
+<td> 指定不纯度检查模式</td>
+</tr>
+<tr>
+<td>-U </td>
+<td> 将内部编码的默认值(Encoding.default_internal)设为 UTF-8</td>
+</tr>
+<tr>
+<td>-v、&ndash;verbose </td>
+<td> 显示版本号，冗长模式设定为有效($VERBOSE 设定为 true)</td>
+</tr>
+<tr>
+<td>-w </td>
+<td> 冗长模式设定为有效</td>
+</tr>
+<tr>
+<td>-Wlevel </td>
+<td> 指定冗长模式的级别 [0= 不输出警告，1= 只输出重要警告，2= 输出全部警告 (默认值)]</td>
+</tr>
+<tr>
+<td>-xdirectory </td>
+<td> 忽略执行脚本中 #!ruby 之前的内容</td>
+</tr>
+<tr>
+<td>&ndash;copyright </td>
+<td> 显示版权信息</td>
+</tr>
+<tr>
+<td>&ndash;enable=feature[, &hellip;] </td>
+<td> 使 feature 有效</td>
+</tr>
+<tr>
+<td>&ndash;disable=feature[, &hellip;] </td>
+<td> 使 feature 无效</td>
+</tr>
+<tr>
+<td>&ndash;external-encoding=encoding </td>
+<td> 指定默认的外部编码</td>
+</tr>
+<tr>
+<td>&ndash;internal-encoding=encoding </td>
+<td> 指定默认的内部编码</td>
+</tr>
+<tr>
+<td>&ndash;version </td>
+<td> 显示版本信息</td>
+</tr>
+<tr>
+<td>&ndash;help </td>
+<td> 显示帮助信息</td>
+</tr>
+</tbody>
+</table>
+
+
+<blockquote><p>上表 &ndash;enable、&ndash;disable 选项可指定的功能名</p></blockquote>
+
+<table>
+<thead>
+<tr>
+<th>功能名 </th>
+<th> 意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gems </td>
+<td> RubyGems 是否有效(默认有效)</td>
+</tr>
+<tr>
+<td>rubyopt </td>
+<td> 是否引用环境变量 RUBYOPT(默认引用)</td>
+</tr>
+<tr>
+<td>did_you_mean </td>
+<td> 是否打开拼写检查功能(默认打开)</td>
+</tr>
+<tr>
+<td>frozen-string-literal </td>
+<td> 是否 freeze 所有字符串字面量(默认否)</td>
+</tr>
+<tr>
+<td>all </td>
+<td> 上述功能是否全部有效</td>
+</tr>
+</tbody>
+</table>
+
+
+<h1><h2 id="const">预定义变量常量</h2></h1>
+
+<h2>预定义变量</h2>
+
+<ul>
+<li>预定义变量是指 Ruby 预先定义好的变量，全部都是以 $ 开头的变量，因此可以像全局变 量那样引用</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th>变量名 </th>
+<th> 内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$! </td>
+<td> 最后发生的异常的相关信息</td>
+</tr>
+<tr>
+<td>$&ldquo; </td>
+<td> $LOADED_FEATURES 的别名</td>
+</tr>
+<tr>
+<td>$$ </td>
+<td> 当前执行中的 Ruby 的进程 ID</td>
+</tr>
+<tr>
+<td>$&amp; </td>
+<td> 最后一次模式匹配后得到的字符串</td>
+</tr>
+<tr>
+<td>$&lsquo; </td>
+<td> 最后一次模式匹配中匹配部分之后的字符串</td>
+</tr>
+<tr>
+<td>$* </td>
+<td> ARGV 的别名</td>
+</tr>
+<tr>
+<td>$+ </td>
+<td> 最后一次模式匹配中最后一个 () 对应的字符串</td>
+</tr>
+<tr>
+<td>$, </td>
+<td> Array#join 的默认分割字符串(默认为 nil)</td>
+</tr>
+<tr>
+<td>$. </td>
+<td> 最后读取的文件的行号</td>
+</tr>
+<tr>
+<td>$/ </td>
+<td> 输入数据的分隔符(默认为 &ldquo;\n&rdquo;)</td>
+</tr>
+<tr>
+<td>$0 </td>
+<td> $PROGRAM_NAME 的别名</td>
+</tr>
+<tr>
+<td>$1、$2&hellip;&hellip; </td>
+<td> 最后一次模式匹配中与 () 匹配的字符串(第 n 个 () 对应 $n)</td>
+</tr>
+<tr>
+<td>$: </td>
+<td> $LOAD_PATH 的别名</td>
+</tr>
+<tr>
+<td>$; </td>
+<td> String#split 的默认分割字符串(默认为 nil)</td>
+</tr>
+<tr>
+<td>$&lt; </td>
+<td> ARGF 的别名</td>
+</tr>
+<tr>
+<td>$> </td>
+<td> print、puts、p 等的默认输出位置(默认为 STDOUT)</td>
+</tr>
+<tr>
+<td>$? </td>
+<td> 最后执行完毕的子进程的状态</td>
+</tr>
+<tr>
+<td>$@ </td>
+<td> 最后发生的异常的相关位置信息</td>
+</tr>
+<tr>
+<td>$\ </td>
+<td> 输出数据的分隔符(默认为 nil)</td>
+</tr>
+<tr>
+<td>$_ </td>
+<td> gets 方法最后读取的字符串</td>
+</tr>
+<tr>
+<td>$` </td>
+<td> 最后一次模式匹配中匹配部分之前的字符串</td>
+</tr>
+<tr>
+<td>$~ </td>
+<td> 最后一次模式匹配相关的信息</td>
+</tr>
+<tr>
+<td>$DEBUG </td>
+<td> 指定 debug 模式的标识(默认为 nil)</td>
+</tr>
+<tr>
+<td>$FILENAME </td>
+<td> ARGF 当前在读取的文件名</td>
+</tr>
+<tr>
+<td>$LOADED_FEATURES </td>
+<td> require 读取的类库名一览表</td>
+</tr>
+<tr>
+<td>$LOAD_PATH </td>
+<td> 执行 require 读取文件时搜索的目录名数组</td>
+</tr>
+<tr>
+<td>$PROGRAM_NAME </td>
+<td> 当前执行中的 Ruby 脚本的别名</td>
+</tr>
+<tr>
+<td>$SAFE </td>
+<td> 安全模式等级(默认 0)</td>
+</tr>
+<tr>
+<td>$VERBOSE </td>
+<td> 指定冗长模式的标识(默认为 nil)</td>
+</tr>
+<tr>
+<td>$stdin </td>
+<td> 标准输入(默认为 STDIN)</td>
+</tr>
+<tr>
+<td>$stdout </td>
+<td> 标准输出(默认为 STDOUT)</td>
+</tr>
+<tr>
+<td>$stderr </td>
+<td> 标准错误输出(默认为 STDERR)</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>预定义常量</h2>
+
+<table>
+<thead>
+<tr>
+<th>常量名 </th>
+<th> 内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ARGF </td>
+<td> 参数，或者从标准输入得到的虚拟文件对象</td>
+</tr>
+<tr>
+<td>ARGV </td>
+<td> 命令行参数数组</td>
+</tr>
+<tr>
+<td>DATA </td>
+<td> 访问 _ <em>END</em> _ 以后数据的文件对象</td>
+</tr>
+<tr>
+<td>ENV </td>
+<td> 环境变量</td>
+</tr>
+<tr>
+<td>RUBY_COPYRIGHT </td>
+<td> 版权信息</td>
+</tr>
+<tr>
+<td>RUBY_DESCRIPTION </td>
+<td> ruby -v 显示的版本信息</td>
+</tr>
+<tr>
+<td>RUBY_ENGINE </td>
+<td> Ruby 的处理引擎</td>
+</tr>
+<tr>
+<td>RUBY_PATCHLEVEL </td>
+<td> Ruby 的补丁级别</td>
+</tr>
+<tr>
+<td>RUBY_PLATFORM </td>
+<td> 运行环境的信息(OS、CPU)</td>
+</tr>
+<tr>
+<td>RUBY_RELEASE_DATE </td>
+<td> Ruby 的发布日期</td>
+</tr>
+<tr>
+<td>RUBY_VERSION </td>
+<td> Ruby 的版本</td>
+</tr>
+<tr>
+<td>STDERR </td>
+<td> 标准错误输出</td>
+</tr>
+<tr>
+<td>STDIN </td>
+<td> 标准输入</td>
+</tr>
+<tr>
+<td>STDOUT </td>
+<td> 标准输出</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>伪变量</h2>
+
+<ul>
+<li>伪变量虽然可以像变量那样引用，但是不能改变其本身的值，对其赋值会产生错误</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th>变量名 </th>
+<th> 内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>self </td>
+<td> 默认的接收者</td>
+</tr>
+<tr>
+<td>nil、true、false </td>
+<td> nil、true、false</td>
+</tr>
+<tr>
+<td><code>__FILE__</code> </td>
+<td> 执行中的 Ruby 脚本的文件名</td>
+</tr>
+<tr>
+<td><code>__LINE__</code> </td>
+<td> 执行中的 Ruby 脚本的行编号</td>
+</tr>
+<tr>
+<td><code>__ENCODING__</code> </td>
+<td> 脚本的编码</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>环境变量</h2>
+
+<table>
+<thead>
+<tr>
+<th>变量名 </th>
+<th> 内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RUBYLIB </td>
+<td> 追加到预定义变量 $LOAD_PATH 中的目录名(各目录间用 : 分隔)</td>
+</tr>
+<tr>
+<td>RUBYOPT </td>
+<td> 启动 Ruby 时的默认选项(RUBYOPT = &ldquo;-U -v&rdquo; 等)</td>
+</tr>
+<tr>
+<td>RUBYPATH </td>
+<td> -S 选项指定的、解析器启动时脚本的搜索路径</td>
+</tr>
+<tr>
+<td>PATH </td>
+<td> 外部命令的搜索路径</td>
+</tr>
+<tr>
+<td>HOME </td>
+<td> DIR.chdir 方法的默认移动位置</td>
+</tr>
+<tr>
+<td>LOGDIR </td>
+<td> 没有 HOME 时的 DIR.chdir 方法的默认移动位置</td>
+</tr>
+<tr>
+<td>LC_ALL、LC_CTYPE、LANG </td>
+<td> 决定默认编码的本地信息(平台依赖)</td>
+</tr>
+<tr>
+<td>RUBYSHELL、COMSPEC </td>
+<td> 执行外部命令时，shell 需要使用的解析器路径(平台依赖)</td>
+</tr>
+</tbody>
+</table>
+
+
+<h1><h2 id="basic">基础</h2></h1>
+
+<h2>注释</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 单行注释</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">=begin</span>
+</span><span class='line'><span class="cm">多</span>
+</span><span class='line'><span class="cm">行</span>
+</span><span class='line'><span class="cm">注</span>
+</span><span class='line'><span class="cm">释</span>
+</span><span class='line'><span class="cm">=end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>变量</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">123</span>
+</span><span class='line'><span class="nb">print</span> <span class="n">a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>控制语句</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># then 可省略</span>
+</span><span class='line'><span class="k">if</span> <span class="n">expr</span> <span class="k">then</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="n">elseif</span> <span class="n">expr2</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 迭代器 times</span>
+</span><span class='line'><span class="mi">3</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>if while 碰到 false 或 nil，认为为假，其余都为真</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;小林&quot;</span><span class="p">,</span> <span class="s2">&quot;林&quot;</span><span class="p">,</span> <span class="s2">&quot;高野&quot;</span><span class="p">,</span> <span class="s2">&quot;森岗&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="n">names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span> <span class="nb">name</span> <span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="sr">/林/</span> <span class="o">=~</span> <span class="nb">name</span>
+</span><span class='line'>        <span class="nb">puts</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="c1"># 小林</span>
+</span><span class='line'><span class="c1"># 林</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>字符串</h2>
+
+<ul>
+<li>单引号不转义 <code>'hello.\n'</code> 输出 <code>hello.\n</code>，且不能插值</li>
+<li>双引号会转义 <code>"hello.\n"</code> 输出 <code>hello 并且有换行</code>，可插值 <code>"#{我是变量} aaaa"</code></li>
+</ul>
+
+
+<h2>数值</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="mi">1</span>    <span class="c1"># Fixnum 对象</span>
+</span><span class='line'><span class="mi">3</span><span class="o">.</span><span class="mi">14</span> <span class="c1"># Float 对象</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 数学相关函数</span>
+</span><span class='line'><span class="no">Math</span><span class="o">.</span><span class="n">sin</span>
+</span><span class='line'><span class="no">Math</span><span class="o">.</span><span class="n">sqrt</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>symbol</h2>
+
+<ul>
+<li>与字符串对象类似，符号也是对象，一般作为名称标签使用，表示方法等的对象的名称</li>
+<li>符号能实现的功能，大部分字符串也能实现。但在像散列的键这样只是单纯判断 &ldquo;是否相等&rdquo; 的处理中，使用符号会比字符串更加有效率</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">sym</span> <span class="o">=</span> <span class="ss">:foo</span>
+</span><span class='line'><span class="n">sym2</span> <span class="o">=</span> <span class="ss">:&quot;foo&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 符号转字符串</span>
+</span><span class='line'><span class="n">sym</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'><span class="c1"># 字符串转符号</span>
+</span><span class='line'><span class="s2">&quot;foo&quot;</span><span class="o">.</span><span class="n">to_sym</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>对象</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 数组</span>
+</span><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="n">names</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="c1"># &quot;a&quot;</span>
+</span><span class='line'><span class="n">names</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;aa&quot;</span>
+</span><span class='line'><span class="n">names</span><span class="o">.</span><span class="n">size</span> <span class="c1"># 3</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># each 方法返回值为 [&quot;aa&quot;, &quot;b&quot;, &quot;c&quot;]</span>
+</span><span class='line'><span class="n">names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span> <span class="n">item</span> <span class="o">|</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">item</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 散列</span>
+</span><span class='line'><span class="c1"># 散列的 key 是符号类型 symbol 或者字符串 在这种只是单纯判断相等的情况下，比字符串性能更好</span>
+</span><span class='line'><span class="n">sym</span> <span class="o">=</span> <span class="ss">:foo</span>
+</span><span class='line'><span class="n">sym</span><span class="o">.</span><span class="n">to_s</span>     <span class="c1"># &quot;foo&quot;</span>
+</span><span class='line'><span class="s2">&quot;foo&quot;</span><span class="o">.</span><span class="n">to_sym</span> <span class="c1"># :foo</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address1</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="p">}</span>
+</span><span class='line'><span class="n">address2</span> <span class="o">=</span> <span class="p">{</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span> <span class="p">}</span> <span class="c1"># address1 的简写(key 为符号)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address3</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="p">}</span> <span class="c1"># key 为字符串</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address1</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span> <span class="c1"># &quot;wt&quot;</span>
+</span><span class='line'><span class="n">address1</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># each 方法返回值为 { :name =&gt; &quot;wt&quot;, :id =&gt; 2 }</span>
+</span><span class='line'><span class="n">address1</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="o">|</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 正则</span>
+</span><span class='line'><span class="c1"># /xxx/ 是正则，=~ 用于匹配正则和字符串</span>
+</span><span class='line'><span class="c1"># i 表不区分大小写</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">/Ruby/</span> <span class="o">=~</span> <span class="s2">&quot;Ruby&quot;</span>    <span class="c1"># 0</span>
+</span><span class='line'><span class="sr">/Ruby/</span> <span class="o">=~</span> <span class="s2">&quot;Diamond&quot;</span> <span class="c1"># nil</span>
+</span><span class='line'><span class="sr">/Ruby/i</span> <span class="o">=~</span> <span class="s2">&quot;RUBY&quot;</span>   <span class="c1"># 0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>nil</h2>
+
+<p>nil 是个特殊的值，表示对象不存在</p>
+
+<ul>
+<li>方法不能返回有意义的值时就会返回 nil</li>
+<li>从数组或者散列中获取对象时，若指定不存在的索引或者键，则得到的返回值也是 nil</li>
+</ul>
+
+
+<h2>方法</h2>
+
+<p>ruby 在调用方法时可以省略 <code>()</code></p>
+
+<p> ```ruby
+def foo
+    puts 123
+end</p>
+
+<p>foo()
+foo</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="sb">```ruby</span>
+</span><span class='line'><span class="sb">print(&quot;hello, ruby.</span><span class="se">\n</span><span class="sb">&quot;)</span>
+</span><span class='line'><span class="sb">print &quot;hello, ruby.</span><span class="se">\n</span><span class="sb">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sb">print(&quot;hello, &quot;, &quot;ruby&quot;, &quot;.&quot;, &quot;</span><span class="se">\n</span><span class="sb">&quot;)</span>
+</span><span class='line'><span class="sb">print &quot;hello, &quot;, &quot;ruby&quot;, &quot;.&quot;, &quot;</span><span class="se">\n</span><span class="sb">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>output</h2>
+
+<p><code>print/puts/p/pp</code></p>
+
+<ul>
+<li>puts 在结尾会自动输出换行符</li>
+<li>使用 p 方法时，数值结果和字符串结果会以不同的形式输出</li>
+<li>pp 需要 <code>require "pp</code> 可以有格式的打印散列、数组</li>
+</ul>
+
+
+<h2>引用其他文件</h2>
+
+<p>被其他程序引用的程序，称为库</p>
+
+<ul>
+<li>require 希望引用的库名
+
+<ul>
+<li>用 require 方法后，Ruby 会搜索参数指定的库，并读取库的所有内容。库内容读取完毕后，程序才会执行 require 方法后面的处理</li>
+<li>require 方法用于引用已存在的库。只需要指定库名，程序就会在预先定义好的路径下查 找并读取与 Ruby 一起安装的库</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;date&quot;</span> <span class="c1"># 引入标准库</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">days</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">tody</span> <span class="o">-</span> <span class="no">Date</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">1993</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'><span class="nb">puts</span><span class="p">(</span><span class="n">days</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span> <span class="c1"># 8323</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>require_relative 希望引用的库名
+
+<ul>
+<li>require_relative 方法在查找库时，则是根据执行中的程序目录(文件夹)来进行的</li>
+</ul>
+</li>
+</ul>
+
+
+<p> ```ruby</p>
+
+<h1>fun.rb</h1>
+
+<p>def foo(a, b)
+    puts a, b
+end</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="sb">```ruby</span>
+</span><span class='line'><span class="sb"># use_fun.rb</span>
+</span><span class='line'><span class="sb">require_relative &quot;fun&quot;</span>
+</span><span class='line'><span class="sb">foo()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用中文</h2>
+
+<ul>
+<li>在某些 ruby 运行环境中，执行包含中文的脚本时，有可能出错，可在程序首行添加魔法注释类指定编码格式</li>
+<li>如没指定魔法注释，ruby 会默认使用 UTF-8 编码方式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># encoding: GBK</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此外，使用 p 方法输出中文时也可能会出现乱码，可用 <code>-E 编码方式</code> 来指定输出结果的编码方式</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ruby -E UTF-8
+</span><span class='line'>irb -E UTF-8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>文件读取</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># read_text.rb</span>
+</span><span class='line'><span class="c1"># 执行命令 ruby read_text.rb test.txt</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 一次读取整个文件内容 1</span>
+</span><span class='line'><span class="c1"># 使用 ARGV 这个内置变量可得到命令行传递来的参数数组</span>
+</span><span class='line'><span class="n">filename</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'><span class="n">text</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'><span class="nb">print</span> <span class="n">text</span>
+</span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">close</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># ---------------------------------------</span>
+</span><span class='line'><span class="c1"># 一次读取整个文件内容 2</span>
+</span><span class='line'><span class="nb">print</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 逐行读</span>
+</span><span class='line'><span class="n">filename</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span> <span class="n">line</span> <span class="o">|</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="n">line</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">close</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># --------------------------------------</span>
+</span><span class='line'><span class="c1"># 文件中读取指定模式的内容并输出</span>
+</span><span class='line'><span class="c1"># 命令 ruby read_text.rb 模式 文件名</span>
+</span><span class='line'><span class="n">pattern</span> <span class="o">=</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'><span class="n">filename</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">file</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span> <span class="n">line</span> <span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">pattern</span> <span class="o">=~</span> <span class="n">line</span>
+</span><span class='line'>        <span class="nb">print</span> <span class="n">line</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-10-04T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/10/04/ruby-install-basic/" data-via="" data-counturl="http://away0x.github.io/blog/2018/10/04/ruby-install-basic/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/11/oc-typedef-generic-enum-class/" title="Previous Post: ObjectiveC - typedef, generic, enum, @class">&laquo; ObjectiveC - typedef, generic, enum, @class</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
