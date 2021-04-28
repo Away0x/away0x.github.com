@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objectivec | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/objectivec/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-28T17:28:35+08:00</updated>
+  <updated>2021-04-28T17:55:14+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,900 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ObjectiveC - KVO, KVC, Delegate, Notification, Block]]></title>
+    <link href="http://away0x.github.io/blog/2018/02/17/oc-kvo-kvc-delegate-notification-block/"/>
+    <updated>2018-02-17T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/02/17/oc-kvo-kvc-delegate-notification-block</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#kvo">KVO</a></li>
+<li><a href="#kvc">KVC</a></li>
+<li><a href="#delegate">Delegate</a></li>
+<li><a href="#notification">Notification</a>
+
+<ul>
+<li><a href="#notification-params">带参数通知</a></li>
+<li><a href="#notification-om">一对多通知接收</a></li>
+<li><a href="#notification-mo">通知的多对一关系</a></li>
+<li><a href="#notification-t">多线程中使用通知</a></li>
+<li><a href="#notification-d">系统通知</a></li>
+<li><a href="#notification-k">键盘通知</a></li>
+</ul>
+</li>
+<li><a href="#block">Block</a></li>
+<li><a href="#diff">通知、KVO、委托代理的区别</a></li>
+</ul>
+
+
+<h1><h2 id="kvo">KVO</h2></h1>
+
+<p>通过 KVC 的方式修改被观察者的属性时，主动通知观察者</p>
+
+<ul>
+<li>KVO: 监听对象属性的变化</li>
+<li>使用步骤
+
+<ol>
+<li>注册</li>
+<li>观察</li>
+<li>移除观察</li>
+</ol>
+</li>
+<li>KVO 的性能问题
+
+<ul>
+<li>如果一个类用 KVO 监听，系统会为其生成一个子类</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// ---------------- KVOClass ----------------------
+@interface KVOClass : NSObject
+@property(nonatomic,strong)Person *p1;
+-(void)testKVO;
+@end
+
+@implementation KVOClass
+-(void)testKVO{
+// 1 注册
+    self.p1 = [[Person alloc]init];
+    [self.p1 setAge:15];
+    // Observer: 观察者
+    // KeyPath: 要监听的属性
+    // options: 方法中要拿到的属性值
+    [self.p1 addObserver:self
+        forKeyPath:@"age"
+        options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+        context:nil];
+    [self.p1 setAge:16];
+}
+// 3 移除
+-(void)dealloc{
+    [self.p1 removeObserver:self forKeyPath:@"age"];
+}
+// 2 观察 KVO 的监听方法
+-(void)observeValueForKeyPath:(NSString *)keyPath
+    ofObject:(id)object
+    change:(NSDictionary&lt;NSString *,id&gt; *)change
+    context:(void *)context{
+
+    NSLog(@"我的年龄变化了");
+    NSLog(@"之前的年龄 %d", [change[NSKeyValueChangeOldKey] intValue]);
+    NSLog(@"现在的年龄 %d", [change[NSKeyValueChangeNewKey] intValue]);
+}
+@end
+
+// ---------------- Person ----------------------
+@interface Person : NSObject
+@property(nonatomic,assign)int age;
+@end
+
+@implementation Person
+@end
+
+// ---------------- 执行文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        KVOClass *kvo = [[KVOClass alloc]init];
+        [kvo testKVO];
+    }
+    return 0;
+}
+</code></pre>
+
+<h1><h2 id="kvc">KVC</h2></h1>
+
+<p>简单来说， 是存取类属性， 通过字符串来访问对象属性</p>
+
+<ul>
+<li>KVC (Key Value Coding) 键值编码</li>
+<li>Java/C# 中可通过反射读取对象的属性</li>
+<li>动态设置
+
+<ul>
+<li>setValue (属性值) forKey (属性名)</li>
+<li>setValue (属性值) forKeyPath (属性路径)</li>
+<li>setValuesForKeysWithDictionary</li>
+</ul>
+</li>
+<li>动态读取
+
+<ul>
+<li>valueForKey (属性名)</li>
+<li>valueForKeyPath (属性名)</li>
+<li>dictionaryWithValuesForKeys</li>
+</ul>
+</li>
+<li>KVC 可设置类的私有成员变量</li>
+</ul>
+
+
+<pre><code class="objectivec">// ---------------- Person ----------------------
+@interface Person : NSObject
+@property(nonatomic,assign) int age;
+@property(nonatomic,copy) NSString* name;
+@end
+
+@implementation Person
+@end
+
+// ---------------- 执行文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        Person *p1 = [[Person alloc]init];
+        [p1 setValue:@"henry" forKeyPath:@"name"]; // 可 forKeyPath:@"a.b"
+        [p1 setValue:@"18" forKeyPath:@"age"];
+        // 批量设置属性
+        //   - p1 必须得有 key 对应的属性才行
+        [p1 setValuesForKeysWithDictionary:@{
+            @"name": @"wt",
+            @"age": @26
+        }];
+
+        Person *p2 = [[Person alloc]init];
+        [p2 setValue:@"robin" forKeyPath:@"name"];
+        [p2 setValue:@"17" forKeyPath:@"age"];
+
+        NSLog(@"p1=%@ p2=%@",p1,[p2 valueForKeyPath:@"name"]);
+        // 批量获取值
+        NSLog(@"%@", [p1 dictionaryWithValuesForKeys:@[@"name", @"age"]);
+    }
+    return 0;
+}
+</code></pre>
+
+<h2>作用</h2>
+
+<ol>
+<li>字典转模型 ,简化代码量</li>
+<li>修改系统的只读变量: 例如自定义tabBar的时候,由于tabBar是只读属性,只能用KVC赋值</li>
+<li>可以任意修改一个对象的属性和变量(包括私有变量)</li>
+<li>可以通过运算符层次查找对象的属性</li>
+</ol>
+
+
+<pre><code class="objectivec">keyPathTeacher *t = [Teacher alloc ] init];
+t.chiild = [Child alloc ] init];
+t.child.book = [Book alloc] init];
+
+NSLog(@"%@",ValueForKeyPath(@"child.book"));
+</code></pre>
+
+<h1><h2 id="delegate">Delegate</h2></h1>
+
+<p>委托代理也可通过 block 实现</p>
+
+<ul>
+<li>适用场合:
+
+<ol>
+<li>当对象 A 发生了一些行为，想告知对象 B (让对象 B 成为对象 A 的代理对象)</li>
+<li>对象 B 想监听对象 A 的一些行为(让对象 B 成为对象 A 的代理对象)</li>
+<li>当对象 A 无法处理某些行为的时候，想让对象 B 帮忙处理(让对象 B 成为对象 A 的代理对象)</li>
+</ol>
+</li>
+<li>协议规范
+
+<ol>
+<li>一般情况下，当前协议属于谁，就将协议定义在谁的头文件上</li>
+</ol>
+</li>
+<li>步骤：
+
+<ol>
+<li>定义协议 <code>类名 + Delegate</code> (需遵守 NSObject 基协议)</li>
+<li>委托 <code>委托类，需实现上面定义的代理协议</code></li>
+<li>代理方法的调用</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// AClass
+// ---------------- 头文件 ----------------------
+// 声明协议
+@protocol BuyTicketDelegate;
+
+@interface AClass: NSObject
+@property(nonatomic, weak) id&lt;BuyTicketDelegate&gt; delegete; // delegete 用于接受委托
+- (void)myBuyTicket;
+@end
+
+// 1. 定义协议
+@protocol BuyTicketDelegate &lt;NSObject&gt;
+
+@optional // 表下面的方法不一定要实现
+- (void) buyTicket;
+
+@end
+
+// ---------------- 实现文件 ----------------------
+@implementation AClass
+
+- (void)myBuyTicket {
+    // 判断代理中是否有要求的方法
+    if ([self.delegete respondsToSelector:@selector(buyTicket)]) {
+        [self.delegete buyTicket];
+    }
+}
+
+@end
+</code></pre>
+
+<pre><code class="objectivec">// BClass
+// ---------------- 头文件 ----------------------
+@interface BClass : NSObject&lt;BuyTicketDelegate&gt;
+- (void)testDelegate;
+@end
+
+// ---------------- 实现文件 ----------------------
+@implementation BClass
+
+- (void)testDelegate {
+    AClass *classa = [[AClass alloc] init];
+    classa.delegete = self; // 设置代理，委托 self
+    [classa myBuyTicket];
+}
+- (void) buyTicket {
+    NSLog(@"我是 BClass 中的方法");
+}
+
+@end
+</code></pre>
+
+<pre><code class="objectivec">int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        BClass *classb = [[BClass alloc] init];
+        [classb testDelegate]; // 打印 "我是 BClass 中的方法"
+    }
+}
+</code></pre>
+
+<h1><h2 id="notification">Notification</h2></h1>
+
+<ul>
+<li>每一个应用程序都有一个通知中心(NSNotificationCenter)实例，专门负责协助不同对象之间的消息通信</li>
+<li>任何一个对象都可以向通知中心发布通知(NSNotification)，描述自己在做什么。其他感兴趣的对象(Observer)可以申请在某个特定通知发布时或在某个特定的对象发布通知时，收到这个通知</li>
+<li>通知基本原理
+
+<ul>
+<li> 角色：通知中心、发起人、接收者</li>
+<li> 步骤：
+
+<ol>
+<li>接受者向通知中心注册</li>
+<li>定义一些通知接收的方法</li>
+<li>发起人向通知中心发通知</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>一个完整的通知需要包含 3 个属性
+
+<ol>
+<li><code>- (NSString *)name;</code> (通知的名称)</li>
+<li><code>- (id)object;</code> (通知发布者)</li>
+<li><code>- (NSDictionary *)userInfo</code> (一些额外的信息，通知发布者传递给通知接受者的信息内容)</li>
+</ol>
+</li>
+<li>监听通知需在发布通知之前</li>
+</ul>
+
+
+<pre><code class="objectivec">// 1. A 对象发布通知
+//    - 定义通知对象
+//        - object 为 nil 时，为发布匿名通知 (不指定发布者)
+NSNotification *note = [NSNotification notificationWithName:@"通知名称"
+    object:A userInfo:@{@"title": @"通知内容xxx"}];
+//    - 发送
+[[NSNotificationCenter defaultCenter]postNotification:note];
+/**
+* 或者也可 (简化发送的方法)
+[[NSNotificationCenter defaultCenter] 
+    postNotificationName:@"通知名称"
+    object:A
+    userInfo:@{@"title": @"通知内容xxx"}];
+*/
+
+// 2. B 对象订阅通知
+//     - addObserver: 通知接收者
+//     - selector: 通知接收到时执行的函数
+//         - doAction: 参数为通知对象 note
+//     - name: 通知名称，nil 时为接收任何 object 的通知
+//     - object: 通知发布者, nil 时为接收任何 name 名的通知
+//         - name 和 object 都为 nil 时，为接收任何通知
+[[NSNotificationCenter defaultCenter]addObserver:B
+    selector:@selector(doAction:)
+    name:@"通知名称"
+    object:A];
+
+// 3. 通知的移除 (取消订阅)
+[[NSNotificationCenter defaultCenter]removeObserver:B
+    name:@"通知名称"
+    object:A];
+// 或
+[[NSNotificationCenter defaultCenter]removeObserver:B];
+</code></pre>
+
+<pre><code class="objectivec">// AClass
+// ---------------- 头文件 ----------------------
+
+// ---------------- 实现文件 ----------------------
+@implementation AClass
+- (void) init {
+    self = [super init];
+    if (self) {
+        // 3. 发起人向通知中心发送通知
+        [[NSNotificationCenter defaultCenter] 
+            postNotificationName:@"TESTNOTIF" object:nil];
+    }
+    return self;
+}
+@end
+</code></pre>
+
+<pre><code class="swift">// BClass
+// ---------------- 头文件 ----------------------
+@interface BClass : NSObject&lt;BuyTicketDelegate&gt;
+- (void)testNotification;
+@end
+// ---------------- 实现文件 ----------------------
+@implementation BClass
+- (void)testNotification {
+    // 1. 接受者向通知中心注册
+    // 参数1：谁在接收这个方法，参数2：响应方法，参数3：通知名称，参数4通知发布者
+    // self 指当前的这个类
+    [[NSNotificationCenter defaultCenter] 
+        addObserver:self selector:@selector(testAction) name:@"TESTNOTIF" object:nil];
+
+    AClass *classa = [[AClass alloc] init]; // A 类的构造方法中发广播
+}
+// 2. 定义一些通知接收的方法
+- (void)testAction {
+    NSLog(@"接收到通知了");
+}
+// 广播销毁的方法
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"TESTNOTIF" object:nil];
+}
+@end
+</code></pre>
+
+<pre><code class="swift">// A 类中发送通知，B 类中接收
+// main
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        BClass *classb = [[BClass alloc] init];
+        [classb testNotification]; // "接收到通知了"
+    }
+}
+</code></pre>
+
+<h2><h3 id="notification-params">带参数通知</h3></h2>
+
+<pre><code class="objectivec">// AClass
+// ---------------- 头文件 ----------------------
+
+// ---------------- 实现文件 ----------------------
+@implementation AClass
+- (void) init {
+    self = [super init];
+    if (self) {
+        // 3. 发起人向通知中心发送通知
+        // 如通知需要携带数据，可以：
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+        [dic setValue:@"123" forKey:@"keya"];
+
+        // 参数1：通知名，参数2：object，参数3：dict(字典)
+        [[NSNotificationCenter defaultCenter] 
+            postNotificationName:@"TESTNOTIF" object:
+            [NSNumber numberWithInt:5] userInfo:dic];
+    }
+    return self;
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">// BClass
+// ---------------- 头文件 ----------------------
+@interface BClass : NSObject&lt;BuyTicketDelegate&gt;
+- (void)testNotification;
+@end
+// ---------------- 实现文件 ----------------------
+@implementation BClass
+- (void)testNotification {
+    // 1. 接受者向通知中心注册
+    // 参数1：谁在接收这个方法，参数2：响应方法，参数3：通知名称，参数4：通知发布者
+    // self 指当前的这个类
+    [[NSNotificationCenter defaultCenter] 
+        addObserver:self selector:@selector(testAction:) name:@"TESTNOTIF" object:nil];
+
+    AClass *classa = [[AClass alloc] init]; // A 类的构造方法中发通知
+}
+// 2. 定义一些通知接收的方法(拿到参数)
+- (void)testAction:(NSNotification*)notif {
+    NSNumber *num = notif.object;
+    NSDictionary *dic = notif.userInfo;
+    NSLog(@"%@ %@", num, dic);
+}
+// 通知销毁的方法
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"TESTNOTIF" object:nil];
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">// A 类中发送通知，B 类中接收
+// main
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        BClass *classb = [[BClass alloc] init];
+        [classb testNotification]; // "接收到广播了"
+    }
+}
+</code></pre>
+
+<h2><h3 id="notification-om">一对多通知接收(一个发送，多个接收)</h3></h2>
+
+<pre><code class="objectivec">// Person 发出通知，Student 和 Teacher 会接收到
+
+// ---------------- Person ----------------------
+@interface Person : NSObject
+-(void)testNotification;
+@end
+
+@interface Person(){
+    Student *s1;
+    Teacher *t1;
+}
+@end
+@implementation Person
+-(void)testNotification{
+    // [Student new];
+    // [Teacher new]; // 这种方式定义的对象 (通知还未来得及发送，对象就已经被释放掉了)
+    s1 = [[Student alloc]init];
+    t1 = [[Teacher alloc]init];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"TESTNOTIF" object:nil];
+}
+@end
+
+// ---------------- Student ----------------------
+@implementation Student
+-(id)init{
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+            selector:@selector(notifAction)
+            name:@"TESTNOTIF"
+            object:nil];
+    }
+    return self;
+}
+-(void)notifAction{
+    NSLog(@"student 接收");
+}
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"TESTNOTIF" object:nil];
+}
+@end
+
+// ---------------- Teacher ----------------------
+@implementation Teacher
+-(id)init{
+    self = [super init];
+    if (self) {
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+            selector:@selector(notifAction)
+            name:@"TESTNOTIF"
+            object:nil];
+    }
+    return self;
+}
+-(void)notifAction{
+    NSLog(@"teacher 接收");
+}
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"TESTNOTIF" object:nil];
+}
+@end
+
+// ---------------- 使用文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        Person *p1 = [[Person alloc]init];
+        [p1 testNotification];
+    }
+    return 0;
+}
+</code></pre>
+
+<h2><h3 id="notification-mo">通知的多对一关系(多个发送，一个接收)</h3></h2>
+
+<pre><code class="objectivec">// Student 和 Teacher 发出通知，Person 会接收到
+
+// ---------------- Person ----------------------
+@interface Person : NSObject
+//@property
+-(void)testNotification;
+@end
+
+@interface Person(){
+    Student *s1;
+    Teacher *t1;
+}
+@end
+@implementation Person
+-(void)testNotification{
+
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notifAction:) name:@"TESTNOTIF" object:nil];
+    s1 = [[Student alloc]init];
+    t1 = [[Teacher alloc]init];
+}
+-(void)notifAction:(NSNotification*)notif{
+    NSDictionary *dic = notif.userInfo;
+    NSString *string = [dic valueForKey:@"info"];
+    NSLog(@"%@",string);
+}
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"TESTNOTIF" object:nil];
+}
+@end
+
+// ---------------- Student ----------------------
+@implementation Student
+-(id)init{
+    self = [super init];
+    if (self) {
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setValue:@"我来自Student" forKey:@"info"];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"TESTNOTIF" object:nil userInfo:dic];
+    }
+    return self;
+}
+@end
+
+// ---------------- Teacher ----------------------
+@implementation Teacher
+-(id)init{
+    self = [super init];
+    if (self) {
+        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        [dic setValue:@"我来自Teacher" forKey:@"info"];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"TESTNOTIF" object:nil userInfo:dic];
+    }
+    return self;
+}
+@end
+
+// ---------------- 使用文件 ----------------------
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        Person *p1 = [[Person alloc]init];
+        [p1 testNotification];
+    }
+    return 0;
+}
+</code></pre>
+
+<h2><h3 id="notification-t">多线程中使用通知</h3></h2>
+
+<pre><code class="objectivec">// 监听通知
+// Name: 通知名字
+// object: 谁发出的通知
+// queue: 决定 block 在哪个线程执行，nil 表示在发布通知的线程中执行
+// usingBlock: 只要监听到通知，就会执行这个 block
+id observe = [[NSNotificationCenter defaultCenter]
+    addObserverFromName:@"note"
+    object:nil
+    queue:nil
+    usingBlock:^(NSNotification * __NONNULL note) {
+        // 只要监听到通知，就会调用
+        NSLog(@"%@", [NSTread currentThread]);
+    }];
+
+
+// 发出通知
+[[NSNotificationCenter defaultCenter]postNotificationName:@"note" object:nil];
+
+// 移除通知
+[[NSNotificationCenter defaultCenter]removeObserver:observe];
+</code></pre>
+
+<h3>通知在多线程中的注意点</h3>
+
+<ul>
+<li>接收通知的代码在哪个线程执行是由发通知的的线程决定的
+
+<ul>
+<li>可通过 addObserverFromName 的 queue 参数指定</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// 异步线程监听通知，主线程发通知
+
+// 监听通知在异步中
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    // 异步任务
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(reciveNote) // reciveNote 这个方法是在主线程中调用的(因为发通知在主线程)
+        name:@"note"
+        objeect:nil];
+});
+
+// 发出通知
+[[NSNotificationCenter defaultCenter]postNotificationName:@"note" object:nil];
+
+// 发现这段代码中的异步任务中监听不到通知
+// 这是由于异步任务执行的顺序不确定，有可能监听在发通知之后
+
+// 当发通知的代码改为如点击事件触发，保证一定在监听之后执行，则异步线程中监听通知成功
+</code></pre>
+
+<pre><code class="objectivec">// 当发通知在异步线程中，主线程监听通知
+
+// 由于监听到通知触发的回调执行在的线程由发通知的线程决定
+// 因此该回调执行在异步线程中
+// 如果改回调中需要修改 UI，则需在主线程中修改
+
+// 执行在异步线程，但更新 UI 的代码执行在主线程总
+- (void)reciveNote {
+
+    // ....
+
+    // 回到主线程更新 UI
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        // 修改 UI
+    });
+}
+</code></pre>
+
+<pre><code class="objectivec">// queue 参数指定 block 在指定线程执行
+// 无论发通知是在哪个线程中都没关系
+
+id observe = [[NSNotificationCenter defaultCenter]
+    addObserverFromName:@"note"
+    object:nil
+    queue:[NSOperationQueue mainQueue]
+    usingBlock:^(NSNotification * __NONNULL note) {
+        // 只要监听到通知，就会调用
+        NSLog(@"%@", [NSTread currentThread]);
+    }];
+</code></pre>
+
+<h2><h3 id="notification-d">系统通知 UIDevice</h3></h2>
+
+<ul>
+<li>UIDevice 类提供了一个单例对象，它代表着设备，通过它可以获得一些设备相关的信息，比如:
+
+<ul>
+<li>电池电量值 batteryLevel</li>
+<li>设备类型 model (iPod、iPhone &hellip;)</li>
+<li>设备系统 systemVersion</li>
+</ul>
+</li>
+<li>可通过 <code>[UIDevice currentDevice</code> 获取这个单例对象</li>
+<li>UIDevice 对象会不间断的发布一些通知，下面是通知名称
+
+<ol>
+<li><code>UIDeviceOrientationDidChangeNotification</code> 设备旋转</li>
+<li><code>UIDeviceBatteryStateDidChangeNotification</code> 电池状态改变</li>
+<li><code>UIDeviceBatteryLevelDidChangeNotification</code> 电池电量改变</li>
+<li><code>UIDeviceProximityStateDidChangeNotification</code> 近距离传感器 (比如设备贴近使用者的脸部)</li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="objectivec">// 系统版本
+double version [[UIDevice currentDevice].systemVersion.doubleValue;
+
+if (version &gt;= 9.0) {
+    // do something   
+}
+</code></pre>
+
+<h2><h3 id="notification-k">键盘通知</h3></h2>
+
+<p>键盘状态改变时，系统会发出一些特定的通知</p>
+
+<ol>
+<li><code>UIKeyboardWillShowNotification</code> 键盘即将显示</li>
+<li><code>UIKeyboardDidShowNotification</code> 键盘显示完毕</li>
+<li><code>UIKeyboardWillHideNotification</code> 键盘即将隐藏</li>
+<li><code>UIKeyboardDidHideNotification</code> 键盘隐藏完毕</li>
+<li><code>UIKeyboardWillChangeFrameNotification</code> 键盘的位置尺寸即将发生改变</li>
+<li><code>UIKeyboardDidChangeFrameNotification</code> 键盘的位置尺寸改变完毕</li>
+</ol>
+
+
+<h1><h2 id="block">Block</h2></h1>
+
+<ul>
+<li>block: 代码块</li>
+<li>本质上是函数指针(代码块的内存地址)</li>
+<li>常用语传值，即把 block 的地址传到要调用 block 的地方</li>
+</ul>
+
+
+<h2>实现</h2>
+
+<pre><code class="objectivec">// 1. 声明 block (返回值 + Block名 + 传递参数)
+typedef int (^MyBlock)(int);
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepook {
+        int a = 5;
+        __block int aa = 5;
+        // 2. 实现 block
+        MyBlock b1 = ^(int b) {
+            NSLog(@"%d", b);
+            // block 中使用外部变量，声明时，需加 __block
+            return b + 1;
+        };
+        // 3. 调用 block
+        int newb = b1(10); // 11
+    }
+    return 0;
+}
+</code></pre>
+
+<h2>类之间的通信为什么要用 block</h2>
+
+<pre><code class="objectivec">@interface AClass : NSObject
+- (void)testBlock;
+@end
+
+@implementation AClass
+- (void)testBlock {
+    // A 类中调 B 类的方法
+    BClass *classb = [[BClass alloc] init];
+    [classb testB]; 
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">@interface BClass : NSObject
+- (void)testB;
+@end
+
+@implementation BClass
+- (void)testB {
+    NSLog(@"我是B");
+    // 如果 B 类想使用 A 类的方法，不可实例化 A 类(会交叉引用)，得使用 block
+    // AClass *classa = [[AClass alloc] init];
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">int main(int argc, const char * argv[]) {
+    @autoreleasepook {
+        AClass *classa = [[AClass alloc] init];
+    }
+    return 0;
+}
+</code></pre>
+
+<h2>类之间通信中使用 block</h2>
+
+<p>其实就是 A 传递一个函数给 B，从而实现在 B 中调 A 的方法</p>
+
+<pre><code class="objectivec">@interface AClass : NSObject
+- (void)testBlock;
+@end
+
+@implementation AClass
+- (void)testBlock {
+    // 声明 block
+    MyBlock b1 = ^(NSString *str1) {
+        NSLog(@"AClass:%@", str1);
+    };
+    // 调用 B 类
+    BClass *classb = [[BClass alloc] init];
+    [classb testB:b1 str1:@"AClass"];
+
+    // ---------------
+    // 快速传递 block(类似 js 的回调)
+    BClass *classb = [[BClass alloc] init];
+    [classb testB:^(NSString *str1) {
+        NSLog(@"AClass:%@", str1);
+    } str1:@"AClass"];
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">typedef void (^MyBlock)(NSString*); // 声明 block
+@interface BClass : NSObject
+- (void)testB:(MyBlock)block str1:(NSString)str1;
+@end
+
+@implementation BClass
+- (void)testB:(MyBlock)block str1:(NSString)str1 {
+    NSLog(@"%@", str1);
+    block(@"我是从B类来的");
+}
+@end
+</code></pre>
+
+<pre><code class="objectivec">int main(int argc, const char * argv[]) {
+    @autoreleasepook {
+        AClass *classa = [[AClass alloc] init];
+    }
+    return 0;
+}
+</code></pre>
+
+<h1><h2 id="diff">通知、KVO、委托代理的区别</h2></h1>
+
+<ul>
+<li>三者都是 iOS 中监听事件的方式</li>
+<li><strong>通知</strong>
+
+<ul>
+<li>任何对象之间都可以传递消息</li>
+<li>使用范围
+
+<ol>
+<li>1 个对象可以发通知给多个对象</li>
+<li>1 个对象可以接受多个对象发出的通知</li>
+</ol>
+</li>
+<li>要求: 必须得保证通知的名字在发出和监听时是一致的</li>
+</ul>
+</li>
+<li><strong>KVO</strong>
+
+<ul>
+<li>仅能监听对象属性的变化 (灵活度不如通知和代理)</li>
+</ul>
+</li>
+<li><strong>代理</strong>
+
+<ul>
+<li>1 个对象只能设置一个代理 (假设这个对象只有一个代理属性)</li>
+<li>1 个对象能成为多个对象的代理</li>
+</ul>
+</li>
+<li>如何选择
+
+<ol>
+<li>代理比通知规范</li>
+<li>建议使用代理多于通知，能使用代理尽量使用代理</li>
+</ol>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ObjectiveC - 单例]]></title>
@@ -1051,332 +1945,6 @@ NSString * const one_name = @"one name";
 #import "GlobeConst.h"
 
 NSLog(@"%@", one_name); // "one name"
-</code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ObjectiveC - Property, Synthesize]]></title>
-    <link href="http://away0x.github.io/blog/2018/02/09/oc-property-synthesize/"/>
-    <updated>2018-02-09T08:00:00+08:00</updated>
-    <id>http://away0x.github.io/blog/2018/02/09/oc-property-synthesize</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<blockquote><p>Xcode4.4之前 @property 用于生成实例变量 getter/setter 的声明，@synthesize 用于生成 getter/setter 的实现</p>
-
-<p>@property 和 @synthesize 在 Xcode4.4 以前一直都是配合着使用，在 4.4 以后，@property 得到了增强，一行代码编译器就会自动帮我们生成 setter 和  getter 方法的声明和实现，同时在 m 文件中声明一个和属性名一样并且在最前面带有下划线的实例变量 (私有的)</p></blockquote>
-
-<ul>
-<li><a href="#property">Property</a></li>
-<li><a href="#synthesize">Synthesize</a></li>
-</ul>
-
-
-<h1><h2 id="property">Property</h2></h1>
-
-<ul>
-<li>@property 是一个编译器指令</li>
-<li>可以使用 @property 来代替 getter/setter 方法的声明和实现
-
-<ul>
-<li>即只要写 @property 就不用写 getter/setter 方法了</li>
-<li>但 @property 生成的 getter/setter 十分简单，想增强，可自己重写</li>
-<li>但如<strong>同时重写(只重写其一不会)</strong>了 getter/setter @property 就不会自动生成私有的实例变量</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">// 使用实例变量 getter/setter
-@interface Person : NSObject {
-    int _age;
-}
-// setter
-- (void)setAge:(int)age;
-// getter
-- (int)age;
-@end
-</code></pre>
-
-<pre><code class="objectivec">// 使用 property 替代 实例变量 getter/setter
-@interface Person : NSObject
-
-// 编译器只要看到 property，就做下面的事情
-//    - 编译时生成一个实例变量 _age
-//    - 生成 getter/setter 的声明
-//    - 生成 getter/setter 的实现
-@property int age; // property 名不用写下划线
-
-@end
-
-// 使用
-Person *p = [Person new];
-[p setAge:11]; // 可使用 setter 了
-p.age = 11;
-</code></pre>
-
-<h2>Property 修饰符</h2>
-
-<ul>
-<li><code>@property (修饰符1, 修饰符2, ...) 数据类型 变量名;</code></li>
-<li>不写修饰符默认为 <code>(atomic, assign, readwrite)</code></li>
-</ul>
-
-
-<h3>readwrite, readonly</h3>
-
-<ul>
-<li>readwrite: (默认) 可读可写，生成 getter/setter</li>
-<li>readonly: 只读，只生成 getter</li>
-<li>也可指定生成的方法的名称</li>
-</ul>
-
-
-<pre><code class="objectivec">@property (readonly) int age;
-
-@property (getter=isMarried) BOOL married;
-// 通常 BOOL 类型的属性的 getter 要以 is 开头
-</code></pre>
-
-<h3>getter, setter</h3>
-
-<ul>
-<li>getter: 可以给生成的 getter 方法起一个名称</li>
-<li>setter: 可以给生成的 setter 方法起一个名称</li>
-</ul>
-
-
-<h3>atomic, nonatomic</h3>
-
-<ul>
-<li>atomic: 线程安全，为 setter 加锁，默认就是 atomic，需要消耗大量的资源</li>
-<li>nonatomic: 非线程安全，不会为 setter 加锁，适合内存小的移动设备</li>
-</ul>
-
-
-<h3>retain</h3>
-
-<p>自动生成 set 方法内存管理的代码</p>
-
-<ul>
-<li>指针的拷贝，使用的是原来的内存空间，对象的索引计数加1</li>
-<li>此属性只能用于Objective-C对象类型，而不能用于Core Foundation对象。
-
-<ul>
-<li>原因很明显，retain会增加对象的引用计数，而基本数据类型或者 Core Foundation 对象都没有引用计数</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">- (void)setBook:(Book *)book {
-    if (_book != book) {
-        [_book release];
-        _book = [book retain];
-    }
-}
-</code></pre>
-
-<h3>assign</h3>
-
-<p>不会生成 set 方法内存管理的代码，仅仅只会生成普通的 set 方法</p>
-
-<ul>
-<li>直接赋值，索引计数不改变，适用于简单数据类型，例如：NSIngeter、CGFloat、int、char 等</li>
-<li>修饰对象了类型时，不改变其引用计数</li>
-<li>所指对象在被释放之后，仍指向那块内存地址，会产生悬垂指针</li>
-</ul>
-
-
-<pre><code class="objectivec">- (void)setBook:(Book *)book {
-    _book = book;
-}
-</code></pre>
-
-<h3>weak, strong</h3>
-
-<ul>
-<li>weak:
-
-<ul>
-<li>不改变被修饰对象的引用计数</li>
-<li>所指对象在被释放之后会自动置为 nil</li>
-<li><code>assign 和 weak 的区别</code>:
-
-<ol>
-<li><code>weak / __weak</code>: 弱指针，不会让引用计数器加一，如果指向的对象被销毁，指针会自动清空</li>
-<li><code>assign / __unsafe_unretained</code>: 不会让引用计数器加一，如果指向的对象被销毁，指针不会清空</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>strong: 强指针 <code>__strong</code></li>
-</ul>
-
-
-<h3>copy</h3>
-
-<p>对象的拷贝，新申请一块内存空间，并把原始内容复制到那片空间，新对象的索引计数为 1</p>
-
-<ul>
-<li>对象进行拷贝，对于不可变对象拷贝为不可变对象会创建新对象</li>
-<li>此属性只对那些实行了 NSCopying 协议的对象类型有效</li>
-<li>很多 Objective-C 中的 object 最好使用用 retain，一些特别的 object（例如：string）使用 copy</li>
-<li>详见内存管理笔记</li>
-<li>会先判断这个对象是可变的还是不可变的
-
-<ul>
-<li>所以如该对象不可变可使用 strong，避免判断，以提高性能</li>
-</ul>
-</li>
-<li><strong>一般就用于 NSString 和 block</strong></li>
-</ul>
-
-
-<table>
-<thead>
-<tr>
-<th> 源对象类型 </th>
-<th> 拷贝方式 </th>
-<th> 目标对象类型 </th>
-<th> 拷贝类型 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> mutable 对象 </td>
-<td> copy </td>
-<td> 不可变 </td>
-<td> 深拷贝 </td>
-</tr>
-<tr>
-<td> mutable 对象 mutableCopy </td>
-<td> 可变 </td>
-<td> 深拷贝 </td>
-<td></td>
-</tr>
-<tr>
-<td> immutable 对象 </td>
-<td> copy </td>
-<td> 不可变 </td>
-<td> 浅拷贝 </td>
-</tr>
-<tr>
-<td> immutable 对象 </td>
-<td> mutableCopy </td>
-<td> 可变 </td>
-<td> 深拷贝 </td>
-</tr>
-</tbody>
-</table>
-
-
-<pre><code class="objectivec">@property(copy) NSMutableArray* arr;
-// 赋值过来的是 NSMutableArray，copy 之后是 NSArray
-// 赋值过来的是 NSArray，copy 之后是 NSArray
-// 所以这样定义容易出现一些异常
-</code></pre>
-
-<h1><h2 id="synthesize">Synthesize</h2></h1>
-
-<ul>
-<li>@synthesize 是一个编译器指令</li>
-<li>通常使用 @property 生成了 getter/setter
-
-<ul>
-<li>可用 synthesize 来修改属性的名称</li>
-</ul>
-</li>
-</ul>
-
-
-<pre><code class="objectivec">@interface Person : NSObject
-@property int age;
-// 相当于下面的代码
-/*
-{
-    int _age;
-}
-- (void)setAge:(int)age;
-- (int)age;
-
-// 并且还在 implementation 中生成了对应的实现
-- (void)setAge:(int)age {
-    _age = age;
-}
-- (int)age {
-    return _age;
-}
-*/
-@end
-
-@implementation Person
-
-// 告诉编译器，需要实现哪个 @property 生成的声明
-//   这里需要实现的是 age property
-// 告诉 @synthesize，需要将传入的值赋给谁和返回谁的值给调用者
-// 如只写 @synthesize age 那么相当于 @synthesize age = age
-// 
-@synthesize age = _age;
-// 相当于下面的代码
-/*
-- (void)setAge:(int)age {
-    _age = age;
-}
-- (int)age {
-    return _age;
-}
-*/
-
-@synthesize age = $age;
-// 相当于下面的代码
-/*
-- (void)setAge:(int)age {
-    $age = age;
-}
-- (int)age {
-    return $age;
-}
-*/
-@end
-</code></pre>
-
-<h2>使用场景</h2>
-
-<pre><code class="objectivec">// 生成了实例变量 _age，并且实现了它的 getter/setter 的声明和实现
-@property (nonatomic, assign) int age;
-
-// 当同时重写了 setter/getter 时，系统会报错，原因是找不到 _age 这个变量
-
-// 解决方法一 (在 .h 的文件中声明这个属性)
-@interface Person : NSObject {
-  int _age;
-}
-@end;
-
-
-// 解决方法二 (在 .m 的文件中使用 @synthesize)
-@implementation Person
-
-@synthesize age = _age;
-// 由于自己重写了 setter/getter 所以得定义下 synthesize
-- (int)age {
-    return _age;
-}
-- (void)setAge:(int)age {
-    _age = age;
-}
-
-@end
-
-/**
-@synthesize age = _age 告诉编译器有个叫 _age 的实例变量，它是方法 age 以及 setAge 的实例变量，如果它不存在，就要将它创建出来
-
-通过这个看似像是赋值的一个操作
-我们可以在 @synthesize 中定义与变量名不同的 setter 和 getter 的命名
-以此来保护变量不会被不恰当的访问
-*/
 </code></pre>
 ]]></content>
   </entry>
