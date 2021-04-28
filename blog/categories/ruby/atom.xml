@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:39:58+08:00</updated>
+  <updated>2021-04-28T17:28:35+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,825 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Function]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/07/ruby-function/"/>
+    <updated>2018-10-07T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/07/ruby-function</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>方法是由对象定义的与该对象相关的操作。在 ruby 中，对象的所有操作都被封装成方法</p>
+
+<ul>
+<li><a href="#call">调用</a></li>
+<li><a href="#category">分类</a></li>
+<li><a href="#define">定义</a></li>
+<li><a href="#sr">send &amp; respond_to?</a></li>
+</ul>
+
+
+<h1><h2 id="call">调用</h2></h1>
+
+<ul>
+<li>ruby 中，调用方法被称为 &ldquo;向对象发送消息 (message)"，调用结果就是 "对象接收 (receive) 了消息&rdquo;</li>
+<li>调用方法时，<code>()</code> 是可以省略的</li>
+</ul>
+
+
+<pre><code class="ruby"># 1. 简单的方法调用
+对象.方法名(参数1, 参数2, ...)
+
+# 2. 带块的方法调用 (do ~ end 可替换为 { ~ })
+#    - do ~ end 时，可以省略参数列表的 ()；{ ~ } 时，只在无参时才可省略
+对象.方法名(参数1, 参数2, ...) do |变量1, 变量2, ...|
+    块内容 
+end
+
+# 3. 运算符形式的方法调用
+#    - ruby 中有些方法看起来很像运算符，四则运算等二元运算符，负号等一元运算符
+#    - 指定数组、散列的元素下标的 [] 等，实际上都是方法
+obj + arg1
+obj =~ arg1
+-obj
+!obj
+obj[arg1]
+obj[arg1] = arg2
+</code></pre>
+
+<h1><h2 id="category">分类</h2></h1>
+
+<ul>
+<li>帮助文档中方法的标记
+
+<ol>
+<li>实例方法: <code>Array#each</code></li>
+<li>类方法: <code>Array.new</code> 或 <code>Array::new</code></li>
+</ol>
+</li>
+</ul>
+
+
+<pre><code class="ruby"># 1. 实例方法
+"abc".split(",")
+
+# 2. 类方法
+Array.new
+
+# 3. 函数式方法 (没有接收者的)
+print "hello"
+sleep(10)
+</code></pre>
+
+<h1><h2 id="define">定义</h2></h1>
+
+<pre><code class="ruby">def 方法名(参数1, 参数2, ...)
+    code ...
+end
+</code></pre>
+
+<pre><code class="ruby"># 1. 参数默认值 (需放参数列表末尾)
+def func(a, b=1, c=2)
+    # code ...
+end
+</code></pre>
+
+<pre><code class="ruby"># 2. 返回值 (可以省略 return，方法体内部最后一个表达式的结果即为返回值)
+# 无指定返回值的函数默认返回 nil
+def func()
+    return 123
+end
+
+def func2()
+    123
+end
+
+def max(a, b)
+    if a &gt; b
+        a
+    else
+        b
+    end
+end
+
+p max(10, 5) # 10
+</code></pre>
+
+<pre><code class="ruby"># 3. 定义带块的方法
+def myloop
+    while true
+        yield  # 定义块
+    end
+end
+
+num = 1
+
+# 调用方法时通过块传进来的处理会在 yield 定义的地方执行
+# yield 可携带参数
+myloop do
+    puts "num is #{num}"
+    break if num &gt; 10
+    num *= 2
+end
+</code></pre>
+
+<pre><code class="ruby"># 4. 参数个数不确定的方法
+def foo(arg, *args)
+    [arg, args]
+end
+
+p foo(1)        # [1, []]
+p foo(1, 2, 3)  # [1, [2, 3]]
+
+def foo2(a, *b, c)
+    [a, b, c]
+end
+
+p foo2(1, 2, 3, 4, 5)  # [1, [2, 3, 4], 5]
+p foo2(1, 2)           # [1, [], 2]
+</code></pre>
+
+<pre><code class="ruby"># 5. 关键字参数 (可指定默认值)
+def 方法名(参数1: 参数1的值, 参数2: 参数2的值, ...)
+    code ...
+end
+
+def area(x: 0, y: 0, z: 0)
+    xy = x * y
+    yz = y * z
+    zx = z * x
+    (xy + yz + zx) * 2
+end
+
+p area(x: 2, y: 3, z: 4) # 52
+p area(z: 4, y: 3, x: 2) # 52 (参数顺序可变)
+p area(x: 2, z: 3)       # 12 (省略 y)
+
+# 不需指定默认值时
+def volume(x:, y: 2, z: 4)
+    x * y * z
+end
+
+p volume(x: 2, y: 3) # 24
+p volume(y: 3, z: 4) # ArgumentError
+volume(foo: 0)       # unknow keyword
+
+# 搜集关键字参数
+def meth(x: 0, y: 0, z: 0, **args)
+    [x, y, z, args]
+end
+
+p meth(z: 4, y: 3, x: 2)       # [2, 3, 4, {}]
+p meth(x: 2, z: 3, v: 4, w: 5) # [2, 0, 3, {:v=&gt;4, :2=&gt;5}]
+
+# 关键字参数与普通参数搭配使用
+def func(a, b: 1, c: 2)
+    code ...
+end
+func(1, b: 2, c: 3)
+
+# 用散列传递参数
+def area(x: 0, y: 0, z: 0)
+    code ...
+end
+
+args1 = {x: 2, y: 3, z: 4}
+p area(args1)
+</code></pre>
+
+<pre><code class="ruby"># 6. 把数组分解成参数
+def foo(a, b, c)
+    a + b + c
+end
+
+p foo(1, 2, 3)    # 6
+
+args1 = [2, 3]
+p foo(1, *args1)  # 6
+
+args2 = [1, 2, 3]
+p foo(*args2)     # 6
+</code></pre>
+
+<pre><code class="ruby"># 7. 把散列作为参数传递
+#    - 散列作为参数传递给方法时，可省略 {}
+def foo(arg)
+    arg
+end
+
+p foo({"a"=&gt;1, "b"=&gt;2}) # {"a"=&gt;1, "b"=&gt;2}
+p foo("a"=&gt;1, "b"=&gt;2)   # {"a"=&gt;1, "b"=&gt;2}
+p foo(a: 1, b: 2)       # {:a=&gt;1, :b=&gt;2}
+
+#    - 当作为最后一个参数传递时，也可使用这样的写法
+def bar(arg1, arg2)
+    [arg1, arg2]
+end
+
+p bar(100, {"a"=&gt;1, "b"=&gt;2})  # [100, {"a"=&gt;1, "b"=&gt;2}]
+p bar(100, "a"=&gt;1, "b"=&gt;2)    # [100, {"a"=&gt;1, "b"=&gt;2}]
+p bar(100, a: 1, b: 2)        # [100, {:a=&gt;1, :b=&gt;2}]
+</code></pre>
+
+<h1><h2 id="sr">send &amp; respond_to?</h2></h1>
+
+<p>ruby 中所有实例都有该方法，可用于检测当前实例有无该方法</p>
+
+<pre><code class="ruby">a = "hello world"
+
+puts a.respond_to?(:length)
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Control Flow]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/06/ruby-control/"/>
+    <updated>2018-10-06T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/06/ruby-control</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#if">if</a></li>
+<li><a href="#unless">unless</a></li>
+<li><a href="#case">case</a></li>
+<li><a href="#times">times</a></li>
+<li><a href="#for">for</a></li>
+<li><a href="#while">while</a></li>
+<li><a href="#until">until</a></li>
+<li><a href="#each">each</a></li>
+<li><a href="#loop">loop</a></li>
+<li><a href="#break">break</a></li>
+<li><a href="#next">next</a></li>
+<li><a href="#redo">redo</a></li>
+</ul>
+
+
+<h1><h2 id="if">if</h2></h1>
+
+<pre><code class="ruby"># 可以省略 then
+
+if expr then
+    code ...
+elsif expr2 then
+    code ...
+else expr2
+    code ...
+end
+
+# if 表达式 (ruby 的 if 有返回值)
+puts "a &gt; b" if a &gt; b
+</code></pre>
+
+<h1><h2 id="unless">unless</h2></h1>
+
+<pre><code class="ruby"># unless 和 if 相反，条件为假时执行
+
+unless expr
+    条件1
+else
+    条件2
+
+# 与上等价
+if expr
+    条件2
+else 
+    条件1
+
+# unless 也有返回值，因此也可写成表达式形式
+a = 2 unless defined?(b)
+</code></pre>
+
+<h1><h2 id="case">case</h2></h1>
+
+<ul>
+<li>case 语句在判断与 when 指定的值是否相等时，实际上是用 <code>===</code> 来判断的
+
+<ul>
+<li><code>===</code> 作用详见运算符笔记</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="ruby"># 可以省略 then
+
+case 比较对象
+when 值1 then
+    code...
+when 值2 then
+    code...
+else
+    code...
+end
+</code></pre>
+
+<ul>
+<li>由于 case 内部是 <code>===</code> 所以不止可比较简单类型</li>
+</ul>
+
+
+<pre><code class="ruby">case a
+when 1
+    1
+when /hello/
+    "hello world"
+when Array
+    []
+else
+    'ok'
+end
+</code></pre>
+
+<h1><h2 id="times">times</h2></h1>
+
+<pre><code class="ruby"># do ~ end
+7.times do
+    puts "lalala"
+end
+
+# { ~ }
+7.times {
+    puts "lalala"
+}
+
+# 获取 index
+7.times do |i|
+    puts "第 #{i} 次的循环"
+end
+</code></pre>
+
+<h1><h2 id="for">for</h2></h1>
+
+<pre><code class="ruby"># do 可省略
+
+for i in 1..5 do
+    puts i
+end
+
+names = ["A", "B", "C"]
+for name in names
+    puts name
+end
+</code></pre>
+
+<h1><h2 id="while">while&lt;/h2</h1>
+
+<pre><code class="ruby"># do 可省略
+
+i = 1
+while i &lt; 3 do
+    puts i
+    i += 1
+end
+</code></pre>
+
+<h1><h2 id="until">until</h2></h1>
+
+<ul>
+<li>until 是不满足条件才执行循环处理，满足则退出，和 while 相反</li>
+</ul>
+
+
+<pre><code class="ruby"># do 可省略
+
+sum = 0
+i = 1
+until sum &gt;= 50
+    sum += i
+    i += 1
+end
+</code></pre>
+
+<h1><h2 id="each">each</h2></h1>
+
+<ul>
+<li>可将对象集合中的对象逐个取出，类似 for&hellip;in</li>
+<li>ruby 内部 for 实际是用 each 实现的</li>
+</ul>
+
+
+<pre><code class="ruby"># do ~ end 可换成 { ~ }
+
+names = ["A", "B", "C"]
+names.each do |name|
+    puts name
+end
+</code></pre>
+
+<h1><h2 id="loop">loop</h2></h1>
+
+<ul>
+<li>没用终止的循环，不断执行</li>
+</ul>
+
+
+<pre><code class="ruby">loop do
+    print "lalala"
+end
+</code></pre>
+
+<h1><h2 id="break">break</h2></h1>
+
+<p>终止程序，跳出循环</p>
+
+<h1><h2 id="next">next</h2></h1>
+
+<p>跳到下一次循环</p>
+
+<h1><h2 id="redo">redo</h2></h1>
+
+<p>在相同的条件下重复刚才的处理</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Variable, Operator]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/05/ruby-variable-operator/"/>
+    <updated>2018-10-05T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/05/ruby-variable-operator</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#variable">Variable</a></li>
+<li><a href="#operator">Operator</a></li>
+</ul>
+
+
+<h1><h2 id="variable">Variable</h2></h1>
+
+<p>Ruby 中有六种类型的变量</p>
+
+<ol>
+<li><strong>局部变量</strong> (local variable)
+
+<ul>
+<li>以英文小写字母或 <code>_</code> 开头</li>
+</ul>
+</li>
+<li><strong>全局变量</strong> (global variable)
+
+<ul>
+<li>以 <code>$</code> 开头</li>
+<li>作用域在整个程序中，即使运用在不同文件里</li>
+</ul>
+</li>
+<li><strong>实例变量</strong> (instance variable)
+
+<ul>
+<li>以 <code>@</code> 开头</li>
+</ul>
+</li>
+<li><strong>类变量</strong> (class variable)
+
+<ul>
+<li>以 <code>@@</code> 开头</li>
+</ul>
+</li>
+<li><strong>伪变量</strong> (pseudo variable)
+
+<ul>
+<li>伪变量是 ruby 预先定义好的代表某特定值的特殊变量，因此即使在程序中给伪变量赋值，它的值也不会改变</li>
+<li><code>nil、true、false、self</code> 等都是伪变量</li>
+<li>它们表面上虽然看着像变量，但实际行为又与变量有差别，因此称为伪变量</li>
+</ul>
+</li>
+<li><strong>预定义变量</strong></li>
+</ol>
+
+
+<pre><code class="ruby">a = "hello"
+a.object_id # 70235952968400
+# 内容变了，内存地址不变
+a.replace("hello2")
+a.object_id # 70238952968400
+
+# 重新赋值，重新开辟内存
+a = "hello"
+a.object_id # 70238952968400
+</code></pre>
+
+<p>全局变量</p>
+
+<pre><code class="ruby"># a.rb
+
+$x = 0  # 定义了一个全局变量
+x = 0   # 定义了属于自身的局部变量
+
+require_relative "b"
+
+p $x  # 全局变量 $x 在 b.rb 中被修改了
+p x   # 0，a.rb 的 x 和 b.rb 的 x 不是同一个，所以不会被修改
+</code></pre>
+
+<pre><code class="ruby"># b.rb
+
+$x = 1  # 修改了全局变量
+x = 1   # 定义了属于自身的局部变量
+</code></pre>
+
+<h2>常量</h2>
+
+<ul>
+<li>常量以大写英文字母开头</li>
+<li>ruby 的运行版本 (RUBY_VERSION)、运行平台 (RUBY_PLATFORM)、命令行参数数组 (ARGV) 等，都是 ruby 预定义好的常量</li>
+<li>已赋值的常量重赋值会报警告</li>
+</ul>
+
+
+<pre><code class="ruby">TEST = 1
+TEST = 2  # 报警告
+</code></pre>
+
+<h1><h2 id="operator">Operator</h2></h1>
+
+<h2>算数运算符</h2>
+
+<pre><code class="ruby">+ - * / % **
+
+# ** 是指数运算
+</code></pre>
+
+<h2>赋值运算符</h2>
+
+<pre><code class="ruby">=
++= -= *= /= %= **=
+&amp;&amp;= ||= ^= &amp;= |= &lt;&lt;= &gt;&gt;=
+
+# ruby 无 ++ --
+</code></pre>
+
+<pre><code class="ruby"># 并行赋值
+a, b, c = 10, 20, 30
+
+# 交换变量值
+a, b = b, c
+
+# 获取数组的值
+ary = [1, 2]
+a, b = ary
+p a # 1
+p b # 2
+
+c, = ary
+p c # 1
+</code></pre>
+
+<h2>逻辑运算符</h2>
+
+<ul>
+<li>表达式执行顺序从左到右</li>
+<li>如逻辑表达式的真假已经可以确定，则不会再判断剩余的表达式 (短路)</li>
+<li>最后一个表达式的值为整体逻辑表达式的值</li>
+</ul>
+
+
+<pre><code class="ruby">|| or
+&amp;&amp; and
+! not
+</code></pre>
+
+<pre><code class="ruby"># 变量默认值
+
+item = item || 1  # 在 item 为 false 或 nil 时，才赋值 1
+
+item ||= 1  # 效果同上
+</code></pre>
+
+<pre><code class="ruby"># 安全运算符 (ruby2.3.0+ 支持)
+
+item = ary &amp;&amp; ary.first  # ary 安全才使用 ary.first
+
+item = ary&amp;.first  # 效果同上 (ary 为 nil 时，表达式返回 nil)
+</code></pre>
+
+<h2>比较运算符</h2>
+
+<pre><code class="ruby">== != &gt; &lt; &gt;= &lt;=
+</code></pre>
+
+<pre><code class="ruby">&lt;=&gt;
+=begin
+联合比较运算符 &lt;=&gt;
+
+如果第一个操作数等于第二个操作数则返回 0
+如果第一个操作数大于第二个操作数则返回 1
+如果第一个操作数小于第二个操作数则返回 -1
+=end
+</code></pre>
+
+<pre><code class="ruby"># 如果接收器和参数具有相同的类型和相等的值，则返回 true
+
+.eql?
+
+# 1 == 1.0 返回 true，但是 1.eql?(1.0) 返回 false
+</code></pre>
+
+<pre><code class="ruby"># 如果接收器和参数具有相同的对象 id，则返回 true
+
+equal?
+
+=begin
+如果 aObj 是 bObj 的副本，那么 aObj == bObj 返回 true
+a.equal?bObj 返回 false
+但是 a.equal?aObj 返回 true
+=end
+</code></pre>
+
+<pre><code class="ruby">===
+
+# 1. 用于测试 case 语句的 when 子句内的相等
+# 2. **左侧**是数值或字符串时，=== 与 == 的意义是一样的
+# 3. === 还可和 =~ 一样来判断正则是否匹配
+#    - p (/zz/ === "xyzzy")  # true
+# 4. 或者判断右边的对象是否属于左边的类
+#    - p ((1..3) === 2)  # true
+</code></pre>
+
+<h2>条件运算符</h2>
+
+<pre><code class="ruby">max = (a &gt; b) ? a : b
+</code></pre>
+
+<h2>范围运算符</h2>
+
+<ul>
+<li>用于表示数值范围，返回一个 Range 对象</li>
+<li><code>X..Y</code> (范围是 X 到 Y)</li>
+<li><code>X...Y</code> (范围是 X 到 Y 的前一个元素)</li>
+<li>对 Range 对象使用 to_a 方法，会返回范围中从开始到结束的值</li>
+</ul>
+
+
+<pre><code class="ruby"># 生成 1~10 的范围对象
+Range.new(1, 10)
+
+# 简化定义
+1..10
+</code></pre>
+
+<pre><code class="ruby">p (5..10).to_a  # [5, 6, 7, 8, 9, 10]
+p (5...10).to_a # [5, 6, 7, 8, 9]
+
+p ("a".."f").to_a  # ["a", "b", "c", "d", "e", "f"]
+p ("a"..."f").to_a  # ["a", "b", "c", "d", "e"]
+</code></pre>
+
+<pre><code class="ruby"># 在 Range 对象内部，可以调用 succ 方法根据
+</code></pre>
+
+<h2>位运算</h2>
+
+<pre><code class="ruby">&amp; | ^ ~ &lt;&lt; &gt;&gt;
+</code></pre>
+
+<h2>defined? 运算符</h2>
+
+<ul>
+<li><code>defined?</code> 是一个特殊的运算符，以方法调用的形式来判断传递的表达式是否已定义</li>
+<li>它返回表达式的描述字符串，如果表达式未定义则返回 nil</li>
+</ul>
+
+
+<h2>点运算符与双冒号运算符</h2>
+
+<ul>
+<li>可通过在方法名称前加上类或模块名称和 <code>.</code> 来调用类或模块中的方法</li>
+<li>可以使用类或模块名称和两个冒号 <code>::</code> 来引用类或模块中的常量
+
+<ul>
+<li>如果 <code>::</code> 前的表达式为类或模块名称，则返回该类或模块内对应的常量值</li>
+<li>如果 <code>::</code> 前未没有前缀表达式，则返回主 Object 类中对应的常量值</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>运算符重载</h2>
+
+<p>不能重载的运算符: <code>:: &amp;&amp; || .. ... ?: not = and or</code></p>
+
+<h3>重载二元运算符</h3>
+
+<pre><code class="ruby">class Point                     
+    attr_accessor :x, :y
+
+    def initialize(x=0, y=0)
+        @x, @y = x, y
+    end 
+
+    def inspect  # 用 p 方法显示 (x, y)
+        "(#{x}, #{y})"
+    end 
+
+    def +(other)  # x, y 分别进行加法运算
+        self.class.new(x + other.x, y + other.y)
+    end 
+
+    def -(other)  # x, y 分别进行减法运算
+        self.class.new(x - other.x, y - other.y)
+    end 
+end
+
+point0 = Point.new(3, 6)
+point1 = Point.new(1, 8)
+
+p point0          # (3, 6)
+p point1          # (1, 8)
+p point0 + point1 # (4, 14)
+p point0 - point1 # (2, -2)
+</code></pre>
+
+<h3>重载一元运算符</h3>
+
+<ul>
+<li>一元运算符: <code>+ - ~ !</code></li>
+<li>对应的方法名为: <code>+@ -@ ~@ !@</code></li>
+<li>一元运算符都是没有参数的</li>
+</ul>
+
+
+<pre><code class="ruby">class Point                     
+    attr_accessor :x, :y
+    def initialize(x=0, y=0)
+        @x, @y = x, y
+    end 
+    def inspect  # 用 p 方法显示 (x, y)
+        "(#{x}, #{y})"
+    end 
+
+    def +@  # 返回自己的副本
+        dup
+    end
+
+    def -@  # 颠倒 x, y 的正负
+        self.class.new(-x, -y)
+    end
+
+    def ~@  # 使坐标翻转 90 度
+        self.class.new(-y, x)
+    end
+end
+
+point = Point.new(3, 6)
+
+p +point  # (3, 6)
+p -point  # (-3, -6)
+p ~point  # (-6, 3)
+</code></pre>
+
+<h3>重载下标方法</h3>
+
+<ul>
+<li>数组散列中 <code>obj[i]</code> 和 <code>obj[i] = x</code> 这样的方法，称为下标方法</li>
+<li>对应的方法名为 <code>[]</code> 和 <code>[]=</code></li>
+</ul>
+
+
+<pre><code class="ruby">class Point                     
+    attr_accessor :x, :y
+    def initialize(x=0, y=0)
+        @x, @y = x, y
+    end 
+    def inspect  # 用 p 方法显示 (x, y)
+        "(#{x}, #{y})"
+    end 
+
+    def [](index)
+        case index
+        when 0
+            x
+        when 1
+            y
+        else
+            raise ArgumentError, "out of range #{index}"
+        end
+    end
+
+    def []=(index, val)
+        case index
+        when 0
+            self.x = val
+        wthen 1
+            self.y = val
+        else
+            raise ArgumentError, "out of range #{index}"
+        end
+    end
+end
+
+point = Point.new(3, 6)
+
+p point[0]      # 3
+p point[1] = 2  # 2
+p point[1]      # 2
+p point[2]      # 错误 ArgumentError
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - Install, Basic]]></title>
@@ -901,6 +1720,8 @@ sym.to_s
 
 <h2>对象</h2>
 
+<blockquote><p>ruby 中，一切皆对象。ruby 是强类型的</p></blockquote>
+
 <pre><code class="ruby"># 数组
 names = ["a", "b", "c"]
 names[0] # "a"
@@ -942,15 +1763,89 @@ end
 /Ruby/i =~ "RUBY"   # 0
 </code></pre>
 
-<h2>nil</h2>
-
-<p>nil 是个特殊的值，表示对象不存在</p>
+<h3>常用对象</h3>
 
 <ul>
+<li>数值对象
+
+<ol>
+<li><code>-10、3.1415</code> 还有表示矩阵、复数、质数、公式的对象</li>
+</ol>
+</li>
+<li>字符串对象</li>
+<li>数组对象、散列对象</li>
+<li>正则对象</li>
+<li>时间对象</li>
+<li>文件对象</li>
+<li>符号对象</li>
+<li>范围对象</li>
+<li>异常对象</li>
+</ul>
+
+
+<h3>类</h3>
+
+<blockquote><p>ruby 中的类 (class) 表示的就是对象的种类</p></blockquote>
+
+<ul>
+<li>对象拥有什么特性等，都是由类决定的</li>
+<li>XX 类的对象，一般也会说成 XX 类的实例 (instance)。所有 ruby 对象其实都是某个类的实例，所以 ruby 中对象和实例的意义几乎是一样的</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 对象 </th>
+<th> 类 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 数值 </td>
+<td> Numeric </td>
+</tr>
+<tr>
+<td> 字符串 </td>
+<td> String </td>
+</tr>
+<tr>
+<td> 数组 </td>
+<td> Array </td>
+</tr>
+<tr>
+<td> 散列 </td>
+<td> Hash </td>
+</tr>
+<tr>
+<td> 正则表达式 </td>
+<td> Regexp </td>
+</tr>
+<tr>
+<td> 文件 </td>
+<td> File </td>
+</tr>
+<tr>
+<td> 符号 </td>
+<td> Symbol </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>nil</h3>
+
+<ul>
+<li>nil 是个特殊的值，表示对象不存在, 在 ruby 中 nil 和 false 都是 &ldquo;否&rdquo; 的意思</li>
+<li><strong>其他一切都为 true (空字符串也是 true)</strong></li>
 <li>方法不能返回有意义的值时就会返回 nil</li>
 <li>从数组或者散列中获取对象时，若指定不存在的索引或者键，则得到的返回值也是 nil</li>
 </ul>
 
+
+<pre><code class="ruby">a = nil # nil
+a.nil?  # true
+</code></pre>
 
 <h2>方法</h2>
 

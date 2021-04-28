@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-04-27T10:39:58+08:00</updated>
+  <updated>2021-04-28T17:28:35+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -12,6 +12,1321 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Function]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/07/ruby-function/"/>
+    <updated>2018-10-07T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/07/ruby-function</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>方法是由对象定义的与该对象相关的操作。在 ruby 中，对象的所有操作都被封装成方法</p>
+
+<ul>
+<li><a href="#call">调用</a></li>
+<li><a href="#category">分类</a></li>
+<li><a href="#define">定义</a></li>
+<li><a href="#sr">send &amp; respond_to?</a></li>
+</ul>
+
+
+<h1><h2 id="call">调用</h2></h1>
+
+<ul>
+<li>ruby 中，调用方法被称为 &ldquo;向对象发送消息 (message)"，调用结果就是 "对象接收 (receive) 了消息&rdquo;</li>
+<li>调用方法时，<code>()</code> 是可以省略的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 1. 简单的方法调用</span>
+</span><span class='line'><span class="err">对象</span><span class="o">.</span><span class="err">方法名</span><span class="p">(</span><span class="err">参数</span><span class="mi">1</span><span class="p">,</span> <span class="err">参数</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 2. 带块的方法调用 (do ~ end 可替换为 { ~ })</span>
+</span><span class='line'><span class="c1">#    - do ~ end 时，可以省略参数列表的 ()；{ ~ } 时，只在无参时才可省略</span>
+</span><span class='line'><span class="err">对象</span><span class="o">.</span><span class="err">方法名</span><span class="p">(</span><span class="err">参数</span><span class="mi">1</span><span class="p">,</span> <span class="err">参数</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="err">变量</span><span class="mi">1</span><span class="p">,</span> <span class="err">变量</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.|</span>
+</span><span class='line'>    <span class="err">块内容</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 3. 运算符形式的方法调用</span>
+</span><span class='line'><span class="c1">#    - ruby 中有些方法看起来很像运算符，四则运算等二元运算符，负号等一元运算符</span>
+</span><span class='line'><span class="c1">#    - 指定数组、散列的元素下标的 [] 等，实际上都是方法</span>
+</span><span class='line'><span class="n">obj</span> <span class="o">+</span> <span class="n">arg1</span>
+</span><span class='line'><span class="n">obj</span> <span class="o">=~</span> <span class="n">arg1</span>
+</span><span class='line'><span class="o">-</span><span class="n">obj</span>
+</span><span class='line'><span class="o">!</span><span class="n">obj</span>
+</span><span class='line'><span class="n">obj</span><span class="o">[</span><span class="n">arg1</span><span class="o">]</span>
+</span><span class='line'><span class="n">obj</span><span class="o">[</span><span class="n">arg1</span><span class="o">]</span> <span class="o">=</span> <span class="n">arg2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="category">分类</h2></h1>
+
+<ul>
+<li>帮助文档中方法的标记
+
+<ol>
+<li>实例方法: <code>Array#each</code></li>
+<li>类方法: <code>Array.new</code> 或 <code>Array::new</code></li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 1. 实例方法</span>
+</span><span class='line'><span class="s2">&quot;abc&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 2. 类方法</span>
+</span><span class='line'><span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 3. 函数式方法 (没有接收者的)</span>
+</span><span class='line'><span class="nb">print</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="nb">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="define">定义</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="err">方法名</span><span class="p">(</span><span class="err">参数</span><span class="mi">1</span><span class="p">,</span> <span class="err">参数</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 1. 参数默认值 (需放参数列表末尾)</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1"># code ...</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 2. 返回值 (可以省略 return，方法体内部最后一个表达式的结果即为返回值)</span>
+</span><span class='line'><span class="c1"># 无指定返回值的函数默认返回 nil</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">func</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">123</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">func2</span><span class="p">()</span>
+</span><span class='line'>    <span class="mi">123</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span>
+</span><span class='line'>        <span class="n">a</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="n">b</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># 10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 3. 定义带块的方法</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">myloop</span>
+</span><span class='line'>    <span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>        <span class="k">yield</span>  <span class="c1"># 定义块</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 调用方法时通过块传进来的处理会在 yield 定义的地方执行</span>
+</span><span class='line'><span class="c1"># yield 可携带参数</span>
+</span><span class='line'><span class="n">myloop</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;num is </span><span class="si">#{</span><span class="n">num</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">break</span> <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">10</span>
+</span><span class='line'>    <span class="n">num</span> <span class="o">*=</span> <span class="mi">2</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 4. 参数个数不确定的方法</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">arg</span><span class="p">,</span> <span class="n">args</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>        <span class="c1"># [1, []]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># [1, [2, 3]]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># [1, [2, 3, 4], 5]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>           <span class="c1"># [1, [], 2]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 5. 关键字参数 (可指定默认值)</span>
+</span><span class='line'><span class="k">def</span> <span class="err">方法名</span><span class="p">(</span><span class="err">参数</span><span class="mi">1</span><span class="p">:</span> <span class="err">参数</span><span class="mi">1</span><span class="err">的值</span><span class="p">,</span> <span class="err">参数</span><span class="mi">2</span><span class="p">:</span> <span class="err">参数</span><span class="mi">2</span><span class="err">的值</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">xy</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>
+</span><span class='line'>    <span class="n">yz</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
+</span><span class='line'>    <span class="n">zx</span> <span class="o">=</span> <span class="n">z</span> <span class="o">*</span> <span class="n">x</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">xy</span> <span class="o">+</span> <span class="n">yz</span> <span class="o">+</span> <span class="n">zx</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">area</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span> <span class="c1"># 52</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">area</span><span class="p">(</span><span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># 52 (参数顺序可变)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">area</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>       <span class="c1"># 12 (省略 y)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 不需指定默认值时</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="ss">x</span><span class="p">:,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">volume</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># 24</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">volume</span><span class="p">(</span><span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">)</span> <span class="c1"># ArgumentError</span>
+</span><span class='line'><span class="n">volume</span><span class="p">(</span><span class="ss">foo</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>       <span class="c1"># unknow keyword</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 搜集关键字参数</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">meth</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">args</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">meth</span><span class="p">(</span><span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>       <span class="c1"># [2, 3, 4, {}]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">meth</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">v</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="ss">w</span><span class="p">:</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># [2, 0, 3, {:v=&gt;4, :2=&gt;5}]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 关键字参数与普通参数搭配使用</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="ss">b</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">c</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">func</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="ss">b</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">c</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 用散列传递参数</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="ss">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">args1</span> <span class="o">=</span> <span class="p">{</span><span class="ss">x</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">y</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">z</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">area</span><span class="p">(</span><span class="n">args1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 6. 把数组分解成参数</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>    <span class="c1"># 6</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">args1</span> <span class="o">=</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">args1</span><span class="p">)</span>  <span class="c1"># 6</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">args2</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="o">*</span><span class="n">args2</span><span class="p">)</span>     <span class="c1"># 6</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 7. 把散列作为参数传递</span>
+</span><span class='line'><span class="c1">#    - 散列作为参数传递给方法时，可省略 {}</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">arg</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">})</span> <span class="c1"># {&quot;a&quot;=&gt;1, &quot;b&quot;=&gt;2}</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">)</span>   <span class="c1"># {&quot;a&quot;=&gt;1, &quot;b&quot;=&gt;2}</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">foo</span><span class="p">(</span><span class="ss">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">b</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>       <span class="c1"># {:a=&gt;1, :b=&gt;2}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#    - 当作为最后一个参数传递时，也可使用这样的写法</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">bar</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">})</span>  <span class="c1"># [100, {&quot;a&quot;=&gt;1, &quot;b&quot;=&gt;2}]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">bar</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">)</span>    <span class="c1"># [100, {&quot;a&quot;=&gt;1, &quot;b&quot;=&gt;2}]</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">bar</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="ss">a</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">b</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>        <span class="c1"># [100, {:a=&gt;1, :b=&gt;2}]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="sr">send &amp; respond_to?</h2></h1>
+
+<p>ruby 中所有实例都有该方法，可用于检测当前实例有无该方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;hello world&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">a</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:length</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Control Flow]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/06/ruby-control/"/>
+    <updated>2018-10-06T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/06/ruby-control</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#if">if</a></li>
+<li><a href="#unless">unless</a></li>
+<li><a href="#case">case</a></li>
+<li><a href="#times">times</a></li>
+<li><a href="#for">for</a></li>
+<li><a href="#while">while</a></li>
+<li><a href="#until">until</a></li>
+<li><a href="#each">each</a></li>
+<li><a href="#loop">loop</a></li>
+<li><a href="#break">break</a></li>
+<li><a href="#next">next</a></li>
+<li><a href="#redo">redo</a></li>
+</ul>
+
+
+<h1><h2 id="if">if</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 可以省略 then</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">expr</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">elsif</span> <span class="n">expr2</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">else</span> <span class="n">expr2</span>
+</span><span class='line'>    <span class="n">code</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># if 表达式 (ruby 的 if 有返回值)</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;a &gt; b&quot;</span> <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="unless">unless</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># unless 和 if 相反，条件为假时执行</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">unless</span> <span class="n">expr</span>
+</span><span class='line'>    <span class="err">条件</span><span class="mi">1</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="err">条件</span><span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 与上等价</span>
+</span><span class='line'><span class="k">if</span> <span class="n">expr</span>
+</span><span class='line'>    <span class="err">条件</span><span class="mi">2</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="err">条件</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># unless 也有返回值，因此也可写成表达式形式</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="case">case</h2></h1>
+
+<ul>
+<li>case 语句在判断与 when 指定的值是否相等时，实际上是用 <code>===</code> 来判断的
+
+<ul>
+<li><code>===</code> 作用详见运算符笔记</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 可以省略 then</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="err">比较对象</span>
+</span><span class='line'><span class="k">when</span> <span class="err">值</span><span class="mi">1</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">code</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">when</span> <span class="err">值</span><span class="mi">2</span> <span class="k">then</span>
+</span><span class='line'>    <span class="n">code</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="n">code</span><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>由于 case 内部是 <code>===</code> 所以不止可比较简单类型</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">case</span> <span class="n">a</span>
+</span><span class='line'><span class="k">when</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="mi">1</span>
+</span><span class='line'><span class="k">when</span> <span class="sr">/hello/</span>
+</span><span class='line'>    <span class="s2">&quot;hello world&quot;</span>
+</span><span class='line'><span class="k">when</span> <span class="nb">Array</span>
+</span><span class='line'>    <span class="o">[]</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="s1">&#39;ok&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="times">times</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># do ~ end</span>
+</span><span class='line'><span class="mi">7</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;lalala&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># { ~ }</span>
+</span><span class='line'><span class="mi">7</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;lalala&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 获取 index</span>
+</span><span class='line'><span class="mi">7</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;第 </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2"> 次的循环&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="for">for</h2></h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># do 可省略</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">5</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">i</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="k">for</span> <span class="nb">name</span> <span class="k">in</span> <span class="n">names</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="nb">name</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="while">while&lt;/h2</h1>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># do 可省略</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">i</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="until">until</h2></h1>
+
+<ul>
+<li>until 是不满足条件才执行循环处理，满足则退出，和 while 相反</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># do 可省略</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">until</span> <span class="n">sum</span> <span class="o">&gt;=</span> <span class="mi">50</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="each">each</h2></h1>
+
+<ul>
+<li>可将对象集合中的对象逐个取出，类似 for&hellip;in</li>
+<li>ruby 内部 for 实际是用 each 实现的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># do ~ end 可换成 { ~ }</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="n">names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="nb">name</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="loop">loop</h2></h1>
+
+<ul>
+<li>没用终止的循环，不断执行</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="kp">loop</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;lalala&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="break">break</h2></h1>
+
+<p>终止程序，跳出循环</p>
+
+<h1><h2 id="next">next</h2></h1>
+
+<p>跳到下一次循环</p>
+
+<h1><h2 id="redo">redo</h2></h1>
+
+<p>在相同的条件下重复刚才的处理</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Variable, Operator]]></title>
+    <link href="http://away0x.github.io/blog/2018/10/05/ruby-variable-operator/"/>
+    <updated>2018-10-05T08:00:00+08:00</updated>
+    <id>http://away0x.github.io/blog/2018/10/05/ruby-variable-operator</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<ul>
+<li><a href="#variable">Variable</a></li>
+<li><a href="#operator">Operator</a></li>
+</ul>
+
+
+<h1><h2 id="variable">Variable</h2></h1>
+
+<p>Ruby 中有六种类型的变量</p>
+
+<ol>
+<li><strong>局部变量</strong> (local variable)
+
+<ul>
+<li>以英文小写字母或 <code>_</code> 开头</li>
+</ul>
+</li>
+<li><strong>全局变量</strong> (global variable)
+
+<ul>
+<li>以 <code>$</code> 开头</li>
+<li>作用域在整个程序中，即使运用在不同文件里</li>
+</ul>
+</li>
+<li><strong>实例变量</strong> (instance variable)
+
+<ul>
+<li>以 <code>@</code> 开头</li>
+</ul>
+</li>
+<li><strong>类变量</strong> (class variable)
+
+<ul>
+<li>以 <code>@@</code> 开头</li>
+</ul>
+</li>
+<li><strong>伪变量</strong> (pseudo variable)
+
+<ul>
+<li>伪变量是 ruby 预先定义好的代表某特定值的特殊变量，因此即使在程序中给伪变量赋值，它的值也不会改变</li>
+<li><code>nil、true、false、self</code> 等都是伪变量</li>
+<li>它们表面上虽然看着像变量，但实际行为又与变量有差别，因此称为伪变量</li>
+</ul>
+</li>
+<li><strong>预定义变量</strong></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70235952968400</span>
+</span><span class='line'><span class="c1"># 内容变了，内存地址不变</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;hello2&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70238952968400</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 重新赋值，重新开辟内存</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70238952968400</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全局变量</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># a.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="vg">$x</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 定义了一个全局变量</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># 定义了属于自身的局部变量</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">require_relative</span> <span class="s2">&quot;b&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="vg">$x</span>  <span class="c1"># 全局变量 $x 在 b.rb 中被修改了</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">x</span>   <span class="c1"># 0，a.rb 的 x 和 b.rb 的 x 不是同一个，所以不会被修改</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># b.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="vg">$x</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 修改了全局变量</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># 定义了属于自身的局部变量</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常量</h2>
+
+<ul>
+<li>常量以大写英文字母开头</li>
+<li>ruby 的运行版本 (RUBY_VERSION)、运行平台 (RUBY_PLATFORM)、命令行参数数组 (ARGV) 等，都是 ruby 预定义好的常量</li>
+<li>已赋值的常量重赋值会报警告</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TEST</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="no">TEST</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># 报警告</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="operator">Operator</h2></h1>
+
+<h2>算数运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">+</span> <span class="o">-</span> <span class="o">*</span> <span class="o">/</span> <span class="sx">% **</span>
+</span><span class='line'>
+</span><span class='line'><span class="sx"># </span><span class="o">**</span> <span class="err">是指数运算</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>赋值运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=</span>
+</span><span class='line'><span class="o">+=</span> <span class="o">-=</span> <span class="o">*=</span> <span class="sr">/= %= **=</span>
+</span><span class='line'><span class="sr">&amp;&amp;= ||= ^= &amp;= |= &lt;&lt;= &gt;&gt;=</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr"># ruby 无 ++ --</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 并行赋值</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 交换变量值</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 获取数组的值</span>
+</span><span class='line'><span class="n">ary</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">]</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ary</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">a</span> <span class="c1"># 1</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">b</span> <span class="c1"># 2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">c</span><span class="p">,</span> <span class="o">=</span> <span class="n">ary</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">c</span> <span class="c1"># 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>逻辑运算符</h2>
+
+<ul>
+<li>表达式执行顺序从左到右</li>
+<li>如逻辑表达式的真假已经可以确定，则不会再判断剩余的表达式 (短路)</li>
+<li>最后一个表达式的值为整体逻辑表达式的值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">||</span> <span class="ow">or</span>
+</span><span class='line'><span class="o">&amp;&amp;</span> <span class="ow">and</span>
+</span><span class='line'><span class="o">!</span> <span class="ow">not</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 变量默认值</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">item</span> <span class="o">||</span> <span class="mi">1</span>  <span class="c1"># 在 item 为 false 或 nil 时，才赋值 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">||=</span> <span class="mi">1</span>  <span class="c1"># 效果同上</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 安全运算符 (ruby2.3.0+ 支持)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">ary</span> <span class="o">&amp;&amp;</span> <span class="n">ary</span><span class="o">.</span><span class="n">first</span>  <span class="c1"># ary 安全才使用 ary.first</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">ary</span><span class="o">&amp;.</span><span class="n">first</span>  <span class="c1"># 效果同上 (ary 为 nil 时，表达式返回 nil)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>比较运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">==</span> <span class="o">!=</span> <span class="o">&gt;</span> <span class="o">&lt;</span> <span class="o">&gt;=</span> <span class="o">&lt;=</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;=&gt;</span>
+</span><span class='line'><span class="cm">=begin</span>
+</span><span class='line'><span class="cm">联合比较运算符 &lt;=&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">如果第一个操作数等于第二个操作数则返回 0</span>
+</span><span class='line'><span class="cm">如果第一个操作数大于第二个操作数则返回 1</span>
+</span><span class='line'><span class="cm">如果第一个操作数小于第二个操作数则返回 -1</span>
+</span><span class='line'><span class="cm">=end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 如果接收器和参数具有相同的类型和相等的值，则返回 true</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">.</span><span class="n">eql?</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 1 == 1.0 返回 true，但是 1.eql?(1.0) 返回 false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 如果接收器和参数具有相同的对象 id，则返回 true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">equal?</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">=begin</span>
+</span><span class='line'><span class="cm">如果 aObj 是 bObj 的副本，那么 aObj == bObj 返回 true</span>
+</span><span class='line'><span class="cm">a.equal?bObj 返回 false</span>
+</span><span class='line'><span class="cm">但是 a.equal?aObj 返回 true</span>
+</span><span class='line'><span class="cm">=end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">===</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 1. 用于测试 case 语句的 when 子句内的相等</span>
+</span><span class='line'><span class="c1"># 2. **左侧**是数值或字符串时，=== 与 == 的意义是一样的</span>
+</span><span class='line'><span class="c1"># 3. === 还可和 =~ 一样来判断正则是否匹配</span>
+</span><span class='line'><span class="c1">#    - p (/zz/ === &quot;xyzzy&quot;)  # true</span>
+</span><span class='line'><span class="c1"># 4. 或者判断右边的对象是否属于左边的类</span>
+</span><span class='line'><span class="c1">#    - p ((1..3) === 2)  # true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>条件运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">max</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">?</span> <span class="n">a</span> <span class="p">:</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>范围运算符</h2>
+
+<ul>
+<li>用于表示数值范围，返回一个 Range 对象</li>
+<li><code>X..Y</code> (范围是 X 到 Y)</li>
+<li><code>X...Y</code> (范围是 X 到 Y 的前一个元素)</li>
+<li>对 Range 对象使用 to_a 方法，会返回范围中从开始到结束的值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 生成 1~10 的范围对象</span>
+</span><span class='line'><span class="no">Range</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 简化定义</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="mi">5</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [5, 6, 7, 8, 9, 10]</span>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="mi">5</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span> <span class="c1"># [5, 6, 7, 8, 9]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">.</span><span class="n">.</span><span class="s2">&quot;f&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;]</span>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="s2">&quot;f&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 在 Range 对象内部，可以调用 succ 方法根据</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>位运算</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&amp;</span> <span class="o">|</span> <span class="o">^</span> <span class="o">~</span> <span class="o">&lt;&lt;</span> <span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>defined? 运算符</h2>
+
+<ul>
+<li><code>defined?</code> 是一个特殊的运算符，以方法调用的形式来判断传递的表达式是否已定义</li>
+<li>它返回表达式的描述字符串，如果表达式未定义则返回 nil</li>
+</ul>
+
+
+<h2>点运算符与双冒号运算符</h2>
+
+<ul>
+<li>可通过在方法名称前加上类或模块名称和 <code>.</code> 来调用类或模块中的方法</li>
+<li>可以使用类或模块名称和两个冒号 <code>::</code> 来引用类或模块中的常量
+
+<ul>
+<li>如果 <code>::</code> 前的表达式为类或模块名称，则返回该类或模块内对应的常量值</li>
+<li>如果 <code>::</code> 前未没有前缀表达式，则返回主 Object 类中对应的常量值</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>运算符重载</h2>
+
+<p>不能重载的运算符: <code>:: &amp;&amp; || .. ... ?: not = and or</code></p>
+
+<h3>重载二元运算符</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>  <span class="c1"># x, y 分别进行加法运算</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>  <span class="c1"># x, y 分别进行减法运算</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point0</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'><span class="n">point1</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span>          <span class="c1"># (3, 6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point1</span>          <span class="c1"># (1, 8)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span> <span class="o">+</span> <span class="n">point1</span> <span class="c1"># (4, 14)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span> <span class="o">-</span> <span class="n">point1</span> <span class="c1"># (2, -2)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>重载一元运算符</h3>
+
+<ul>
+<li>一元运算符: <code>+ - ~ !</code></li>
+<li>对应的方法名为: <code>+@ -@ ~@ !@</code></li>
+<li>一元运算符都是没有参数的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">+@</span>  <span class="c1"># 返回自己的副本</span>
+</span><span class='line'>        <span class="nb">dup</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">-@</span>  <span class="c1"># 颠倒 x, y 的正负</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">~</span><span class="err">@</span>  <span class="c1"># 使坐标翻转 90 度</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="o">+</span><span class="n">point</span>  <span class="c1"># (3, 6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="o">-</span><span class="n">point</span>  <span class="c1"># (-3, -6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="o">~</span><span class="n">point</span>  <span class="c1"># (-6, 3)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>重载下标方法</h3>
+
+<ul>
+<li>数组散列中 <code>obj[i]</code> 和 <code>obj[i] = x</code> 这样的方法，称为下标方法</li>
+<li>对应的方法名为 <code>[]</code> 和 <code>[]=</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">[]</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">index</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">x</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="n">y</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;out of range </span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">[]=</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">index</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">val</span>
+</span><span class='line'>        <span class="n">wthen</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">val</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;out of range </span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>      <span class="c1"># 3</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># 2</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>      <span class="c1"># 2</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span>      <span class="c1"># 错误 ArgumentError</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - Install, Basic]]></title>
@@ -1085,6 +2400,8 @@
 
 <h2>对象</h2>
 
+<blockquote><p>ruby 中，一切皆对象。ruby 是强类型的</p></blockquote>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1164,14 +2481,91 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>nil</h2>
-
-<p>nil 是个特殊的值，表示对象不存在</p>
+<h3>常用对象</h3>
 
 <ul>
+<li>数值对象
+
+<ol>
+<li><code>-10、3.1415</code> 还有表示矩阵、复数、质数、公式的对象</li>
+</ol>
+</li>
+<li>字符串对象</li>
+<li>数组对象、散列对象</li>
+<li>正则对象</li>
+<li>时间对象</li>
+<li>文件对象</li>
+<li>符号对象</li>
+<li>范围对象</li>
+<li>异常对象</li>
+</ul>
+
+
+<h3>类</h3>
+
+<blockquote><p>ruby 中的类 (class) 表示的就是对象的种类</p></blockquote>
+
+<ul>
+<li>对象拥有什么特性等，都是由类决定的</li>
+<li>XX 类的对象，一般也会说成 XX 类的实例 (instance)。所有 ruby 对象其实都是某个类的实例，所以 ruby 中对象和实例的意义几乎是一样的</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 对象 </th>
+<th> 类 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 数值 </td>
+<td> Numeric </td>
+</tr>
+<tr>
+<td> 字符串 </td>
+<td> String </td>
+</tr>
+<tr>
+<td> 数组 </td>
+<td> Array </td>
+</tr>
+<tr>
+<td> 散列 </td>
+<td> Hash </td>
+</tr>
+<tr>
+<td> 正则表达式 </td>
+<td> Regexp </td>
+</tr>
+<tr>
+<td> 文件 </td>
+<td> File </td>
+</tr>
+<tr>
+<td> 符号 </td>
+<td> Symbol </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>nil</h3>
+
+<ul>
+<li>nil 是个特殊的值，表示对象不存在, 在 ruby 中 nil 和 false 都是 &ldquo;否&rdquo; 的意思</li>
+<li><strong>其他一切都为 true (空字符串也是 true)</strong></li>
 <li>方法不能返回有意义的值时就会返回 nil</li>
 <li>从数组或者散列中获取对象时，若指定不存在的索引或者键，则得到的返回值也是 nil</li>
 </ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="kp">nil</span> <span class="c1"># nil</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">nil?</span>  <span class="c1"># true</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>方法</h2>

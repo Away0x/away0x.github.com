@@ -1181,6 +1181,8 @@ RBENV
 
 <h2>对象</h2>
 
+<blockquote><p>ruby 中，一切皆对象。ruby 是强类型的</p></blockquote>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1260,14 +1262,91 @@ RBENV
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>nil</h2>
-
-<p>nil 是个特殊的值，表示对象不存在</p>
+<h3>常用对象</h3>
 
 <ul>
+<li>数值对象
+
+<ol>
+<li><code>-10、3.1415</code> 还有表示矩阵、复数、质数、公式的对象</li>
+</ol>
+</li>
+<li>字符串对象</li>
+<li>数组对象、散列对象</li>
+<li>正则对象</li>
+<li>时间对象</li>
+<li>文件对象</li>
+<li>符号对象</li>
+<li>范围对象</li>
+<li>异常对象</li>
+</ul>
+
+
+<h3>类</h3>
+
+<blockquote><p>ruby 中的类 (class) 表示的就是对象的种类</p></blockquote>
+
+<ul>
+<li>对象拥有什么特性等，都是由类决定的</li>
+<li>XX 类的对象，一般也会说成 XX 类的实例 (instance)。所有 ruby 对象其实都是某个类的实例，所以 ruby 中对象和实例的意义几乎是一样的</li>
+</ul>
+
+
+<table>
+<thead>
+<tr>
+<th> 对象 </th>
+<th> 类 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 数值 </td>
+<td> Numeric </td>
+</tr>
+<tr>
+<td> 字符串 </td>
+<td> String </td>
+</tr>
+<tr>
+<td> 数组 </td>
+<td> Array </td>
+</tr>
+<tr>
+<td> 散列 </td>
+<td> Hash </td>
+</tr>
+<tr>
+<td> 正则表达式 </td>
+<td> Regexp </td>
+</tr>
+<tr>
+<td> 文件 </td>
+<td> File </td>
+</tr>
+<tr>
+<td> 符号 </td>
+<td> Symbol </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>nil</h3>
+
+<ul>
+<li>nil 是个特殊的值，表示对象不存在, 在 ruby 中 nil 和 false 都是 &ldquo;否&rdquo; 的意思</li>
+<li><strong>其他一切都为 true (空字符串也是 true)</strong></li>
 <li>方法不能返回有意义的值时就会返回 nil</li>
 <li>从数组或者散列中获取对象时，若指定不存在的索引或者键，则得到的返回值也是 nil</li>
 </ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="kp">nil</span> <span class="c1"># nil</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">nil?</span>  <span class="c1"># true</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>方法</h2>
@@ -1509,6 +1588,8 @@ end</p>
       
         <a class="basic-alignment left" href="/blog/2018/02/16/oc-singleton/" title="Previous Post: ObjectiveC - 单例">&laquo; ObjectiveC - 单例</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2018/10/05/ruby-variable-operator/" title="Next Post: Ruby - Variable, Operator">Ruby - Variable, Operator &raquo;</a>
       
     </p>
   </footer>

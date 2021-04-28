@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby - Variable, Operator - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="Variable
+Operator Variable Ruby 中有六种类型的变量 局部变量 (local variable) 以英文小写字母或 _ 开头 全局变量 (global variable) 以 $ 开头
+作用域在整个程序中，即使运用在不同文件里 实例变量 (instance &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2018/10/05/ruby-variable-operator">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ruby - Variable, Operator</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-10-05T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#variable">Variable</a></li>
+<li><a href="#operator">Operator</a></li>
+</ul>
+
+
+<h1><h2 id="variable">Variable</h2></h1>
+
+<p>Ruby 中有六种类型的变量</p>
+
+<ol>
+<li><strong>局部变量</strong> (local variable)
+
+<ul>
+<li>以英文小写字母或 <code>_</code> 开头</li>
+</ul>
+</li>
+<li><strong>全局变量</strong> (global variable)
+
+<ul>
+<li>以 <code>$</code> 开头</li>
+<li>作用域在整个程序中，即使运用在不同文件里</li>
+</ul>
+</li>
+<li><strong>实例变量</strong> (instance variable)
+
+<ul>
+<li>以 <code>@</code> 开头</li>
+</ul>
+</li>
+<li><strong>类变量</strong> (class variable)
+
+<ul>
+<li>以 <code>@@</code> 开头</li>
+</ul>
+</li>
+<li><strong>伪变量</strong> (pseudo variable)
+
+<ul>
+<li>伪变量是 ruby 预先定义好的代表某特定值的特殊变量，因此即使在程序中给伪变量赋值，它的值也不会改变</li>
+<li><code>nil、true、false、self</code> 等都是伪变量</li>
+<li>它们表面上虽然看着像变量，但实际行为又与变量有差别，因此称为伪变量</li>
+</ul>
+</li>
+<li><strong>预定义变量</strong></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70235952968400</span>
+</span><span class='line'><span class="c1"># 内容变了，内存地址不变</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;hello2&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70238952968400</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 重新赋值，重新开辟内存</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="n">a</span><span class="o">.</span><span class="n">object_id</span> <span class="c1"># 70238952968400</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全局变量</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># a.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="vg">$x</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 定义了一个全局变量</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># 定义了属于自身的局部变量</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">require_relative</span> <span class="s2">&quot;b&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="vg">$x</span>  <span class="c1"># 全局变量 $x 在 b.rb 中被修改了</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">x</span>   <span class="c1"># 0，a.rb 的 x 和 b.rb 的 x 不是同一个，所以不会被修改</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># b.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="vg">$x</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 修改了全局变量</span>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># 定义了属于自身的局部变量</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常量</h2>
+
+<ul>
+<li>常量以大写英文字母开头</li>
+<li>ruby 的运行版本 (RUBY_VERSION)、运行平台 (RUBY_PLATFORM)、命令行参数数组 (ARGV) 等，都是 ruby 预定义好的常量</li>
+<li>已赋值的常量重赋值会报警告</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TEST</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="no">TEST</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># 报警告</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1><h2 id="operator">Operator</h2></h1>
+
+<h2>算数运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">+</span> <span class="o">-</span> <span class="o">*</span> <span class="o">/</span> <span class="sx">% **</span>
+</span><span class='line'>
+</span><span class='line'><span class="sx"># </span><span class="o">**</span> <span class="err">是指数运算</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>赋值运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=</span>
+</span><span class='line'><span class="o">+=</span> <span class="o">-=</span> <span class="o">*=</span> <span class="sr">/= %= **=</span>
+</span><span class='line'><span class="sr">&amp;&amp;= ||= ^= &amp;= |= &lt;&lt;= &gt;&gt;=</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr"># ruby 无 ++ --</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 并行赋值</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 交换变量值</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 获取数组的值</span>
+</span><span class='line'><span class="n">ary</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">]</span>
+</span><span class='line'><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ary</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">a</span> <span class="c1"># 1</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">b</span> <span class="c1"># 2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">c</span><span class="p">,</span> <span class="o">=</span> <span class="n">ary</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">c</span> <span class="c1"># 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>逻辑运算符</h2>
+
+<ul>
+<li>表达式执行顺序从左到右</li>
+<li>如逻辑表达式的真假已经可以确定，则不会再判断剩余的表达式 (短路)</li>
+<li>最后一个表达式的值为整体逻辑表达式的值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">||</span> <span class="ow">or</span>
+</span><span class='line'><span class="o">&amp;&amp;</span> <span class="ow">and</span>
+</span><span class='line'><span class="o">!</span> <span class="ow">not</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 变量默认值</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">item</span> <span class="o">||</span> <span class="mi">1</span>  <span class="c1"># 在 item 为 false 或 nil 时，才赋值 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">||=</span> <span class="mi">1</span>  <span class="c1"># 效果同上</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 安全运算符 (ruby2.3.0+ 支持)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">ary</span> <span class="o">&amp;&amp;</span> <span class="n">ary</span><span class="o">.</span><span class="n">first</span>  <span class="c1"># ary 安全才使用 ary.first</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">item</span> <span class="o">=</span> <span class="n">ary</span><span class="o">&amp;.</span><span class="n">first</span>  <span class="c1"># 效果同上 (ary 为 nil 时，表达式返回 nil)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>比较运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">==</span> <span class="o">!=</span> <span class="o">&gt;</span> <span class="o">&lt;</span> <span class="o">&gt;=</span> <span class="o">&lt;=</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;=&gt;</span>
+</span><span class='line'><span class="cm">=begin</span>
+</span><span class='line'><span class="cm">联合比较运算符 &lt;=&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">如果第一个操作数等于第二个操作数则返回 0</span>
+</span><span class='line'><span class="cm">如果第一个操作数大于第二个操作数则返回 1</span>
+</span><span class='line'><span class="cm">如果第一个操作数小于第二个操作数则返回 -1</span>
+</span><span class='line'><span class="cm">=end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 如果接收器和参数具有相同的类型和相等的值，则返回 true</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">.</span><span class="n">eql?</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 1 == 1.0 返回 true，但是 1.eql?(1.0) 返回 false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 如果接收器和参数具有相同的对象 id，则返回 true</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">equal?</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">=begin</span>
+</span><span class='line'><span class="cm">如果 aObj 是 bObj 的副本，那么 aObj == bObj 返回 true</span>
+</span><span class='line'><span class="cm">a.equal?bObj 返回 false</span>
+</span><span class='line'><span class="cm">但是 a.equal?aObj 返回 true</span>
+</span><span class='line'><span class="cm">=end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">===</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 1. 用于测试 case 语句的 when 子句内的相等</span>
+</span><span class='line'><span class="c1"># 2. **左侧**是数值或字符串时，=== 与 == 的意义是一样的</span>
+</span><span class='line'><span class="c1"># 3. === 还可和 =~ 一样来判断正则是否匹配</span>
+</span><span class='line'><span class="c1">#    - p (/zz/ === &quot;xyzzy&quot;)  # true</span>
+</span><span class='line'><span class="c1"># 4. 或者判断右边的对象是否属于左边的类</span>
+</span><span class='line'><span class="c1">#    - p ((1..3) === 2)  # true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>条件运算符</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">max</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="p">?</span> <span class="n">a</span> <span class="p">:</span> <span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>范围运算符</h2>
+
+<ul>
+<li>用于表示数值范围，返回一个 Range 对象</li>
+<li><code>X..Y</code> (范围是 X 到 Y)</li>
+<li><code>X...Y</code> (范围是 X 到 Y 的前一个元素)</li>
+<li>对 Range 对象使用 to_a 方法，会返回范围中从开始到结束的值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 生成 1~10 的范围对象</span>
+</span><span class='line'><span class="no">Range</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 简化定义</span>
+</span><span class='line'><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="mi">5</span><span class="o">.</span><span class="n">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [5, 6, 7, 8, 9, 10]</span>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="mi">5</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span> <span class="c1"># [5, 6, 7, 8, 9]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">.</span><span class="n">.</span><span class="s2">&quot;f&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;]</span>
+</span><span class='line'><span class="nb">p</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="s2">&quot;f&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_a</span>  <span class="c1"># [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 在 Range 对象内部，可以调用 succ 方法根据</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>位运算</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&amp;</span> <span class="o">|</span> <span class="o">^</span> <span class="o">~</span> <span class="o">&lt;&lt;</span> <span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>defined? 运算符</h2>
+
+<ul>
+<li><code>defined?</code> 是一个特殊的运算符，以方法调用的形式来判断传递的表达式是否已定义</li>
+<li>它返回表达式的描述字符串，如果表达式未定义则返回 nil</li>
+</ul>
+
+
+<h2>点运算符与双冒号运算符</h2>
+
+<ul>
+<li>可通过在方法名称前加上类或模块名称和 <code>.</code> 来调用类或模块中的方法</li>
+<li>可以使用类或模块名称和两个冒号 <code>::</code> 来引用类或模块中的常量
+
+<ul>
+<li>如果 <code>::</code> 前的表达式为类或模块名称，则返回该类或模块内对应的常量值</li>
+<li>如果 <code>::</code> 前未没有前缀表达式，则返回主 Object 类中对应的常量值</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>运算符重载</h2>
+
+<p>不能重载的运算符: <code>:: &amp;&amp; || .. ... ?: not = and or</code></p>
+
+<h3>重载二元运算符</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>  <span class="c1"># x, y 分别进行加法运算</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>  <span class="c1"># x, y 分别进行减法运算</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point0</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'><span class="n">point1</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span>          <span class="c1"># (3, 6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point1</span>          <span class="c1"># (1, 8)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span> <span class="o">+</span> <span class="n">point1</span> <span class="c1"># (4, 14)</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point0</span> <span class="o">-</span> <span class="n">point1</span> <span class="c1"># (2, -2)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>重载一元运算符</h3>
+
+<ul>
+<li>一元运算符: <code>+ - ~ !</code></li>
+<li>对应的方法名为: <code>+@ -@ ~@ !@</code></li>
+<li>一元运算符都是没有参数的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">+@</span>  <span class="c1"># 返回自己的副本</span>
+</span><span class='line'>        <span class="nb">dup</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">-@</span>  <span class="c1"># 颠倒 x, y 的正负</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">~</span><span class="err">@</span>  <span class="c1"># 使坐标翻转 90 度</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="o">+</span><span class="n">point</span>  <span class="c1"># (3, 6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="o">-</span><span class="n">point</span>  <span class="c1"># (-3, -6)</span>
+</span><span class='line'><span class="nb">p</span> <span class="o">~</span><span class="n">point</span>  <span class="c1"># (-6, 3)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>重载下标方法</h3>
+
+<ul>
+<li>数组散列中 <code>obj[i]</code> 和 <code>obj[i] = x</code> 这样的方法，称为下标方法</li>
+<li>对应的方法名为 <code>[]</code> 和 <code>[]=</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Point</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">inspect</span>  <span class="c1"># 用 p 方法显示 (x, y)</span>
+</span><span class='line'>        <span class="s2">&quot;(</span><span class="si">#{</span><span class="n">x</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">y</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">[]</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">index</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">x</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="n">y</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;out of range </span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">[]=</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">index</span>
+</span><span class='line'>        <span class="k">when</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">val</span>
+</span><span class='line'>        <span class="n">wthen</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">val</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;out of range </span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="no">Point</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>      <span class="c1"># 3</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># 2</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>      <span class="c1"># 2</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">point</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span>      <span class="c1"># 错误 ArgumentError</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-10-05T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2018/10/05/ruby-variable-operator/" data-via="" data-counturl="http://away0x.github.io/blog/2018/10/05/ruby-variable-operator/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/10/04/ruby-install-basic/" title="Previous Post: Ruby - install, basic">&laquo; Ruby - install, basic</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/10/06/ruby-control/" title="Next Post: Ruby - Control Flow">Ruby - Control Flow &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2021 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
