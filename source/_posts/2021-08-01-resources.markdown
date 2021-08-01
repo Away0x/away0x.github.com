@@ -8,20 +8,11 @@ categories: resources
 
 > 列举一些自己觉得不错的学习资源 (持续更新...)
 
-* [Ruby](#ruby)
-    * [书](#ruby-book)
-    * [代码](#ruby-code)
-* [iOS](#ios)
-    * [代码](#ios-code)
-* [Android](#android)
-    * [代码](#android-code)
-* [Go](#go)
-    * [课程](#go-course)
-    * [代码](#go-code)
-* [Rust](#rust)
-    * [课程](#rust-course)
-    * [书](#rust-book)
-    * [论坛](#rust-forum)
+* [Ruby](#ruby): [书](#ruby-book)、[代码](#ruby-code)
+* [iOS](#ios): [代码](#ios-code)
+* [Android](#android): [代码](#android-code)
+* [Go](#go): [课程](#go-course)、[代码](#go-code)
+* [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[论坛](#rust-forum)
 
 # <h2 id="ruby">Ruby</h2>
 ## <h3 id="ruby-book">书</h3>
