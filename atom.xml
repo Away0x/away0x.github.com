@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-08-01T17:50:43+08:00</updated>
+  <updated>2021-08-10T09:22:55+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -24,7 +24,7 @@
 <li><a href="#ruby">Ruby</a>: <a href="#ruby-book">书</a>、<a href="#ruby-code">代码</a></li>
 <li><a href="#ios">iOS</a>: <a href="#ios-code">代码</a></li>
 <li><a href="#android">Android</a>: <a href="#android-code">代码</a></li>
-<li><a href="#go">Go</a>: <a href="#go-course">课程</a>、<a href="#go-code">代码</a></li>
+<li><a href="#go">Go</a>: <a href="#go-course">课程</a>、<a href="#go-book">书</a>、<a href="#go-code">代码</a></li>
 <li><a href="#rust">Rust</a>: <a href="#rust-course">课程</a>、<a href="#rust-book">书</a>、<a href="#rust-forum">论坛</a></li>
 </ul>
 
@@ -44,6 +44,8 @@
 <li><a href="https://github.com/aidewoode/black_candy">Black Candy</a></li>
 <li><a href="https://github.com/getcampo/campo">Campo</a></li>
 <li><a href="https://github.com/ruby-china/homeland">Homeland</a></li>
+<li><a href="https://github.com/chatwoot/chatwoot">chatwoot</a></li>
+<li><a href="https://github.com/mastodon/mastodon">mastodon</a></li>
 </ul>
 
 
@@ -76,6 +78,13 @@
 </ul>
 
 
+<h2><h3 id="go-book">书</h3></h2>
+
+<ul>
+<li><a href="https://www.cntofu.com/book/14/readme.html">The Way to Go</a></li>
+</ul>
+
+
 <h2><h3 id="go-code">代码</h3></h2>
 
 <ul>
@@ -97,6 +106,7 @@
 <ul>
 <li><a href="https://doc.rust-lang.org/book/">The Rust Programming Language</a> 学 Rust 的第一本书</li>
 <li><a href="https://rust-cli.github.io/book/index.html">Command line apps in Rust</a></li>
+<li><a href="https://doc.rust-lang.org/stable/rust-by-example/index.html">Rust by Example</a></li>
 </ul>
 
 
