@@ -12,6 +12,7 @@ categories: resources
 * [iOS](#ios): [代码](#ios-code)
 * [Android](#android): [代码](#android-code)
 * [Go](#go): [课程](#go-course)、[书](#go-book)、[代码](#go-code)
+* [Java](#java): [课程](#java-course)、[代码](#java-code)
 * [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[论坛](#rust-forum)
 
 # <h2 id="ruby">Ruby</h2>
@@ -47,6 +48,18 @@ categories: resources
 ## <h3 id="go-code">代码</h3>
 - [go-rest-api](https://github.com/qiangxue/go-rest-api) PHP Yii 框架作者开源的，代码很漂亮，值得学习
 
+
+# <h2 id="java">Java</h2>
+## <h3 id="java-course">课程</h3>
+- [Baeldung](https://www.baeldung.com/)
+- [Spring Boot基础教程](https://github.com/dyc87112/SpringBoot-Learning)
+- [Spring Boot Demo](https://github.com/xkcoding/spring-boot-demo)
+- [SpringBoot Labs](https://github.com/YunaiV/SpringBoot-Labs)
+
+## <h3 id="java-code">代码</h3>
+- [微人事](https://github.com/lenve/vhr)
+- [EL-ADMIN 后台管理系统](https://github.com/elunez/eladmin)
+- [Mall](https://github.com/macrozheng/mall)
 
 # <h2 id="rust">Rust</h2>
 ## <h3 id="rust-course">课程</h3>
