@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-08-10T09:27:59+08:00</updated>
+  <updated>2021-08-17T15:38:36+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -25,6 +25,7 @@
 <li><a href="#ios">iOS</a>: <a href="#ios-code">代码</a></li>
 <li><a href="#android">Android</a>: <a href="#android-code">代码</a></li>
 <li><a href="#go">Go</a>: <a href="#go-course">课程</a>、<a href="#go-book">书</a>、<a href="#go-code">代码</a></li>
+<li><a href="#java">Java</a>: <a href="#java-course">课程</a>、<a href="#java-code">代码</a></li>
 <li><a href="#rust">Rust</a>: <a href="#rust-course">课程</a>、<a href="#rust-book">书</a>、<a href="#rust-forum">论坛</a></li>
 </ul>
 
@@ -89,6 +90,27 @@
 
 <ul>
 <li><a href="https://github.com/qiangxue/go-rest-api">go-rest-api</a> PHP Yii 框架作者开源的，代码很漂亮，值得学习</li>
+</ul>
+
+
+<h1><h2 id="java">Java</h2></h1>
+
+<h2><h3 id="java-course">课程</h3></h2>
+
+<ul>
+<li><a href="https://www.baeldung.com/">Baeldung</a></li>
+<li><a href="https://github.com/dyc87112/SpringBoot-Learning">Spring Boot基础教程</a></li>
+<li><a href="https://github.com/xkcoding/spring-boot-demo">Spring Boot Demo</a></li>
+<li><a href="https://github.com/YunaiV/SpringBoot-Labs">SpringBoot Labs</a></li>
+</ul>
+
+
+<h2><h3 id="java-code">代码</h3></h2>
+
+<ul>
+<li><a href="https://github.com/lenve/vhr">微人事</a></li>
+<li><a href="https://github.com/elunez/eladmin">EL-ADMIN 后台管理系统</a></li>
+<li><a href="https://github.com/macrozheng/mall">Mall</a></li>
 </ul>
 
 
