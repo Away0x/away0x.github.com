@@ -14,6 +14,7 @@ categories: resources
 * [Go](#go): [课程](#go-course)、[书](#go-book)、[代码](#go-code)
 * [Java](#java): [课程](#java-course)、[代码](#java-code)
 * [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[论坛](#rust-forum)
+* [PHP](#php): [课程](#php-course)
 
 # <h2 id="ruby">Ruby</h2>
 ## <h3 id="ruby-book">书</h3>
@@ -73,3 +74,7 @@ categories: resources
 ## <h3 id="rust-forum">论坛</h3>
 - [Rust语言中文社区](https://rustcc.cn/)
 
+
+# <h2 id="php">PHP</h2>
+## <h3 id="php-course">课程</h3>
+- [learnku 论坛 Laravel 系列教程](https://learnku.com/laravel/courses) 很全面，适合后端入门学习，课程收费但是物有所值
