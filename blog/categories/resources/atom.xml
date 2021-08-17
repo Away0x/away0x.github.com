@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Resources | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/resources/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-08-17T15:38:36+08:00</updated>
+  <updated>2021-08-17T15:55:26+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -27,6 +27,7 @@
 <li><a href="#go">Go</a>: <a href="#go-course">课程</a>、<a href="#go-book">书</a>、<a href="#go-code">代码</a></li>
 <li><a href="#java">Java</a>: <a href="#java-course">课程</a>、<a href="#java-code">代码</a></li>
 <li><a href="#rust">Rust</a>: <a href="#rust-course">课程</a>、<a href="#rust-book">书</a>、<a href="#rust-forum">论坛</a></li>
+<li><a href="#php">PHP</a>: <a href="#php-course">课程</a></li>
 </ul>
 
 
@@ -136,6 +137,15 @@
 
 <ul>
 <li><a href="https://rustcc.cn/">Rust语言中文社区</a></li>
+</ul>
+
+
+<h1><h2 id="php">PHP</h2></h1>
+
+<h2><h3 id="php-course">课程</h3></h2>
+
+<ul>
+<li><a href="https://learnku.com/laravel/courses">learnku 论坛 Laravel 系列教程</a> 很全面，适合后端入门学习，课程收费但是物有所值</li>
 </ul>
 
 ]]></content>
