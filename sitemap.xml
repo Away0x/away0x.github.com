@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://away0x.github.io/blog/2021/08/01/resources/</loc>
-<lastmod>2021-08-01T17:17:29+08:00</lastmod>
-</url>
-<url>
 <loc>http://away0x.github.io/blog/2018/10/07/ruby-function/</loc>
 <lastmod>2018-10-07T08:00:00+08:00</lastmod>
 </url>
@@ -106,12 +102,6 @@
 <loc>http://away0x.github.io/blog/categories/ruby/</loc>
 </url>
 <url>
-<loc>http://away0x.github.io/blog/categories/resources/</loc>
-</url>
-<url>
 <loc>http://away0x.github.io/posts/2/</loc>
-</url>
-<url>
-<loc>http://away0x.github.io/posts/3/</loc>
 </url>
 </urlset>
