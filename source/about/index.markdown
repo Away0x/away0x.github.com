@@ -1,8 +1,6 @@
 ---
 layout: page
 title: "about"
-date: 2021-08-01 17:17:29
-comments: true
 sharing: true
 footer: true
 ---
