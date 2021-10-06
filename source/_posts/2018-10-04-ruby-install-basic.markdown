@@ -553,7 +553,7 @@ puts(days.to_i) # 8323
 - require_relative 希望引用的库名
     - require_relative 方法在查找库时，则是根据执行中的程序目录(文件夹)来进行的
 
- ```ruby
+```ruby
 # fun.rb
 def foo(a, b)
     puts a, b
