@@ -330,7 +330,7 @@ curl --proto &#39;=https&#39; --tlsv1.2 &hellip;">
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span><span class="o">:</span> <span class="kt">u32</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 在栈上分配一个类型为 u32 的变量, 变量名为 x</span>
 </span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="c1">// Error: cannot assign twice to immutable variable</span>
 </span><span class='line'>
 </span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
@@ -403,6 +403,15 @@ curl --proto &#39;=https&#39; --tlsv1.2 &hellip;">
 </span><span class='line'><span class="c1">// 声明时必须初始化，且初始化必须为编译期可确定的常量</span>
 </span><span class='line'><span class="c1">// 全局变量读写时需要用 unsafe 修饰</span>
 </span><span class='line'><span class="k">static</span> <span class="n">GLOBAL</span><span class="o">:</span> <span class="kt">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 生命周期(&#39;static)为整个程序运行期间</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用静态变量时, 由于一些限制, 可以使用 lazy_static 工具</span>
+</span><span class='line'><span class="c1">// https://github.com/rust-lang-nursery/lazy-static.rs</span>
+</span><span class='line'><span class="k">static</span> <span class="n">MAP</span><span class="o">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span> <span class="c1">// 无法编译通过, 需要用 lazy_static</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -990,6 +999,10 @@ curl --proto &#39;=https&#39; --tlsv1.2 &hellip;">
 
 
 <h3>for</h3>
+
+<blockquote><p>for 可以用于任何实现了 IntoIterator trait 的数据结构</p></blockquote>
+
+<p>在执行过程中，IntoIterator 会生成一个迭代器，for 循环不断从迭代器中取值，直到迭代器返回 None 为止。因而，for 循环实际上只是一个语法糖，编译器会将其展开使用 loop 循环对迭代器进行循环访问，直至返回 None</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

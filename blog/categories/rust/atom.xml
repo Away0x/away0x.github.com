@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rust | Away0x's Blog]]></title>
   <link href="http://away0x.github.io/blog/categories/rust/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-10-06T10:12:12+08:00</updated>
+  <updated>2021-10-06T14:12:34+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -142,7 +142,7 @@ println!("{a} {b} {c}", a="a", b="b", c="c");
 </ul>
 
 
-<pre><code class="rust">let x = 5;
+<pre><code class="rust">let x: u32 = 5; // 在栈上分配一个类型为 u32 的变量, 变量名为 x
 x = 6; // Error: cannot assign twice to immutable variable
 
 let mut y = 5;
@@ -199,6 +199,11 @@ let Point { x: ref a, y: ref b } = p;
 // 声明时必须初始化，且初始化必须为编译期可确定的常量
 // 全局变量读写时需要用 unsafe 修饰
 static GLOBAL: i32 = 0; // 生命周期('static)为整个程序运行期间
+</code></pre>
+
+<pre><code class="rust">// 使用静态变量时, 由于一些限制, 可以使用 lazy_static 工具
+// https://github.com/rust-lang-nursery/lazy-static.rs
+static MAP: HashMap&lt;String, String&gt; = HashMap::new(); // 无法编译通过, 需要用 lazy_static
 </code></pre>
 
 <h2>Types</h2>
@@ -662,6 +667,10 @@ while number != 0 {
 </code></pre>
 
 <h3>for</h3>
+
+<blockquote><p>for 可以用于任何实现了 IntoIterator trait 的数据结构</p></blockquote>
+
+<p>在执行过程中，IntoIterator 会生成一个迭代器，for 循环不断从迭代器中取值，直到迭代器返回 None 为止。因而，for 循环实际上只是一个语法糖，编译器会将其展开使用 loop 循环对迭代器进行循环访问，直至返回 None</p>
 
 <pre><code class="rust">let a = [10, 20, 30, 40, 50];
 for element in a.iter() {
