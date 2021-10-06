@@ -88,6 +88,7 @@ RBENV
   <li><a href="/blog/categories/objectivec">Objective-C</a></li>
   <li><a href="/blog/categories/frontend">Frontend</a></li>
   <li><a href="/blog/categories/ruby">Ruby</a></li>
+  <li><a href="/blog/categories/rust">Rust</a></li>
   <li><a href="/resources">Resources</a></li>
   <li><a href="/about">About</a></li>
 </ul>
@@ -1428,22 +1429,23 @@ foo</p>
 </ul>
 
 
-<p> ```ruby</p>
-
-<h1>fun.rb</h1>
-
-<p>def foo(a, b)
-    puts a, b
-end</p>
-
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="sb">```ruby</span>
-</span><span class='line'><span class="sb"># use_fun.rb</span>
-</span><span class='line'><span class="sb">require_relative &quot;fun&quot;</span>
-</span><span class='line'><span class="sb">foo()</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># fun.rb</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># use_fun.rb</span>
+</span><span class='line'><span class="n">require_relative</span> <span class="s2">&quot;fun&quot;</span>
+</span><span class='line'><span class="n">foo</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
