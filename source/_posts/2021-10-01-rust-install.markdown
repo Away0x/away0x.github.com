@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Rust - install, basic"
+title: "Rust - Install, Basic"
 date: 2021-10-01 08:00:00 +0800
 comments: true
 categories: rust
@@ -111,7 +111,7 @@ println!("{a} {b} {c}", a="a", b="b", c="c");
     - 可以使用相同的名字声明新的变量，新的变量会 shadow 之前声明的同名变量
 
 ```rust
-let x = 5;
+let x: u32 = 5; // 在栈上分配一个类型为 u32 的变量, 变量名为 x
 x = 6; // Error: cannot assign twice to immutable variable
 
 let mut y = 5;
@@ -154,6 +154,11 @@ const MAX_POINTS: u32 = 100_1000;
 // 声明时必须初始化，且初始化必须为编译期可确定的常量
 // 全局变量读写时需要用 unsafe 修饰
 static GLOBAL: i32 = 0; // 生命周期('static)为整个程序运行期间
+```
+```rust
+// 使用静态变量时, 由于一些限制, 可以使用 lazy_static 工具
+// https://github.com/rust-lang-nursery/lazy-static.rs
+static MAP: HashMap<String, String> = HashMap::new(); // 无法编译通过, 需要用 lazy_static
 ```
 
 ## Types
@@ -427,6 +432,10 @@ while number != 0 {
 ```
 
 ### for
+> for 可以用于任何实现了 IntoIterator trait 的数据结构
+
+在执行过程中，IntoIterator 会生成一个迭代器，for 循环不断从迭代器中取值，直到迭代器返回 None 为止。因而，for 循环实际上只是一个语法糖，编译器会将其展开使用 loop 循环对迭代器进行循环访问，直至返回 None
+
 ```rust
 let a = [10, 20, 30, 40, 50];
 for element in a.iter() {

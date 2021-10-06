@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Ruby - install, basic"
+title: "Ruby - Install, Basic"
 date: 2018-10-04 08:00:00 +0800
 comments: true
 categories: ruby
