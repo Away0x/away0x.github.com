@@ -160,6 +160,28 @@ static GLOBAL: i32 = 0; // 生命周期('static)为整个程序运行期间
 // https://github.com/rust-lang-nursery/lazy-static.rs
 static MAP: HashMap<String, String> = HashMap::new(); // 无法编译通过, 需要用 lazy_static
 ```
+```rust
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+
+lazy_static! {
+    static ref HASHMAP: Arc<Mutex<HashMap<u32, &'static str>>> = {
+        let mut m = HashMap::new();
+        m.insert(0, "foo");
+        m.insert(1, "bar");
+        m.insert(2, "baz");
+        Arc::new(Mutex::new(m))
+    };
+}
+
+fn main() {
+    let mut map = HASHMAP.lock().unwrap();
+    map.insert(3, "waz");
+
+    println!("map: {:?}", map);
+}
+```
 
 ## Types
 - Rust 是静态编译语言，在编译时必须知道所有变量的类型
@@ -438,8 +460,19 @@ while number != 0 {
 
 ```rust
 let a = [10, 20, 30, 40, 50];
-for element in a.iter() {
+for element in a {
     println!("the value is: {}", element);
+}
+```
+```rust
+let v = vec![10, 42, 9, 8];
+for item in v {
+    println!("{}", item);
+}
+
+let v = vec![10, 42, 9, 8];
+for (index, value) in v.iter().enumerate() {
+    println!("index: {}, value: {}", index, value);
 }
 ```
 

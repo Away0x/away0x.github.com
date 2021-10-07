@@ -5,14 +5,14 @@ sharing: true
 footer: true
 ---
 
-> 列举一些自己觉得不错的学习资源 (持续更新...)
+> 列举一些自己觉得不错的资源 (最近更新于 2021-10-07)
 
 * [Ruby](#ruby): [书](#ruby-book)、[代码](#ruby-code)
 * [iOS](#ios): [代码](#ios-code)
 * [Android](#android): [代码](#android-code)
 * [Go](#go): [课程](#go-course)、[书](#go-book)、[代码](#go-code)
 * [Java](#java): [课程](#java-course)、[代码](#java-code)
-* [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[论坛](#rust-forum)
+* [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[其他](#rust-other)
 * [PHP](#php): [课程](#php-course)
 
 # <h2 id="ruby">Ruby</h2>
@@ -70,9 +70,9 @@ footer: true
 - [Command line apps in Rust](https://rust-cli.github.io/book/index.html)
 - [Rust by Example](https://doc.rust-lang.org/stable/rust-by-example/index.html)
 
-## <h3 id="rust-forum">论坛</h3>
+## <h3 id="rust-other">论坛</h3>
 - [Rust语言中文社区](https://rustcc.cn/)
-
+- [Rust Language Cheat Sheet](https://cheats.rs/)
 
 # <h2 id="php">PHP</h2>
 ## <h3 id="php-course">课程</h3>
