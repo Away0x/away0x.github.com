@@ -4,7 +4,7 @@
   <title><![CDATA[Away0x's Blog]]></title>
   <link href="http://away0x.github.io/atom.xml" rel="self"/>
   <link href="http://away0x.github.io/"/>
-  <updated>2021-10-07T19:04:35+08:00</updated>
+  <updated>2021-10-09T16:00:06+08:00</updated>
   <id>http://away0x.github.io/</id>
   <author>
     <name><![CDATA[TongWu]]></name>
@@ -32,6 +32,8 @@
 <blockquote><p>如安装困难, 可参考 <a href="https://rsproxy.cn/">https://rsproxy.cn/</a> 配置 proxy</p></blockquote>
 
 <h2>rustup</h2>
+
+<blockquote><p>Rust 安装和管理工具</p></blockquote>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -62,7 +64,10 @@
 
 <h2>cargo</h2>
 
+<blockquote><p>Rust 的 package 管理工具</p></blockquote>
+
 <ul>
+<li><a href="https://doc.rust-lang.org/cargo/index.html">Cargo book</a></li>
 <li><a href="https://crates.io/">crates.io</a></li>
 </ul>
 
@@ -88,29 +93,56 @@
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-<span class='line-number'>22</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>cargo --version
 </span><span class='line'><span class="c"># 创建项目</span>
 </span><span class='line'><span class="c"># --lib 库项目</span>
 </span><span class='line'><span class="c"># --vcs=git 指定版本控制工具</span>
 </span><span class='line'>cargo new demo
-</span><span class='line'><span class="c"># 编译</span>
-</span><span class='line'><span class="c"># --release 发布时编译</span>
+</span><span class='line'><span class="c"># 编译, --release 发布时编译</span>
 </span><span class='line'>cargo build
-</span><span class='line'><span class="c"># 编译并运行</span>
-</span><span class='line'>cargo run
+</span><span class='line'><span class="c"># 清除 cargo 构建文件</span>
+</span><span class='line'>cargo clean
 </span><span class='line'><span class="c"># 检查代码 (不生成可执行文件)</span>
 </span><span class='line'>cargo check
-</span><span class='line'><span class="c"># 格式化代码</span>
-</span><span class='line'>cargo fmt
-</span><span class='line'><span class="c"># 发布 crate</span>
-</span><span class='line'>cargo publish
-</span><span class='line'>cargo yank <span class="c"># 撤回版本</span>
+</span><span class='line'><span class="c"># 编译并运行</span>
+</span><span class='line'>cargo run
 </span><span class='line'><span class="c"># 安装二进制文件</span>
 </span><span class='line'>cargo install &lt;crate-name&gt; <span class="c"># 会安装到 ～/.cargo/bin</span>
 </span><span class='line'>cargo install --force &lt;crate-name&gt; <span class="c"># 重新安装</span>
 </span><span class='line'><span class="c"># 生成文档并打开</span>
 </span><span class='line'>cargo doc --open
+</span><span class='line'><span class="c"># 发布 crate</span>
+</span><span class='line'>cargo publish
+</span><span class='line'>cargo yank <span class="c"># 撤回版本</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cargo 常用的第三方插件, 需要 cargo install 这些插件才可运行</span>
+</span><span class='line'><span class="c"># 自动修复 warning</span>
+</span><span class='line'>cargo fix
+</span><span class='line'><span class="c"># 添加项目依赖</span>
+</span><span class='line'>cargo add
+</span><span class='line'><span class="c"># 审核项目依赖是否有漏洞风险</span>
+</span><span class='line'>cargo audit
+</span><span class='line'><span class="c"># lint 工具</span>
+</span><span class='line'>cargo clippy
+</span><span class='line'><span class="c"># 格式化代码</span>
+</span><span class='line'>cargo fmt
+</span><span class='line'><span class="c"># 可展开宏代码, 方便调试</span>
+</span><span class='line'>cargo expand
 </span></code></pre></td></tr></table></div></figure>
 
 
