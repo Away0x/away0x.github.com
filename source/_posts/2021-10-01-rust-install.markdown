@@ -15,6 +15,8 @@ categories: rust
 > 如安装困难, 可参考 https://rsproxy.cn/ 配置 proxy
 
 ## rustup
+> Rust 安装和管理工具
+
 ```bash
 # 安装 rustup
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
@@ -31,6 +33,9 @@ rustup doc
 ```
 
 ## cargo
+> Rust 的 package 管理工具
+
+- [Cargo book](https://doc.rust-lang.org/cargo/index.html)
 - [crates.io](https://crates.io/)
 
 ```bash
@@ -39,23 +44,37 @@ cargo --version
 # --lib 库项目
 # --vcs=git 指定版本控制工具
 cargo new demo
-# 编译
-# --release 发布时编译
+# 编译, --release 发布时编译
 cargo build
-# 编译并运行
-cargo run
+# 清除 cargo 构建文件
+cargo clean
 # 检查代码 (不生成可执行文件)
 cargo check
-# 格式化代码
-cargo fmt
-# 发布 crate
-cargo publish
-cargo yank # 撤回版本
+# 编译并运行
+cargo run
 # 安装二进制文件
 cargo install <crate-name> # 会安装到 ～/.cargo/bin
 cargo install --force <crate-name> # 重新安装
 # 生成文档并打开
 cargo doc --open
+# 发布 crate
+cargo publish
+cargo yank # 撤回版本
+```
+```bash
+# cargo 常用的第三方插件, 需要 cargo install 这些插件才可运行
+# 自动修复 warning
+cargo fix
+# 添加项目依赖
+cargo add
+# 审核项目依赖是否有漏洞风险
+cargo audit
+# lint 工具
+cargo clippy
+# 格式化代码
+cargo fmt
+# 可展开宏代码, 方便调试
+cargo expand
 ```
 
 # <h2 id="basic">Basic</h2>
