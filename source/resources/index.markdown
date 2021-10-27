@@ -60,6 +60,9 @@ footer: true
 - [微人事](https://github.com/lenve/vhr)
 - [EL-ADMIN 后台管理系统](https://github.com/elunez/eladmin)
 - [Mall](https://github.com/macrozheng/mall)
+- [New Bee Mall](https://github.com/newbee-ltd/newbee-mall-plus)
+- [Spring Boot Projects](https://github.com/ZHENFENG13/spring-boot-projects)
+- [RuoYi](https://gitee.com/y_project/RuoYi)
 
 # <h2 id="rust">Rust</h2>
 ## <h3 id="rust-course">课程</h3>
