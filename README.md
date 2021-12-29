@@ -12,7 +12,7 @@ bundle exec rake new_post "title"
 
 ## deploy
 ```bash
-bundle exec rake preview
+bundle exec rake preview # localhost:4000
 bundle exec rake generate
 bundle exec rake deploy
 git push origin source

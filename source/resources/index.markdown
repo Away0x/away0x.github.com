@@ -5,7 +5,7 @@ sharing: true
 footer: true
 ---
 
-> 列举一些自己觉得不错的资源 (最近更新于 2021-10-07)
+> 列举一些自己觉得不错的资源 (最近更新于 2021-12-29)
 
 * [Ruby](#ruby): [书](#ruby-book)、[代码](#ruby-code)
 * [iOS](#ios): [代码](#ios-code)
@@ -14,6 +14,7 @@ footer: true
 * [Java](#java): [课程](#java-course)、[代码](#java-code)
 * [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[其他](#rust-other)
 * [PHP](#php): [课程](#php-course)
+* [Flutter](#flutter): [代码](#flutter-code)
 
 # <h2 id="ruby">Ruby</h2>
 ## <h3 id="ruby-book">书</h3>
@@ -44,6 +45,7 @@ footer: true
 
 ## <h3 id="go-book">书</h3>
 - [The Way to Go](https://www.cntofu.com/book/14/readme.html)
+- [Go 语言编程之旅：一起用 Go 做项目](https://golang2.eddycjy.com/)
 
 ## <h3 id="go-code">代码</h3>
 - [go-rest-api](https://github.com/qiangxue/go-rest-api) PHP Yii 框架作者开源的，代码很漂亮，值得学习
@@ -80,3 +82,8 @@ footer: true
 # <h2 id="php">PHP</h2>
 ## <h3 id="php-course">课程</h3>
 - [learnku 论坛 Laravel 系列教程](https://learnku.com/laravel/courses) 很全面，适合后端入门学习，课程收费但是物有所值
+
+# <h2 id="flutter">Flutter</h2>
+## <h3 id="flutter-code">代码</h3>
+- [Best-Flutter-UI-Templates](https://github.com/mitesh77/Best-Flutter-UI-Templates)
+
