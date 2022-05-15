@@ -18,6 +18,6 @@ footer: true
 
 * `Backend`: Golang / Python / Ruby / NodeJs / Rust
 * `Frontend`: HTML / CSS / Javascript / jQuery / React / Vue
-* `Mobile App`: iOS / Android / Objective-C / Swift / Kotlin
+* `Mobile App`: iOS / Android / Objective-C / Swift / Kotlin / Flutter
 * `DBMS`: MySQL / PostgreSQL / Redis
 * `Other`: Docker / Linux / Nginx / Git

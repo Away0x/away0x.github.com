@@ -5,7 +5,7 @@ sharing: true
 footer: true
 ---
 
-> 列举一些自己觉得不错的资源 (最近更新于 2021-12-29)
+> 列举一些自己觉得不错的资源 (最近更新于 2022-05-15)
 
 * [Ruby](#ruby): [书](#ruby-book)、[代码](#ruby-code)
 * [iOS](#ios): [代码](#ios-code)
@@ -15,6 +15,7 @@ footer: true
 * [Rust](#rust): [课程](#rust-course)、[书](#rust-book)、[其他](#rust-other)
 * [PHP](#php): [课程](#php-course)
 * [Flutter](#flutter): [代码](#flutter-code)
+* [设计资源]({{root_url}}/design)
 
 # <h2 id="ruby">Ruby</h2>
 ## <h3 id="ruby-book">书</h3>
@@ -69,6 +70,7 @@ footer: true
 # <h2 id="rust">Rust</h2>
 ## <h3 id="rust-course">课程</h3>
 - [Rust编程语言入门教程](https://www.bilibili.com/video/BV1hp4y1k7SV) 简明易懂，全程没有废话，强烈推荐!
+- [Rust Async 异步编程](https://www.bilibili.com/video/BV1Ki4y1C7gj)
 
 ## <h3 id="rust-book">书</h3>
 - [The Rust Programming Language](https://doc.rust-lang.org/book/) 学 Rust 的第一本书
