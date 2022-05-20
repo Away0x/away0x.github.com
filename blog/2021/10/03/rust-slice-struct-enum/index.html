@@ -1,0 +1,685 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rust - Slice, Struct, Enum - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="Slice
+Struct
+Enum Slice 切片 Slice 是不持有所有权的数据类型 字符串切片 字符串切片: 指向字符串中一部分内容的引用 形式: [开始索引..结束索引] 开始索引: 切片起始位置的索引值
+结束索引: 切片终止位置的下一个索引值 字符串切片的范围索引必须发生在有效的 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2021/10/03/rust-slice-struct-enum">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+  <script src="/javascripts/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script src="/javascripts/alpine.min.js" defer type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css"> -->
+<link href="/stylesheets/google-fonts.css" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <!-- <li><a href="/blog/categories/ios">iOS</a></li> -->
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+  <li><a href="/blog/categories/rust">Rust</a></li>
+  <li><a href="/resources">Resources</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Rust - Slice, Struct, Enum</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2021-10-03T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#Slice">Slice</a></li>
+<li><a href="#Struct">Struct</a></li>
+<li><a href="#Enum">Enum</a></li>
+</ul>
+
+
+<h2><h2 id="Slice">Slice</h2></h2>
+
+<ul>
+<li>切片 Slice 是不持有所有权的数据类型</li>
+</ul>
+
+
+<h3>字符串切片</h3>
+
+<ul>
+<li>字符串切片: 指向字符串中一部分内容的引用
+
+<ul>
+<li>形式: <code>[开始索引..结束索引]</code>
+
+<ul>
+<li>开始索引: 切片起始位置的索引值</li>
+<li>结束索引: 切片终止位置的下一个索引值</li>
+</ul>
+</li>
+<li>字符串切片的范围索引必须发生在有效的 UTF-8 字符边界内</li>
+<li>如果尝试从一个多字节的字符中创建字符串切片，程序会报错并退出</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">hello</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="mf">0.</span><span class="p">.</span><span class="mi">5</span><span class="p">];</span>        <span class="c1">// 也可以写成 &amp;s[..5]</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">world</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="mf">6.</span><span class="p">.</span><span class="mi">11</span><span class="p">];</span>       <span class="c1">// 也可以写成 &amp;s[6..]</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">hello_world</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="mf">0.</span><span class="p">.</span><span class="mi">11</span><span class="p">];</span> <span class="c1">// 也可以写成 &amp;s[0..s.len()] &amp;s[..]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>字符串字面值 <code>&amp;str</code> 是切片
+
+<ul>
+<li>其是被直接存储在二进制程序中的</li>
+<li><code>&amp;str</code> 是不可变引用，所以字符串字面值也是不可变的</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;hello world&quot;</span><span class="p">;</span> <span class="c1">// &amp;str 字符串切片类型</span>
+</span><span class='line'><span class="c1">// s 是指向二进制程序特定位置的切片</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他类型的切片</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">slice</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mf">1.</span><span class="p">.</span><span class="mi">3</span><span class="p">];</span> <span class="c1">// 类型为 &amp;[i32]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><h2 id="Struct">Struct</h2></h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// struct 又自身所有数据的所有权，只要 struct 实例是有效的，那么里面的字段数据也是有效的</span>
+</span><span class='line'><span class="c1">// struct 里面的字段也可以放引用，但是需要使用生命周期 (生命周期可以保证只要 struct 实例有效，那么里面的引用也是有效的)</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">username</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span> <span class="c1">// 持有所有权</span>
+</span><span class='line'>    <span class="n">email</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span>    <span class="c1">// 持有所有权</span>
+</span><span class='line'>    <span class="n">age</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>         <span class="c1">// 标量类型</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 一旦 struct 的实例是可变的，那么实例中所有的字段都是可变的</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">user</span> <span class="o">=</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">email</span><span class="o">:</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;a@qq.com&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">username</span><span class="o">:</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;wt&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">age</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">user</span><span class="p">.</span><span class="n">email</span><span class="p">);</span>
+</span><span class='line'><span class="n">user</span><span class="p">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;b@qq.com&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 字段名与变量名相同使，可初始化简写</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">build_user</span><span class="p">(</span><span class="n">email</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">username</span><span class="o">:</span> <span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="p">{</span> <span class="n">email</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">age</span><span class="o">:</span> <span class="mi">16</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 基于某个 struct 实例，创建新的 struct</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">user2</span> <span class="o">=</span> <span class="n">User</span> <span class="p">{</span> <span class="n">email</span><span class="o">:</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;c@qq.com&quot;</span><span class="p">),</span> <span class="p">..</span><span class="n">user1</span> <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">Point3d</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">z</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">default</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Point3d</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Point3d</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Point3d</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="p">..</span><span class="n">default</span><span class="p">()</span> <span class="p">};</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">point</span> <span class="o">=</span> <span class="n">Point3d</span> <span class="p">{</span> <span class="n">z</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="p">..</span><span class="n">origin</span> <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Tuple Struct</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">Color</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">);</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Point</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">black</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// Color, Point 是不同的类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 常用于包装一些基本数据类型，去扩展它的功能 (NewType 模式)</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Score</span><span class="p">(</span><span class="kt">u32</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">Score</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">pass</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+</span><span class='line'>        <span class="bp">self</span><span class="p">.</span><span class="mi">0</span> <span class="o">&gt;=</span> <span class="mi">60</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Score</span><span class="p">(</span><span class="mi">59</span><span class="p">);</span>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">pass</span><span class="p">(),</span> <span class="kc">false</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Unit-Like Struct</h3>
+
+<ul>
+<li>适用于需要在某个类型上实现某个 trait，但是在里面又没有想要存储的数据</li>
+<li>可以看作是占位类型，其实例就是其自身。不管创建多少实例，编译器都会优化成同一个，其也不会占用内存空间，是一个零大小类型</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">Unit</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">unit1</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">;</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">unit2</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Recursive Enum</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">Recursive</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Data</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">rec</span><span class="o">:</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">Recursive</span><span class="o">&gt;</span><span class="p">,</span> <span class="c1">// 需要用 Box 包装</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Print Struct</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">a</span><span class="o">:</span> <span class="kt">u32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">b</span><span class="o">:</span> <span class="kt">u32</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">u</span> <span class="o">=</span> <span class="n">User</span> <span class="p">{</span> <span class="n">a</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">:</span> <span class="mi">2</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{:?}&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{:#?}&quot;</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span> <span class="c1">// 比 {:?} 更漂亮些</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Struct Method</h3>
+
+<ul>
+<li>C/C++ 调用方法: <code>obj-&gt;something()</code> 和 <code>(*obj).something()</code></li>
+<li>Rust 没有 <code>-&gt;</code> 运算符, Rust 会自动引用或者解引用</li>
+<li>在调用方法时，Rust 根据情况会自动添加 <code>&amp;</code>、<code>&amp;mut</code>、或 <code>*</code>，以便 Object 可以匹配方法的签名
+
+<ul>
+<li><code>p1.distance(&amp;p2)</code> 效果等价于 <code>(&amp;p1).distance(&amp;p2)</code></li>
+</ul>
+</li>
+<li>每个 struct 可以有多个 impl 块</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">username</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">email</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">User</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 实例方法</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">say</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">st</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{} say: {}&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">username</span><span class="p">,</span> <span class="n">st</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 静态方法 (关联函数)</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">dosomething</span><span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">u</span> <span class="o">=</span> <span class="n">User</span> <span class="p">{</span> <span class="n">username</span><span class="o">:</span> <span class="s">&quot;wt&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="n">email</span><span class="o">:</span> <span class="s">&quot;a@a.com&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">()</span> <span class="p">};</span>
+</span><span class='line'>    <span class="n">u</span><span class="p">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">);</span> <span class="c1">// wt say: hello</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 调用关联函数</span>
+</span><span class='line'>    <span class="n">User</span><span class="o">::</span><span class="n">dosomething</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><h2 id="Enum">Enum</h2></h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">enum</span> <span class="n">IpAddrKind</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">V4</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">V6</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">four</span> <span class="o">=</span> <span class="n">IpAddrKind</span><span class="o">::</span><span class="n">V4</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">six</span> <span class="o">=</span> <span class="n">IpAddrKind</span><span class="o">::</span><span class="n">V6</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">route</span><span class="p">(</span><span class="n">four</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">route</span><span class="p">(</span><span class="n">ip_kind</span><span class="o">:</span> <span class="n">IpAddrKind</span><span class="p">)</span> <span class="p">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 数据附加到枚举到变体中</span>
+</span><span class='line'><span class="c1">// - 优点:</span>
+</span><span class='line'><span class="c1">//   - 不需要额外使用 struct 存储数据</span>
+</span><span class='line'><span class="c1">//   - 每个变体可以拥有不同的类型以及关联的数据</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">IpAddrKind</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">V4</span><span class="p">(</span><span class="kt">u8</span><span class="p">,</span> <span class="kt">u8</span><span class="p">,</span> <span class="kt">u8</span><span class="p">,</span> <span class="kt">u8</span><span class="p">),</span> <span class="c1">// 可嵌入任意类型的数据，String、struct ...</span>
+</span><span class='line'>    <span class="n">V6</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">home</span> <span class="o">=</span> <span class="n">IpAddrKind</span><span class="o">::</span><span class="n">V4</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">loopback</span> <span class="o">=</span> <span class="n">IpAddrKind</span><span class="o">::</span><span class="n">V6</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;::1&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Quite</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'>    <span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">ChangeColor</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// enum method</span>
+</span><span class='line'><span class="k">impl</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">call</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">q</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">Quit</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">24</span> <span class="p">};</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">w</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Hello&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">c</span><span class="p">.</span><span class="n">call</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Option Enum</h3>
+
+<ul>
+<li>定义于标准库中，在 Prelude(预导入模块)中</li>
+<li>描述了: 某个值可能存在(某种类型)或不存在的情况</li>
+<li>Rust 没有 Null，有类似 Null 概念的枚举 <code>Option&lt;T&gt;</code>
+
+<ul>
+<li>其包含在 Prelude 中可以直接使用</li>
+<li><code>Option&lt;T&gt;</code>、<code>Some&lt;T&gt;</code>、<code>None</code></li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 标准库中的定义</span>
+</span><span class='line'><span class="k">enum</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">None</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">some_num</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">some_str</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">absent_num</span><span class="o">:</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nb">None</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Union</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="n">union</span> <span class="n">U</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">u</span><span class="o">:</span> <span class="kt">u32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">v</span><span class="o">:</span> <span class="kt">u64</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2021-10-03T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rust/'>rust</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2021/10/03/rust-slice-struct-enum/" data-via="" data-counturl="http://away0x.github.io/blog/2021/10/03/rust-slice-struct-enum/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2021/10/02/rust-ownership-borrowing/" title="Previous Post: Rust - Ownership, Borrowing">&laquo; Rust - Ownership, Borrowing</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2021/10/04/rust-package-crate-module-path/" title="Next Post: Rust - Package, Crate, Module, Path">Rust - Package, Crate, Module, Path &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2022 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+<script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1280412127'%3E%3C/span%3E%3Cscript src='https://v1.cnzz.com/z_stat.php%3Fid%3D1280412127%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+<style>
+  span[id^="cnzz_stat_icon"] {
+    display: none;
+  }
+</style>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

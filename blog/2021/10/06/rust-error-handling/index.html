@@ -1,0 +1,817 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rust - Error Handling - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="Error Handling
+thiserror
+anyhow Error Handling 大部分情况下，Rust 在编译阶段就会提示错误
+错误分类 可恢复 (例如文件未找到，可再次尝试)
+不可恢复 (bug, 例如访问的索引超出范围) Rust 没有类似异常的机制 可恢复错误: Result &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2021/10/06/rust-error-handling">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+  <script src="/javascripts/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script src="/javascripts/alpine.min.js" defer type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css"> -->
+<link href="/stylesheets/google-fonts.css" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <!-- <li><a href="/blog/categories/ios">iOS</a></li> -->
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+  <li><a href="/blog/categories/rust">Rust</a></li>
+  <li><a href="/resources">Resources</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Rust - Error Handling</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2021-10-06T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#ErrorHandling">Error Handling</a></li>
+<li><a href="#thiserror">thiserror</a></li>
+<li><a href="#anyhow">anyhow</a></li>
+</ul>
+
+
+<h2><h2 id="ErrorHandling">Error Handling</h2></h2>
+
+<ul>
+<li>大部分情况下，Rust 在编译阶段就会提示错误</li>
+<li>错误分类
+
+<ul>
+<li>可恢复 (例如文件未找到，可再次尝试)</li>
+<li>不可恢复 (bug, 例如访问的索引超出范围)</li>
+</ul>
+</li>
+<li>Rust 没有类似异常的机制
+
+<ul>
+<li>可恢复错误: <code>Result&lt;T, E&gt;</code></li>
+<li>不可恢复: <code>panic! 宏</code></li>
+</ul>
+</li>
+<li>在定义一个可能失败的函数时，优先考虑返回 Result, 否则就 <code>panic!</code></li>
+</ul>
+
+
+<h3>不可恢复的错误与 panic!</h3>
+
+<ul>
+<li>当 <code>panic!</code> 宏执行时:
+
+<ul>
+<li>程序会打印错误信息</li>
+<li>展开 (unwind)、清理调用栈 (stack)</li>
+<li>退出程序</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>为应对 panic，展开或中止 (abort) 调用栈</h4>
+
+<ul>
+<li>默认情况下，当 panic 发生
+
+<ul>
+<li>程序展开调用栈 (这个工作量是很大的)
+
+<ul>
+<li>Rust 沿着调用栈往回走</li>
+<li>清理每个遇到的函数中的数据</li>
+</ul>
+</li>
+<li>或立即中止调用栈
+
+<ul>
+<li>不进行清理，直接停止程序</li>
+<li>内存需要稍后由操作系统进行清理</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>想让二进制文件更小，可以设置从 &ldquo;展开&rdquo; 改为 &ldquo;中止&rdquo;
+
+<ul>
+<li><code>Cargo.toml</code> 中适当的 <code>profile</code> 部分设置 <code>panic = "abort"</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h4>查看 panic! 产生的回溯信息</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span><span class="nv">RUST_BACJTRACE</span><span class="o">=</span><span class="m">1</span> <span class="o">&amp;&amp;</span> cargo run
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;trigger panic&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>可恢复的错误与 Result</h3>
+
+<h4>Result Enum</h4>
+
+<ul>
+<li>和 Option Enum 一样，Result 和其变体也是由 prelude 带入作用域的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 定义</span>
+</span><span class='line'><span class="k">enum</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">Err</span><span class="p">(</span><span class="n">E</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// T: 操作成功情况下, 返回 Ok 变体里的数据的类型</span>
+</span><span class='line'><span class="c1">// E: 操作失败情况下，返回 Err 变体里的数据的类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 match 处理 Result</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">fs</span><span class="o">::</span><span class="n">File</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="k">match</span> <span class="n">f</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Ok</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">file</span><span class="p">,</span>
+</span><span class='line'>        <span class="nb">Err</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">match</span> <span class="n">error</span><span class="p">.</span><span class="n">kind</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 创建文件</span>
+</span><span class='line'>            <span class="n">ErrorKind</span><span class="o">::</span><span class="n">NotFound</span> <span class="o">=&gt;</span> <span class="k">match</span> <span class="n">File</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nb">Ok</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">fc</span><span class="p">,</span>
+</span><span class='line'>                <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error creating file: {:?}&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">),</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="c1">// 其他错误类型</span>
+</span><span class='line'>            <span class="n">other_error</span> <span class="o">=&gt;</span> <span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error opening the file: {:?}&quot;</span><span class="p">,</span> <span class="n">other_error</span><span class="p">),</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 Result 闭包</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">fs</span><span class="o">::</span><span class="n">File</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">).</span><span class="n">unwrap_or_else</span><span class="p">(</span><span class="o">|</span><span class="n">error</span><span class="o">|</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">error</span><span class="p">.</span><span class="n">kind</span><span class="p">()</span> <span class="o">==</span> <span class="n">ErrorKind</span><span class="o">::</span><span class="n">NotFound</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">File</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">).</span><span class="n">unwrap_or_else</span><span class="p">(</span><span class="o">|</span><span class="n">error</span><span class="o">|</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error creating file: {:?}&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">})</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error opening the file: {:?}&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>unwrap</h4>
+
+<ul>
+<li>unwrap: match 表达式的一个快捷方法
+
+<ul>
+<li>如果 Result 结果是 Ok, 返回 Ok 里面的值</li>
+<li>如果 Result 结果是 Err，调用 <code>panic!</code> 宏</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="k">match</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Ok</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">file</span><span class="p">,</span>
+</span><span class='line'>        <span class="nb">Err</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error opening the file: {:?}&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// unwrap 等同于以上代码</span>
+</span><span class='line'>    <span class="c1">// 返回 Err 时，panic</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>expect</h4>
+
+<ul>
+<li>expect: 和 unwrap 类似，但是可以指定错误信息</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;Error opening the file&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>传播错误与 ? 运算符</h4>
+
+<ul>
+<li><code>? 运算符</code> 只能应用于 Result 或者 Option 或者实现了 Try Trait 的类型</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 发生错误了，将错误交给调用方处理</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">read_username_from_file</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">io</span><span class="o">::</span><span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">f</span> <span class="o">=</span> <span class="k">match</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Ok</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">file</span><span class="p">,</span>
+</span><span class='line'>        <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">return</span> <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">s</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">f</span><span class="p">.</span><span class="n">read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Ok</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">ok</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
+</span><span class='line'>        <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用 `?` 运算符简化上面的传播错误代码</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">read_username_from_file2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">io</span><span class="o">::</span><span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// let mut f = match File::open(&quot;hello.txt&quot;) {</span>
+</span><span class='line'>    <span class="c1">//     Ok(file) =&gt; file,</span>
+</span><span class='line'>    <span class="c1">//     Err(e) =&gt; return Err(e)</span>
+</span><span class='line'>    <span class="c1">// };</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span> <span class="c1">// 得到 Err 的话, 会直接 return Err, 等于上面的代码</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">s</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">f</span><span class="p">.</span><span class="n">read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">s</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用链式调用继续简化代码</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">read_username_from_file3</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">io</span><span class="o">::</span><span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">s</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>    <span class="c1">// 当某个 ? 操作符的地方得到 Err 了，会直接 return Err</span>
+</span><span class='line'>    <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">read_to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">s</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>? 运算符与 from 函数</h5>
+
+<ul>
+<li>Trait <code>std::convert::From</code> 上的 from 函数
+
+<ul>
+<li>用于错误之间的转换</li>
+</ul>
+</li>
+<li>被 <code>?</code> 所应用的错误，会隐式的被 from 函数处理
+
+<ul>
+<li>它所接收的错误类型会被转化为当前函数返回类型所定义的错误类型</li>
+</ul>
+</li>
+<li>用于: 针对不同错误原因，返回同一种错误类型
+
+<ul>
+<li>前提: 需要错误类型实现了转化为所返回的错误类型的 from 函数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">convert</span><span class="o">::</span><span class="n">From</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">From</span><span class="o">&lt;</span><span class="n">Error1</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">Error2</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">from</span><span class="p">(</span><span class="n">_</span><span class="o">:</span> <span class="n">Error1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Error2</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>? 运算符与 main 函数</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// Box&lt;dyn Error&gt;: 是 trait 对象，可简单理解为代表任何可能的错误类型</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">dyn</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">f</span> <span class="o">=</span> <span class="n">File</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;hello.txt&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>自定义错误</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 不实现 Error trait 的错误</span>
+</span><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">CustomError</span><span class="p">(</span><span class="n">String</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">CustomError</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;test.txt&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">content</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">fs</span><span class="o">::</span><span class="n">read_to_string</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="n">map_err</span><span class="p">(</span><span class="o">|</span><span class="n">err</span><span class="o">|</span> <span class="n">CustomError</span><span class="p">(</span><span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error reading `{}`: {}&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">err</span><span class="p">)))</span><span class="o">?</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;file content: {}&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Error: CustomError(&quot;Error reading `test.txt`: No such file or directory (os error 2)&quot;)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 实现 Error trait 的错误</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">SuperError</span><span class="p">;</span>
+</span><span class='line'><span class="k">impl</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="n">Display</span> <span class="k">for</span> <span class="n">SuperError</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">fmt</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">:</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="n">Formatter</span><span class="o">&lt;</span><span class="nl">&#39;_</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="nb">Result</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">write</span><span class="o">!</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&quot;SuperError&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span> <span class="k">for</span> <span class="n">SuperError</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">CustomError</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">err</span><span class="o">:</span> <span class="n">SuperError</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="n">Display</span> <span class="k">for</span> <span class="n">CustomError</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">fmt</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">:</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="n">Formatter</span><span class="o">&lt;</span><span class="nl">&#39;_</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">fmt</span><span class="o">::</span><span class="nb">Result</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">write</span><span class="o">!</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&quot;CustomError&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span> <span class="k">for</span> <span class="n">CustomError</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 可用于实现错误追溯</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">source</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">Option</span><span class="o">&lt;&amp;</span><span class="p">(</span><span class="n">dyn</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span> <span class="o">+</span> <span class="k">&#39;static</span><span class="p">)</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Some</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">.</span><span class="n">err</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">new_custom_error</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">CustomError</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Err</span><span class="p">(</span><span class="n">CustomError</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">err</span><span class="o">:</span> <span class="n">SuperError</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">dyn</span> <span class="n">std</span><span class="o">::</span><span class="n">error</span><span class="o">::</span><span class="n">Error</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// new_custom_error()?;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">new_custom_error</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Error: {}&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+</span><span class='line'>            <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Caused by: {}&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">source</span><span class="p">().</span><span class="n">unwrap</span><span class="p">());</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Ok&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><h2 id="thiserror">thiserror</h2></h2>
+
+<blockquote><p>第三方库</p></blockquote>
+
+<ul>
+<li>为 <code>std::error::Error</code> 提供了方便的宏</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[derive(Debug, thiserror::Error)]</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Error</span> <span class="p">{</span>
+</span><span class='line'>    <span class="cp">#[error(transparent)]</span>
+</span><span class='line'>    <span class="n">VarError</span><span class="p">(</span><span class="cp">#[from]</span> <span class="n">std</span><span class="o">::</span><span class="n">env</span><span class="o">::</span><span class="n">VarError</span><span class="p">),</span> <span class="c1">// 捕获 env::VarError 异常</span>
+</span><span class='line'>    <span class="cp">#[error(transparent)]</span>
+</span><span class='line'>    <span class="n">IoError</span><span class="p">(</span><span class="cp">#[from]</span> <span class="n">std</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">Error</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">Error</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// std::env::var(&quot;不存在的环境变量&quot;)?; // 发生 std::env::VarError 异常</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">fs</span><span class="o">::</span><span class="n">read_to_string</span><span class="p">(</span><span class="s">&quot;不存在的路径&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span> <span class="c1">// 发生 std::io::Error 异常</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Error: VarError(NotPresent)</span>
+</span><span class='line'>    <span class="c1">// Error: IoError(Os { code: 2, kind: NotFound, message: &quot;No such file or directory&quot; })</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><h2 id="anyhow">anyhow</h2></h2>
+
+<blockquote><p>第三方库</p></blockquote>
+
+<ul>
+<li>提供了 <code>anyhow::Error</code></li>
+<li>它的 Context trait 可以用来添加描述。除此之外，它还保留了原始 error ，因此我们会得到指向错误根源的 error</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// Context trait 用来添加错误描述</span>
+</span><span class='line'><span class="c1">// Result 会自动转换异常类型</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">anyhow</span><span class="o">::</span><span class="p">{</span><span class="n">Context</span><span class="p">,</span> <span class="nb">Result</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">path</span> <span class="o">=</span> <span class="s">&quot;test.txt&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">content</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">fs</span><span class="o">::</span><span class="n">read_to_string</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="n">with_context</span><span class="p">(</span><span class="o">||</span> <span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;could not read file `{}`&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;file content: {}&quot;</span><span class="p">,</span> <span class="n">content</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Error: could not read file `test.txt`</span>
+</span><span class='line'><span class="c1">// Caused by:</span>
+</span><span class='line'><span class="c1">//     No such file or directory (os error 2)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2021-10-06T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rust/'>rust</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2021/10/06/rust-error-handling/" data-via="" data-counturl="http://away0x.github.io/blog/2021/10/06/rust-error-handling/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2021/10/05/rust-vector-string-hashmap/" title="Previous Post: Rust - Vector, String, HashMap">&laquo; Rust - Vector, String, HashMap</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2021/10/07/rust-generic-trait/" title="Next Post: Rust - Generic, Trait">Rust - Generic, Trait &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2022 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+<script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1280412127'%3E%3C/span%3E%3Cscript src='https://v1.cnzz.com/z_stat.php%3Fid%3D1280412127%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+<style>
+  span[id^="cnzz_stat_icon"] {
+    display: none;
+  }
+</style>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

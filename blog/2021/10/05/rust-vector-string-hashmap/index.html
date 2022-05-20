@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rust - Vector, String, HashMap - Away0x's Blog</title>
+  <meta name="author" content="TongWu">
+
+  
+  <meta name="description" content="Vector
+String
+HashMap 这些类型都是存储在 Heap 中的, 动态大小 Vector 类型: Vec&lt;T&gt; 由标准库提供
+可存储多个值
+只能存储相同类型的数据
+值在内存中连续存放 当 Vector 离开作用域后，它就被清理了，它的所有元素也被清理了 1
+2
+3
+4 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://away0x.github.io/blog/2021/10/05/rust-vector-string-hashmap">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Away0x's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+  <script src="/javascripts/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script src="/javascripts/alpine.min.js" defer type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css"> -->
+<link href="/stylesheets/google-fonts.css" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Away0x's Blog</a></h1>
+  
+    <h2>Coding blogging for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+<ul class="subscribe">
+  <li><a href="https://github.com/Away0x" rel="subscribe-github" title="@Away0x on GitHub" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 50,0 C 22.385714,0 0,22.385714 0,50 0,77.614286 22.385714,100 50,100 77.614286,100 100,77.614286 100,50 100,22.385714 77.614286,0 50,0 z m 29.692858,79.692858 c -3.859184,3.859182 -8.351022,6.887754 -13.35,9.00306 -1.27041,0.536736 -2.560204,1.009184 -3.867348,1.415306 v -7.493878 c 0,-3.938774 -1.35102,-6.835714 -4.053062,-8.690816 1.692858,-0.163264 3.24694,-0.390816 4.663266,-0.683672 1.416326,-0.292858 2.913266,-0.716328 4.491838,-1.27041 1.57857,-0.55408 2.994896,-1.213264 4.247958,-1.97755 1.253062,-0.765306 2.458164,-1.758164 3.613266,-2.978572 1.155102,-1.220408 2.12449,-2.604082 2.905102,-4.15 0.780612,-1.545918 1.4,-3.40204 1.855102,-5.566326 0.455102,-2.164286 0.683674,-4.54898 0.683674,-7.153062 0,-5.045918 -1.643878,-9.341836 -4.931634,-12.890816 C 77.44796,33.35 77.285714,29.10204 75.463266,24.512244 l -1.22143,-0.145918 c -0.845918,-0.09796 -2.368366,0.260204 -4.565306,1.07449 -2.196938,0.814286 -4.663264,2.14796 -7.396938,4.004082 -3.87449,-1.07449 -7.893878,-1.611224 -12.061224,-1.611224 -4.19898,0 -8.203062,0.536734 -12.012246,1.611224 -1.72449,-1.17245 -3.361224,-2.139796 -4.907142,-2.905102 C 31.753062,25.77449 30.516326,25.254082 29.587756,24.97653 28.660204,24.7 27.79796,24.528572 27,24.463266 c -0.79796,-0.0653 -1.310204,-0.08062 -1.537756,-0.04898 -0.22755,0.03164 -0.390816,0.0653 -0.487754,0.09796 -1.82347,4.62245 -1.985714,8.87143 -0.487756,12.743878 -3.287754,3.54796 -4.931632,7.844898 -4.931632,12.890816 0,2.604082 0.227552,4.988776 0.683674,7.153062 0.456122,2.164286 1.07449,4.020408 1.855102,5.566326 0.780612,1.545918 1.75,2.929592 2.905102,4.15 1.155102,1.220408 2.360204,2.213266 3.613264,2.978572 1.253062,0.766326 2.669388,1.42449 4.24796,1.97755 1.578572,0.554082 3.07551,0.976532 4.491836,1.27041 1.416328,0.292856 2.970408,0.521428 4.663266,0.683672 -2.669388,1.82347 -4.004082,4.720408 -4.004082,8.690816 v 7.639796 C 36.536734,89.818368 35.083674,89.3 33.656122,88.695918 c -4.99898,-2.115306 -9.490816,-5.143878 -13.35,-9.00306 -3.859184,-3.859184 -6.887754,-8.351022 -9.00306,-13.35 C 9.1163263,61.171428 8.0071428,55.67347 8.0071428,50 c 0,-5.67347 1.1091835,-11.171428 3.2969392,-16.342858 2.115306,-4.998978 5.143878,-9.490816 9.00306,-13.35 3.859184,-3.859182 8.351022,-6.887754 13.35,-9.00306 C 38.828572,9.1163266 44.32653,8.0071428 50,8.0071428 c 5.67347,0 11.171428,1.1091838 16.342858,3.2969392 5,2.115306 9.490816,5.143878 13.35,9.00306 3.859182,3.859184 6.887754,8.351022 9.00306,13.35 2.186736,5.17245 3.295918,10.67041 3.295918,16.342858 0,5.672448 -1.109182,11.171428 -3.296938,16.342858 -2.115306,4.998978 -5.143878,9.490816 -9.00204,13.35 l 0,0 z"></path></svg></a></li>
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="away0x.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <!-- <li><a href="/blog/categories/ios">iOS</a></li> -->
+  <li><a href="/blog/categories/objectivec">Objective-C</a></li>
+  <li><a href="/blog/categories/frontend">Frontend</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>
+  <li><a href="/blog/categories/rust">Rust</a></li>
+  <li><a href="/resources">Resources</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Rust - Vector, String, HashMap</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2021-10-05T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<ul>
+<li><a href="#Vector">Vector</a></li>
+<li><a href="#String">String</a></li>
+<li><a href="#HashMap">HashMap</a></li>
+</ul>
+
+
+<blockquote><p>这些类型都是存储在 Heap 中的, 动态大小</p></blockquote>
+
+<h2><h2 id="Vector">Vector</h2></h2>
+
+<ul>
+<li>类型: <code>Vec&lt;T&gt;</code>
+
+<ul>
+<li>由标准库提供</li>
+<li>可存储多个值</li>
+<li>只能存储相同类型的数据</li>
+<li>值在内存中连续存放</li>
+</ul>
+</li>
+<li>当 Vector 离开作用域后，它就被清理了，它的所有元素也被清理了</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 创建</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">v1</span><span class="o">:</span> <span class="n">Vec</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Vec</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span> <span class="c1">// Vec&lt;i32&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 更新</span>
+</span><span class='line'>    <span class="n">v1</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 获取</span>
+</span><span class='line'>    <span class="n">v2</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 通过索引获取</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">v2</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">Some</span><span class="p">(</span><span class="n">one</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">one</span><span class="p">),</span>
+</span><span class='line'>        <span class="nb">None</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;none&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 遍历</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="o">&amp;</span><span class="n">v2</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">v3</span> <span class="p">{</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// 修改 v3 里面的每项元素</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 引用与借用对 Vector 的影响</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 作用域内同时发生了可变借用和不可变借用，违反了引用借用规则</span>
+</span><span class='line'><span class="c1">//    因为 Vector 在内存中是连续摆放的，所以再往 v 中添加元素的时候，内存中可能没有这么大的连续内存块了，</span>
+</span><span class='line'><span class="c1">//    所以 push 可能会导致内存重新分配(原来的内存释放)，这样的话，之前的引用 first 还是指向原来的内存地址，就会出现问题</span>
+</span><span class='line'><span class="c1">//    所以通过引用借用规则，就可以避免掉这类 Bug</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">first</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 发生了一次不可变的借用</span>
+</span><span class='line'>    <span class="n">v</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span> <span class="c1">// 发生了一次可变的借用 (该行会报错)</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;The first element is {}&quot;</span><span class="p">,</span> <span class="n">first</span><span class="p">);</span> <span class="c1">// 发生了一次不可变的借用</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// Vector + Enum</span>
+</span><span class='line'><span class="c1">// Vector 只能存储相同类型的数据</span>
+</span><span class='line'><span class="c1">// 这里使用附加数据的 Enum 创建 Vector，从而使 Vector 可存储多种数据</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">SpreadsheetCell</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Int</span><span class="p">(</span><span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">Float</span><span class="p">(</span><span class="kt">f64</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Text</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">row</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">SpreadsheetCell</span><span class="o">::</span><span class="nb">Int</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">SpreadsheetCell</span><span class="o">::</span><span class="n">Text</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)),</span>
+</span><span class='line'>        <span class="n">SpreadsheetCell</span><span class="o">::</span><span class="nb">Float</span><span class="p">(</span><span class="mf">10.12</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><h2 id="String">String</h2></h2>
+
+<ul>
+<li><strong>字符串切片 <code>&amp;str</code></strong>
+
+<ul>
+<li>Rust 的核心语言层面，只有一个字符串类型: 字符串切片 <strong>str</strong> (或 <strong><code>&amp;str</code></strong>)</li>
+<li>字符串切片: 对存储在其他地方、UTF-8 编码的字符串的引用
+
+<ul>
+<li>字符串字面值: 存储在二进制文件中，也是字符串切片</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>String 类型</strong>
+
+<ul>
+<li>来自标准库而不是核心语言</li>
+<li>其可增长、可修改、可获得所有权</li>
+<li>UTF-8 编码</li>
+</ul>
+</li>
+<li>Rust 标准库提供了很多字符串类型:
+
+<ul>
+<li><code>&amp;str</code>, <code>String</code>, <code>&amp;[u8]</code>, <code>[&amp;u8;N]</code>, <code>[Vec&lt;u8&gt;]</code>, <code>&amp;u8</code>, <code>OsStr</code>, <code>OsString</code>, <code>Path</code>, <code>PathBuf</code>, <code>CStr</code>, <code>CString</code>, <code>&amp;' static str</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>创建 String</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 创建</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="s">&quot;init content&quot;</span><span class="p">.</span><span class="n">to_string</span><span class="p">();</span> <span class="c1">// to_string 方法可用于实现了 Display Trait 的类型</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s3</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;init content&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>更新 String</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 添加</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// push_str: 把一个字符串切片附加到 String</span>
+</span><span class='line'><span class="n">s1</span><span class="p">.</span><span class="n">push_str</span><span class="p">(</span><span class="s">&quot;123&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;456&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">s1</span><span class="p">.</span><span class="n">push_str</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s4</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// push: 把单个字符附加到 String</span>
+</span><span class='line'><span class="n">s2</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="sc">&#39;l&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// +: 拼接字符串</span>
+</span><span class='line'><span class="c1">//   实际上是使用了类似 fn add(self, s: &amp;str) -&gt; String {...} 的这个方法</span>
+</span><span class='line'><span class="c1">//   s1 + &amp;s2，其实是把 s1 和 s2 的引用相加到一起，所以 s1 的所有权转移到 add 方法里了，下面拼接之后的打印 s1 会报错</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello &quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s3</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">s2</span><span class="p">;</span> <span class="c1">// s1 失去了所有权; s2 由于传递的是引用，保留了所有权</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s1</span><span class="p">);</span> <span class="c1">// 报错 (s1 的所有权转移，s1 这里不可使用了)</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span> <span class="c1">// 可打印</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s3</span><span class="p">);</span> <span class="c1">// 可打印</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 问题: s1 + &amp;s2，这里是 String + &amp;String 类型，但是 add 函数签名要求是 &amp;str，为何可运行？</span>
+</span><span class='line'><span class="c1">//      这是因为标准库中这个 add 方法使用了泛型，只能把 &amp;str 添加到 String</span>
+</span><span class='line'><span class="c1">//      所以编译器在这里产生了解引用强制转换 (deref coercion)，把 &amp;String 转换为了 &amp;str 类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// format!: 拼接字符串</span>
+</span><span class='line'><span class="c1">//          format! 则不会获取任何参数的所有权</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;aa&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;bb&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s3</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">s4</span> <span class="o">=</span> <span class="n">format</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}-{}-{}&quot;</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">s3</span><span class="p">);</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s1</span><span class="p">);</span> <span class="c1">// 可打印</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span> <span class="c1">// 可打印</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s3</span><span class="p">);</span> <span class="c1">// 可打印</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 上面的例子如果用 + 来实现就得 (使用 + 运算符会导致 s1 的所有权转移)</span>
+</span><span class='line'><span class="c1">// let s4 = s1 + &quot;-&quot; + &amp;s2 + &quot;-&quot; + &amp;s3;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>访问 String</h3>
+
+<ul>
+<li>不支持索引语法访问
+
+<ul>
+<li>字符串其实是对 <code>Vec&lt;u8&gt;</code> 的包装，通过索引获取到的是字节，通常没有意义，且容易引发 Bug，所以 Rust 直接拒绝了这种行为</li>
+<li>索引操作应该是消耗一个常量时间(<code>O(1)</code>)，但是 String 的索引操作无法保证这种时间
+
+<ul>
+<li>因为需要遍历所有内容，来确定有多少个合法字符</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 访问</span>
+</span><span class='line'><span class="c1">// Rust 的 String 不支持索引语法访问</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="n">s1</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// 报错</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// len: 返回 String 所占用的字节数</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">len1</span> <span class="o">=</span> <span class="n">Strnig</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hola&quot;</span><span class="p">).</span><span class="n">len</span><span class="p">();</span>  <span class="c1">// 4 (使用 utf8 编码, hola 占用了 4 个字节)</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">len2</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;字节数&quot;</span><span class="p">).</span><span class="n">len</span><span class="p">();</span> <span class="c1">// 9 (汉字每个字占用了 3 个字节)</span>
+</span><span class='line'><span class="c1">// 由于字符串实际上是个 byte Vector 即 Vec&lt;u8&gt; 类型的包装，所以通过索引只能索引到 unicode 标量值，例如: &quot;208&quot;、&quot;151&quot; 这样的 code</span>
+</span><span class='line'><span class="c1">// 为了避免得到这类无意义的数据，Rust 直接拒绝了这样通过索引操作字符串的行为</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>字节(Bytes)、标量值(Scalar Values)、字形簇(Grapheme Clusters)</h4>
+
+<ul>
+<li>Rust 有三种看待字符串的方式:
+
+<ul>
+<li>字节</li>
+<li>标量值</li>
+<li>字形簇 (最接近所谓的 &ldquo;字母&rdquo;)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;नमस्ते&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 字节</span>
+</span><span class='line'><span class="k">for</span> <span class="n">b</span> <span class="k">in</span> <span class="n">s</span><span class="p">.</span><span class="n">bytes</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span> <span class="c1">// 224 164 168 224 164 174 224 ...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 标量值</span>
+</span><span class='line'><span class="k">for</span> <span class="n">b</span> <span class="k">in</span> <span class="n">s</span><span class="p">.</span><span class="n">chars</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// chars 方法会将其分开并返回六个 char 类型的值</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span> <span class="c1">// 六个奇奇怪怪的字符</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 字形簇</span>
+</span><span class='line'><span class="c1">// 标准库没有提供从字符串中获取字形簇的功能</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>切割 String</h3>
+
+<ul>
+<li>可以使用 <code>[]</code> 和一个范围来创建字符串的切片
+
+<ul>
+<li>必须谨慎使用</li>
+<li>如果切割时跨越了字符边界，程序运行时就会 panic</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;字符串&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s1</span><span class="p">[</span><span class="mf">0.</span><span class="p">.</span><span class="mi">3</span><span class="p">];</span> <span class="c1">// s2 为 s1 的前是那个字节，汉字占 3 个字节，所以这里切出的是一个完整的汉字</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s2</span><span class="p">);</span> <span class="c1">// 字</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">s3</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s1</span><span class="p">[</span><span class="mf">0.</span><span class="p">.</span><span class="mi">4</span><span class="p">];</span> <span class="c1">// 前 4 个字节不能切出完整的汉字</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s3</span><span class="p">);</span> <span class="c1">// 报错 必须按照字符串的边界切割才行)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>遍历 String</h3>
+
+<ul>
+<li>遍历标量值: <code>chars()</code> 方法</li>
+<li>遍历字节: <code>bytes()</code> 方法</li>
+<li>遍历字形簇: 很复杂，标准库未提供，需要找第三方库</li>
+</ul>
+
+
+<h2><h2 id="HashMap">HashMap</h2></h2>
+
+<ul>
+<li>类型: <code>HashMap&lt;K, V&gt;</code></li>
+<li>HashMap 不在 Prelude 中，需要自己导入，且不像 Vector 有内置宏来创建</li>
+<li>数据存储在 heap 上</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">collections</span><span class="o">::</span><span class="n">HashMap</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// 创建: new</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">scores</span><span class="o">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="kt">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// 添加数据: insert</span>
+</span><span class='line'><span class="n">scores</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 collect 方法创建 HashMap</span>
+</span><span class='line'><span class="c1">// collect 方法可以把数据整合成很多种集合类型，也包括 hashmap，所以返回值需要显式指明类型</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">teams</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Blue&quot;</span><span class="p">),</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Yellow&quot;</span><span class="p">)];</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">intial_scores</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// iter 返回遍历器，zip 创建 Tuple</span>
+</span><span class='line'><span class="c1">// 需要指明 collect 创建类型为 HashMap，里面的 key value，编译器会自动推到出来，所以可以省略</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">scores</span><span class="o">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">teams</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">zip</span><span class="p">(</span><span class="n">intial_scores</span><span class="p">.</span><span class="n">iter</span><span class="p">()).</span><span class="n">collect</span><span class="p">();</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">scores</span><span class="p">);</span> <span class="c1">// { &quot;Blue&quot;: 10, &quot;Yellow&quot;: 50 }</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 访问 get(key: &amp;K) =&gt; Option&lt;&amp;V&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">map</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'><span class="n">map</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">),</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;v&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">one</span> <span class="o">=</span> <span class="n">map</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">one</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">None</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;not exist&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 遍历</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">in</span> <span class="o">&amp;</span><span class="n">map</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}: {}&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 更新</span>
+</span><span class='line'><span class="n">map</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">),</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;v&quot;</span><span class="p">));</span> <span class="c1">// 如已存在 k，则会覆盖</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 只在 key 不对应任何值的情况下，才插入 v</span>
+</span><span class='line'><span class="c1">// entry: 检查是否存在指定的 key</span>
+</span><span class='line'><span class="n">map</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">or_insert</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;v2&quot;</span><span class="p">));</span> <span class="c1">// 不存在再插入, or_insert 返回的是 value 的可变引用</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 基于现有值来更新</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;hello world wonderful world&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">map</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">word</span> <span class="k">in</span> <span class="n">text</span><span class="p">.</span><span class="n">split_whitespace</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">count</span> <span class="o">=</span> <span class="n">map</span><span class="p">.</span><span class="n">entry</span><span class="p">(</span><span class="n">word</span><span class="p">).</span><span class="n">or_insert</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// 返回 value 的可变引用</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// 修改 value</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{:#?}&quot;</span><span class="p">,</span> <span class="n">map</span><span class="p">);</span> <span class="c1">// {&quot;hello&quot;: 1, &quot;world&quot;: 2, &quot;wonderful&quot;: 1} // world 单词出现 2 次，其他单词出现 1 次</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>HashMap 和所有权</h3>
+
+<ul>
+<li>对于实现了 Copy trait 的类型(例如 i32)，值会被复制到 HashMap 中</li>
+<li>对于拥有所有权的值(例如 String), 值会被移动，所有权会转移给 HashMap</li>
+<li>如果将值的引用插入到 HashMap，值本身不会移动
+
+<ul>
+<li>在 HashMap 有效的期间，被引用的值必须保持有效</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">k</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">v</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;v&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">map</span> <span class="o">=</span> <span class="n">HashMap</span><span class="o">::</span><span class="n">new</span><span class="p">();</span>
+</span><span class='line'><span class="n">map</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// k, v 所有权转移给了 map</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}, {}&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span> <span class="c1">// 报错，k v 不可使用了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    TongWu
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2021-10-05T08:00:00+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2021</span></span> <span class='time'>8:00 am</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rust/'>rust</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://away0x.github.io/blog/2021/10/05/rust-vector-string-hashmap/" data-via="" data-counturl="http://away0x.github.io/blog/2021/10/05/rust-vector-string-hashmap/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2021/10/04/rust-package-crate-module-path/" title="Previous Post: Rust - Package, Crate, Module, Path">&laquo; Rust - Package, Crate, Module, Path</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2021/10/06/rust-error-handling/" title="Next Post: Rust - Error Handling">Rust - Error Handling &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2022 - TongWu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+<script type="text/javascript">document.write(unescape("%3Cspan id='cnzz_stat_icon_1280412127'%3E%3C/span%3E%3Cscript src='https://v1.cnzz.com/z_stat.php%3Fid%3D1280412127%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+<style>
+  span[id^="cnzz_stat_icon"] {
+    display: none;
+  }
+</style>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
