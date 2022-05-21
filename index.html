@@ -9,8 +9,7 @@
   <meta name="author" content="TongWu">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -116,9 +115,12 @@
   </header>
 
 
-  <div class="entry-content">
-</div>
+  <div class="entry-content"></div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2021/10/14/rust-macro-unsafe/">Read on &rarr;</a>
+    </footer>
   
 
 
@@ -146,7 +148,682 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><ul>
+<li>模式是 Rust 的一种特殊语法，用于匹配复杂和简单类型的结构</li>
+<li>将模式与匹配表达式和其他构造结合使用，可以更好地控制程序的控制流</li>
+<li>模式由以下元素 (的一些组合) 组成:
+
+<ul>
+<li>字面值</li>
+<li>解构的数组、enum、struct 和 tuple</li>
+<li>变量</li>
+<li>通配符</li>
+<li>占位符</li>
+</ul>
+</li>
+<li>想要使用模式，需要将其与某个值比较
+
+<ul>
+<li>如果可以模式匹配，就可以在代码中使用这个值的相应部分</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>可用用到模式匹配的地方</h2>
+
+<h3>match 的分支</h3>
+
+<ul>
+<li>要求分支需要包含所有的可能性
+
+<ul>
+<li><code>_</code>: 可以匹配任何东西，不会绑定到变量，通常用于 match 的最后一个分支，或用于忽略某些值</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">match</span> <span class="n">VALUE</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">enum</span> <span class="n">Coin</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Penny</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Nickel</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Dime</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Quarter</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">value_in_cents</span><span class="p">(</span><span class="n">coin</span><span class="o">:</span> <span class="n">Coin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">u8</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">coin</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Penny</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Nickel</span> <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Dime</span> <span class="o">=&gt;</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Quarter</span> <span class="o">=&gt;</span> <span class="mi">25</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>if let</h3>
+
+<ul>
+<li>简单的控制流表达式，处理只关心一种匹配而忽略其他匹配的情况，放弃了穷举的可能性，可以理解成 match 的简化版</li>
+<li>主要是作为一种简短的方式来等价的代替只有一个匹配项的 match</li>
+<li><code>if let</code> 可选的可以拥有 <code>else</code> <code>else if</code> <code>else if let</code></li>
+<li><code>if let</code> 不会检查穷尽性</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">0</span><span class="k">u8</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">v</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 可使用 if let 改写</span>
+</span><span class='line'><span class="k">if</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>while let 条件循环</h3>
+
+<ul>
+<li>只有模式继续满足匹配的条件，那它运行 while 循环一直运行</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="k">while</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">top</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>for 循环</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">in</span> <span class="n">arr</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">enumerate</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}: {}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>let 语句</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 这个其实也是一个模式</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>函数参数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// 参数 x 也是一个模式</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">foo2</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">:</span> <span class="o">&amp;</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">))</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">point</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="n">foo2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">point</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>模式的可辩驳性</h2>
+
+<ul>
+<li>模式有两种形式: 可辩驳的(可失败的), 无可辩驳的(不可失败的)
+
+<ul>
+<li>能匹配任何可能传递的值的模式: 无可辩驳的
+
+<ul>
+<li>例如: <code>let x = 5</code></li>
+</ul>
+</li>
+<li>对于某些可能的值，无法继续匹配的模式: 可辩驳的
+
+<ul>
+<li>例如: <code>if let Some(x) = val</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>函数参数、let 语句、for 循环只接收<strong>无可辩驳</strong>的模式</li>
+<li><code>if let</code> 和 <code>while let</code> 接收<strong>可辩驳</strong>和<strong>无可辩驳</strong>的模式</li>
+<li>match 语句，除了最后一个分支是<strong>无可辩驳</strong>的，其他分支为<strong>可辩驳</strong></li>
+</ul>
+
+
+<h2>匹配语法</h2>
+
+<h3>匹配字面值</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mi">1</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">2</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;two&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">3</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;anything&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>匹配命名变量</h3>
+
+<ul>
+<li>命名的变量是可匹配任何值的无可辩驳模式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got 50&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Matched, y = {:?}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="c1">// 作用域只在子句中</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Default case, x = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;at the end: x = {:?}, y = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// &quot;Matched, y = 5&quot;</span>
+</span><span class='line'><span class="c1">// &quot;at the end: x = Some(5), y = 10&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多重模式</h3>
+
+<ul>
+<li>match 可使用 <code>|</code>(或运算符), 可以匹配多种模式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mi">1</span> <span class="o">|</span> <span class="mi">2</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one or two&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">3</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;anything&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>匹配范围</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mf">1.</span><span class="p">.</span><span class="o">=</span><span class="mi">5</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one through five&quot;</span><span class="p">),</span> <span class="c1">// 1,2,3,4,5</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;something else&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用模式来解构分解值</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 struct</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">7</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="n">a</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="n">b</span> <span class="p">}</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">p</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 子分支会创建 x y 变量</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = any, y = 0 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On the x axis at {}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = 0, y = any 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On the y axis at {}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="c1">// 匹配到该行</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = any, y = any 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On neither axis: ({}, {})&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 enum</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Quit</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'>    <span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">ChangeColor</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Quit</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="c1">// 会创建 x y 变量</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{...},</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构嵌套的类型</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Color</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">Rgb</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'>   <span class="n">Hsv</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Quit</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'>    <span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Hsv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">255</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Rgb</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Hsv</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">_</span> <span class="o">=&gt;</span> <span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 tuple</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">((</span><span class="n">feet</span><span class="p">,</span> <span class="n">inches</span><span class="p">),</span> <span class="n">Point</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="o">=</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">-</span><span class="mi">10</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>在模式中忽略值</h4>
+
+<ul>
+<li><code>_</code>: 可用来忽略某个值</li>
+<li>使用以 <code>_</code> 开头的名称: 标记该值不会被用到</li>
+<li><code>..</code>: 忽略值的剩余部分</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 `_` 来作为匹配但不绑定任何值的通配符</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">foo</span><span class="p">(</span><span class="n">_</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This code only uses the y parameter: {}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// --------</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">setting_value</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">new_setting_value</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="k">match</span> <span class="p">(</span><span class="n">setting_value</span><span class="p">,</span> <span class="n">new_setting_value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">),</span> <span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Can&#39;t overwrite an existing customized value&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">setting_value</span> <span class="o">=</span> <span class="n">new_setting_value</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;setting is {:?}&quot;</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// --------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">numbers</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span><span class='line'><span class="k">match</span> <span class="n">numbers</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">third</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">fifth</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Some numbers: {}, {}, {}&quot;</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">third</span><span class="p">,</span> <span class="n">fifth</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用以 `_` 开头的名称: 忽略被使用的变量</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">_x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// _x 没被使用也不会有警告</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// -------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Hello!&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="c1">// s 多所有权被移入了 if let 子句了, _s 会发生绑定操作获取所有权</span>
+</span><span class='line'><span class="c1">// 如果将 Some(_s) 修改为 Some(_)，_ 不会发生绑定操作，所以 s 的所有权也不会移动了</span>
+</span><span class='line'><span class="k">if</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;found a string&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 用 .. 忽略剩余值</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Point</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">z</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">:</span> <span class="mi">0</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">origin</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="p">..</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;x is {}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ----------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">numbers</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">numbers</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// (.., second, ..) 这种模糊的匹配会失败</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">..,</span> <span class="n">last</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Some numbers: {}, {}&quot;</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>match guard</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 指定于 match 分支模式之后的额外 if 条件，它也必须被满足才能选择此分支</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got 50&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="c1">// 匹配 Some(n), 然后绑定 n, 如果 n == y, 匹配成功</span>
+</span><span class='line'>    <span class="c1">// 该例中, 匹配 Some(n) 成功，但是由于 n != y，所以进入 _ 分支</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">y</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Matched, n = {}&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Default case, x = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="c1">// 最终匹配到这个分支</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 匹配 4, 5, 6; 并且 y == true</span>
+</span><span class='line'>    <span class="mi">4</span> <span class="o">|</span> <span class="mi">5</span> <span class="o">|</span> <span class="mi">6</span> <span class="k">if</span> <span class="n">y</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;yes&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;no&quot;</span><span class="p">),</span> <span class="c1">// 最终匹配到这个分支</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>@ 绑定</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// @ 符号让我们可以创建一个变量，该变量可以在测试某个值是否与模式匹配的同时保存该值</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="mi">5</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 要求 id 的值在 3~7 范围内，同时使用 @ 将匹配到的值存储在 id_variable 变量中</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="n">id_variable</span> <span class="o">@</span> <span class="mf">3.</span><span class="p">.</span><span class="o">=</span><span class="mi">7</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found an id in range: {}&quot;</span><span class="p">,</span> <span class="n">id_variable</span><span class="p">)</span> <span class="c1">// </span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="c1">// 这里由于 id 匹配的是一个范围，其可能是 10 11 12, 没有具体的值，所以即使匹配到了也无法绑定</span>
+</span><span class='line'>    <span class="c1">// 如果匹配到该子句了，想在子句内使用具体匹配到的值，也得 { id: id_variable @ 10..=12 }</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="mf">10.</span><span class="p">.</span><span class="o">=</span><span class="mi">12</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found an id in another range&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="c1">// 该子句指定了一个没有范围的比例，所以如果匹配到这行，id 可以绑定具体的值</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found some other id: {}&quot;</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// Found an id in range: 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -176,7 +853,520 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><ul>
+<li>Concurrent 并发: 程序的不同部分之间可以独立的运行</li>
+<li>Parallel 并行: 程序的不同部分同时运行</li>
+</ul>
+
+
+<h2>线程</h2>
+
+<ul>
+<li>通过 <code>thread::spawn</code> 创建线程
+
+<ul>
+<li>参数为一个闭包, 闭包里面是在新线程中运行的代码</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">time</span><span class="o">::</span><span class="n">Duration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">.</span><span class="mi">10</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;hi number {} from the spawned thread!&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_millis</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">.</span><span class="mi">5</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;hi number {} from the main thread!&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_millis</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 当主线程结束时，新线程也会结束，而不管子线程是否执行完毕</span>
+</span><span class='line'>    <span class="c1">// 可以使用 join 等待子线程执行完毕 (会堵塞, 直到线程执行完毕)</span>
+</span><span class='line'>    <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>move 闭包常与 spawn 一起使用, 它允许我们在一个线程中使用另一个线程的数据</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">// 将 v 的所有权移动到了线程中, 这样线程中就可以安全的使用 v 变量了</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Here&#39;s a vector: {:?}&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>消息传递</h2>
+
+<ul>
+<li>线程 (或 Actor) 通过彼此发送消息(数据)来进行通信
+
+<ul>
+<li><strong>不用用共享内存来通信, 要用通信来共享内存</strong></li>
+</ul>
+</li>
+<li>Rust 中使用 <code>Channel</code> 来实现消息传递
+
+<ul>
+<li>Channel 包含发送端和接收端, 如果这两端中任意一端被丢弃了, 那么 Channel 就关闭了</li>
+</ul>
+</li>
+<li>使用 <code>mpsc::channel</code> 来创建 Channel
+
+<ul>
+<li>mpsc (multiple producer, single consumer): 多个生产者, 一个消费者</li>
+</ul>
+</li>
+<li>发送端:
+
+<ul>
+<li><code>send</code> 方法:
+
+<ul>
+<li>参数: 要发送的数据</li>
+<li>返回值: <code>Result&lt;T, E&gt;</code>, 如果有问题(如接收端已经被丢弃), 就会返回一个 Err</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接收端:
+
+<ul>
+<li><code>recv</code> 方法 (堵塞当前线程运行, 直到 Channel 中有值传送过来)
+
+<ul>
+<li>一但有值收到, 就会返回 <code>Result&lt;T, E&gt;</code></li>
+<li>当发送端关闭, 就会收到一个错误</li>
+</ul>
+</li>
+<li><code>try_recv</code> 方法 (不会堵塞)
+
+<ul>
+<li>立即返回 <code>Result&lt;T, E&gt;</code>, 有数据到达会返回 Ok, 否则返回 Err</li>
+<li>通常会使用循环调用来检查该函数的结果</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">mpsc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// tx: 发送端</span>
+</span><span class='line'>    <span class="c1">// rx: 接收端</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// move: 使新的线程拥有了 tx 发送端的所有权了</span>
+</span><span class='line'>    <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">val</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// 这里 send 之后, val 的所有权会被转移给接收者</span>
+</span><span class='line'>        <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span> <span class="c1">// 发送数据</span>
+</span><span class='line'>        <span class="c1">// val 不可用了</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 接收数据 (阻塞主线程执行直到从通道中接收一个值)</span>
+</span><span class='line'>    <span class="c1">// 当通道发送端关闭，recv 会返回一个错误表明不会再有新的值到来了</span>
+</span><span class='line'>    <span class="c1">// 还有个方法 try_recv, 其不会堵塞则是立即返回 Result, Ok 表示有值, Err 表示值还没到来</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">received</span> <span class="o">=</span> <span class="n">rx</span><span class="p">.</span><span class="n">recv</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 发送多个值</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">mpsc</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">time</span><span class="o">::</span><span class="n">Duration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;the&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;thread&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span> <span class="c1">// 暂停 1s</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 可把接受者 rx 当作迭代器使用, 每过 1s 会接收到一个值</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">received</span> <span class="k">in</span> <span class="n">rx</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 通过克隆发送者来创建多个生产者</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">tx1</span> <span class="o">=</span> <span class="n">tx</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'><span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">tx1</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;more&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;messages&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 会接收到 tx1 和 tx 两个发送端发送的数据</span>
+</span><span class='line'><span class="k">for</span> <span class="n">received</span> <span class="k">in</span> <span class="n">rx</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>共享状态</h2>
+
+<ul>
+<li>Rust 支持通过共享状态来实现并发
+
+<ul>
+<li>Channel 类似单所有权: 一旦值的所有权转移至 Channel, 就无法使用它了</li>
+<li>共享内存的并发类似多所有权: 多个线程可以同时访问同一块内存</li>
+</ul>
+</li>
+<li>使用 <code>Mutex</code> (mutual exclusion 互斥锁) 来保证每次只允许一个线程来访问数据
+
+<ul>
+<li>想要访问数据, 线程必须首先获取互斥锁 (lock)
+
+<ul>
+<li>lock: 是一种数据结构, 是 mutex 的一部分, 它能跟踪谁对数据拥有独占访问权</li>
+</ul>
+</li>
+<li>mutex 通常被描述为: 通过锁定系统来保护它所持有的数据</li>
+</ul>
+</li>
+<li><strong>Mutex 的两条规则</strong>
+
+<ol>
+<li>在使用数据之前, 必须尝试获取锁(lock)</li>
+<li>使用完 mutex 所保护的数据, 必须对数据进行解锁, 以便其他线程可以获取锁</li>
+</ol>
+</li>
+<li>Mutex 的 API:
+
+<ul>
+<li>通过 <code>Mutex::new(数据)</code> 来创建 <code>Mutex&lt;T&gt;</code>
+
+<ul>
+<li><code>Mutex&lt;T&gt;</code> 是一个智能指针</li>
+</ul>
+</li>
+<li>访问数据前, 通过 lock 方法来获取锁
+
+<ul>
+<li>会堵塞当前线程</li>
+<li>lock 可能会失败</li>
+<li>返回的是 MutexGuard (智能指针, 实现了 Deref 和 Drop)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">Mutex</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Mutex</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="k">mut</span> <span class="n">num</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">num</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// mutex 使用了 Drop trait, 所以这里会自动 unlock</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;m = {:?}&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>原子引用计数 <code>Arc&lt;T&gt;</code> (A: atomic)
+
+<ul>
+<li>类似 <code>Rc&lt;T&gt;</code> (Rc 线程不安全) 并可以安全的用于并发环境的类型, 和 <code>Rc&lt;T&gt;</code> 有着相同的 API</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 多线程共享 mutex</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="p">{</span><span class="n">Mutex</span><span class="p">,</span> <span class="n">Arc</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">Arc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Mutex</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">handles</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mf">0.</span><span class="p">.</span><span class="mi">10</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 利用 Arc 实现多线程之间共享所有权</span>
+</span><span class='line'>        <span class="c1">// 不使用 Arc 的话, 在第一次循环时, counter 的所有权就会被移动到线程中, 第二次循环就会报错 (不能将 counter 锁的所有权移动到多个线程中)</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">Arc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 线程中获取 lock, 并修改值</span>
+</span><span class='line'>            <span class="kd">let</span> <span class="k">mut</span> <span class="n">num</span> <span class="o">=</span> <span class="n">counter</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>            <span class="o">*</span><span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>        <span class="n">handles</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 等所有线程都执行完毕后再往下执行</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">handle</span> <span class="k">in</span> <span class="n">handles</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Result: {}&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">counter</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>RefCell&lt;T&gt;</code>/<code>Rc&lt;T&gt;</code> 与 <code>Mutex&lt;T&gt;</code>/<code>Arc&lt;T&gt;</code> 的相似性</h3>
+
+<ul>
+<li><code>Mutex&lt;T&gt;</code> 提供了内部可变性, 和 Cell 家族一样
+
+<ul>
+<li>使用 <code>RefCell&lt;T&gt;</code> 来改变 <code>Rc&lt;T&gt;</code> 里面的内容</li>
+<li>使用 <code>Mutex&lt;T&gt;</code> 来改变 <code>Arc&lt;T&gt;</code> 里面的内容</li>
+<li>注意: <code>Mutex&lt;T&gt;</code> 有死锁风险</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Send &amp; Sync</h2>
+
+<h3>Send Trait</h3>
+
+<ul>
+<li><code>std::marker::Send</code>: 允许线程间转移所有权</li>
+<li>实现 Send Trait 的类型就可以在线程间转移所有权
+
+<ul>
+<li>Rust 中几乎所有的类型都实现了 Send</li>
+<li><code>Rc&lt;T&gt;</code> 没有实现 Send, 它只用于单线程场景</li>
+</ul>
+</li>
+<li>任何完全由 Send 类型组成的类型也是 Send</li>
+<li>除了原始指针之外, 几乎所有的基础类型都是 Send</li>
+</ul>
+
+
+<h3>Sync Trait</h3>
+
+<ul>
+<li><code>std::marker::Sync</code>: 允许从多线程访问</li>
+<li>实现 Sync Trait 的类型可以安全的被多个线程引用
+
+<ul>
+<li>即: <strong>如果 <code>T</code> 是 Sync, 那么 <code>&amp;T</code> 就是 Send</strong>, <code>&amp;T</code> 可以被安全的送往另外一个线程</li>
+</ul>
+</li>
+<li>任何完全由 Sync 类型组成的类型也是 Sync</li>
+<li>基础类型都是 Sync</li>
+<li><code>Rc&lt;T&gt;</code>, <code>RefCell&lt;T&gt;</code>, <code>Cell&lt;T&gt;</code> 家族都不是 Sync 的</li>
+<li><code>Mutex&lt;T&gt;</code> 是 Sync 的</li>
+</ul>
+
 </div>
   
   
@@ -206,7 +1396,686 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><ul>
+<li>指针: 一个变量在内存中包含的是一个地址 (指向其他数据)</li>
+<li>Rust 中最常见的指针就是 &ldquo;引用&rdquo;
+
+<ul>
+<li>使用 <code>&amp;</code></li>
+<li>借用它指向的值</li>
+<li>没有其余开销</li>
+<li>最常见的指针类型</li>
+</ul>
+</li>
+<li><strong>智能指针:</strong>
+
+<ul>
+<li>行为和指针类似</li>
+<li>有额外的元数据和功能</li>
+</ul>
+</li>
+<li><strong>引用</strong>和<strong>智能指针</strong>的不同
+
+<ul>
+<li>引用: 只借用数据</li>
+<li>智能指针: 很多时候都拥有它所指向的数据</li>
+</ul>
+</li>
+<li>常用的智能指针类型:
+
+<ul>
+<li><code>Box&lt;T&gt;</code>: 在 heap 内存上分配值</li>
+<li><code>Rc&lt;T&gt;</code>: 启用多重所有权的引用计数类型</li>
+<li><code>Ref&lt;T&gt;</code>、<code>RefMut&lt;T&gt;</code>: 通过 <code>RefCell&lt;T&gt;</code> 访问，在运行时而不是编译时强制借用规则的类型</li>
+</ul>
+</li>
+<li><code>String</code> 和 <code>Vec&lt;T&gt;</code> 就是智能指针
+
+<ul>
+<li>它们都拥有一片内存区域，且运行用户对其操作</li>
+<li>拥有元数据 (例如容量等)</li>
+<li>提供额外的功能或保障 (String 保障其数据时合法的 UTF-8 编码)</li>
+</ul>
+</li>
+<li><strong>通常使用 struct 实现，并且实现了: <code>Deref</code> 和 <code>Drop</code> 两个 Trait</strong>
+
+<ul>
+<li>Deref trait: 允许智能指针 struct 的实例像引用一样使用</li>
+<li>Drop trait: 允许你自动移当智能指针实例走出作用域时的代码</li>
+</ul>
+</li>
+<li><strong>内部可变模式 (interior mutability pattern):</strong> 不可变类型暴露出可修改其内部值的 API</li>
+</ul>
+
+
+<h2><code>Box&lt;T&gt;</code> 类型</h2>
+
+<ul>
+<li>其是最简单的智能指针:
+
+<ul>
+<li>允许你在 Heap 上存储数据 (而不是 stack)</li>
+<li>stack 上是指向 Heap 数据的指针</li>
+<li>没有性能开销</li>
+<li>没有其他额外功能</li>
+<li>适用于 &ldquo;间接&rdquo; 存储的场景</li>
+<li>实现了 <code>Deref</code> 和 <code>Drop</code> 两个 Trait</li>
+</ul>
+</li>
+<li>使用场景:
+
+<ol>
+<li>在编译时，某类型的大小无法确定。但使用该类型时，上下文却需要知道它的确切大小
+
+<ul>
+<li><code>Box&lt;T&gt;</code> 是一个指针, Rust 知道它需要多少空间 (指针的大小不会基于它指向的数据的大小变化而变化)</li>
+<li><code>Box&lt;T&gt;</code></li>
+</ul>
+</li>
+<li>当有大量数据，想移交所有权，但需要确保在操作时数据不会被复制</li>
+<li>使用某个值时，你只关心它是否实现了特定的 Trait，而不关心它的具体类型</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span> <span class="c1">// 整数 5 存储在 heap 上了</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;a = {}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// &quot;a = 5&quot;</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">// a 被释放了 (会释放其存储在 stack 上的指针，以及存储在 heap 上的数据)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cons List (递归类型)</h3>
+
+<ul>
+<li>在编译时，Rust 需要知道一个类型所占的空间大小</li>
+<li>而递归类型的大小无法在编译时确定, 但 Box 类型的大小确定，在递归类型中使用 Box 就可解决上述问题</li>
+<li>这种类型 <code>Cons List</code> 是来自 Lisp 的一种数据结构
+
+<ul>
+<li>Cons List 里每个成员由两个元素组成
+
+<ol>
+<li>当前项的值</li>
+<li>下一个元素</li>
+</ol>
+</li>
+<li>Cons List 里最后一个成员只包含一个 Nil 值，没有下一个元素</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 Rust 实现 Cons List</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Box&lt;T&gt; 提供了 &quot;间接&quot; 存储和 heap 内存分配的方式</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">))))));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{:?}&quot;</span><span class="p">,</span> <span class="n">list</span><span class="p">);</span> <span class="c1">// Cons(1, Cons(2, Cons(3, Nil)))</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Deref Trait</h2>
+
+<ul>
+<li>实现该 Trait 可使我们能<strong>自定义解引用运算符 <code>*</code> 的行为</strong></li>
+<li>通过实现 Deref，智能指针可<strong>像常规引用一样来处理</strong></li>
+<li>解引用运算符 <code>*</code>
+
+<ul>
+<li>常规的引用也是一种指针</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span> <span class="c1">// ok</span>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用 Box&lt;T&gt; 替代上面的引用</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 自定义智能指针</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">MyBox</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="n">std</span><span class="o">::</span><span class="n">ops</span><span class="o">::</span><span class="n">Deref</span> <span class="k">for</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">type</span> <span class="n">Target</span> <span class="o">=</span> <span class="n">T</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">deref</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+</span><span class='line'>        <span class="o">&amp;</span><span class="bp">self</span><span class="p">.</span><span class="mi">0</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">MyBox</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok </span>
+</span><span class='line'>    <span class="c1">// *y 相当于 *(y.deref())</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Deref Coercion</h3>
+
+<ul>
+<li>Deref Coercion (函数和方法的隐式解引用转化) 是为函数和方法提供的一种便捷特性</li>
+<li>假设 <code>T</code> 实现了 Deref trait
+
+<ul>
+<li>Deref Coercion 可以把 <code>T</code> 的引用转化为 <code>T</code> 经过 Deref 操作后生成的引用</li>
+</ul>
+</li>
+<li>当把某类型的引用传递给函数或方法时，但它的类型与定义的参数类型不匹配:
+
+<ul>
+<li>Deref Coercion 就会自动发生</li>
+<li>编译器会对 deref 进行一系列调用，来把它转为所需的参数类型 (在编译时完成，没有额外的性能开销)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">hello</span><span class="p">(</span><span class="n">name</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Hello, {}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MyBox</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="c1">// &amp;m: &amp;MyBox&lt;String&gt;</span>
+</span><span class='line'>    <span class="c1">// - 由于 MyBox 实现了 deref trait，所以编译器可以把 &amp;MyBox&lt;String&gt; 转化为 &amp;String</span>
+</span><span class='line'>    <span class="c1">// - 由于标准库中 String 也实现了 deref trait，调用 deref 方法返回一个 &amp;str 类型</span>
+</span><span class='line'>    <span class="c1">// - 所以 &amp;m 可以作为参数传入，满足 &amp;str 的参数类型要求</span>
+</span><span class='line'>    <span class="n">hello</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 如果没有实现 deref trait，则这里得这样调用: hello(&amp;(*m)[..])</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>解引用与可变性</h3>
+
+<ul>
+<li>可使用 <code>DerefMut Trait</code> 重载可变引用 <code>*</code> 运算符</li>
+<li>在类型和 trait 在下列三种情况发生时，Rust 会执行 Deref Coercion:
+
+<ol>
+<li>当 <code>T: Deref&lt;Target=U&gt;</code>，允许 <code>&amp;T</code> 转换为 <code>&amp;U</code></li>
+<li>当 <code>T: DerefMut&lt;Target=U&gt;</code>，允许 <code>&amp;mut T</code> 转换为 <code>&amp;mut U</code></li>
+<li>当 <code>T: Deref&lt;Target=U&gt;</code>，允许 <code>&amp;mut T</code> 转换为 <code>&amp;U</code></li>
+</ol>
+</li>
+</ul>
+
+
+<h2>Drop Trait</h2>
+
+<ul>
+<li>类似实现 <code>Drop Trait</code>，可以让我们自定义<strong>当值将要离开作用域时发生的动作</strong>
+
+<ul>
+<li>例如: 文件、网络资源释放等</li>
+</ul>
+</li>
+<li>任何类型都可以实现 Drop Trait, 该 trait 在 prelude 里面</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">data</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="nb">Drop</span> <span class="k">for</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="nb">drop</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="bp">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;drop&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span> <span class="n">data</span><span class="o">:</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span> <span class="p">};</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">// &quot;drop&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Rust 不允许手动调用 Drop trait 的 drop 方法
+
+<ul>
+<li>但可以调用标准库的 <code>std::mem::drop</code> 函数，来提前 drop 值</li>
+</ul>
+</li>
+</ul>
+
+
+<h2><code>Rc&lt;T&gt;</code> 引用计数智能指针</h2>
+
+<ul>
+<li>有时, 一个值会有多个所有者, 为了<strong>支持这种多重所有权的情况</strong>, Rust 实现了 <code>Rc&lt;T&gt;</code>
+
+<ul>
+<li>RC: reference counting (引用计数)</li>
+<li>该类型会在实例内部维护一个用于记录值引用次数的计数器, 用于判断这个值是否被使用 (可以追踪值的所有引用)</li>
+<li>0 个引用: 该值可以被清理掉</li>
+<li><code>Rc&lt;T&gt;</code> 通过不可变引用, 使我们可以在程序不同部分共享<strong>只读</strong>数据</li>
+</ul>
+</li>
+<li>使用场景: 需要在 heap 上分配数据, 这些数据被程序的多个部分读取(只读), 但在编译时无法确定哪个部分最后使用完这些数据</li>
+<li><code>Rc&lt;T&gt;</code> 只能用于单线程场景, 多线程场景可以使用 <code>Arc&lt;T&gt;</code>
+
+<ul>
+<li>Rc 为了性能使用的不是线程安全的引用计数器</li>
+<li>Arc 内部引用计数使用了 atomic usize, 线程安全</li>
+</ul>
+</li>
+<li><code>Rc::clone(&amp;a) 函数</code>: 会增加引用计数</li>
+<li><code>Rc::strong_count(&amp;a)</code>: 获得引用计数
+
+<ul>
+<li>还有 <code>Rc::weak_count</code> 函数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 对一个 Rc 结构进行 clone()，不会将其内部的数据复制，只会增加引用计数</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 作用域有三个 Rc(a, b, c), 它们共同指向堆上相同的数据, 即堆上的数据有 3 个共享的所有者</span>
+</span><span class='line'>    <span class="c1">// 而当一个 Rc 结构离开作用域被 drop() 时，也只会减少其引用计数，直到引用计数为零，才会真正清除对应的内存</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 两个 List 共享另一个 List 的所有权</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="n">Rc</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">)))));</span>
+</span><span class='line'>    <span class="c1">// b, c 共享 a 的所有权</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span> <span class="c1">// 引用计数+1</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span> <span class="c1">// 引用计数+1</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// c 离开作用域了, 引用计数自动 -1</span>
+</span><span class='line'>    <span class="c1">// a.clone() 该方法会进行深度的 copy; Rc::clone 只会增加引用计数, 不会执行数据的深度 copy</span>
+</span><span class='line'>    <span class="c1">// a 在引用计数清零的时候才会被回收</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><code>RefCell&lt;T&gt;</code></h2>
+
+<ul>
+<li>内部可变性: 是 Rust 的设计模式之一, 它允许你在只持有不可变引用的前提下对数据进行修改
+
+<ul>
+<li>数据结构中使用了 unsafe 代码来绕过 Rust 正常的可变性和借用规则</li>
+</ul>
+</li>
+<li>与 <code>Rc&lt;T&gt;</code> 不同, <code>RefCell&lt;T&gt;</code> 类型代表了其持有数据的唯一所有权
+
+<ul>
+<li>Rc 是个只读的引用计数器, 无法拿到 Rc 结构内部数据的可变引用</li>
+</ul>
+</li>
+<li><code>RefCell&lt;T&gt;</code> 和 <code>Box&lt;T&gt;</code> 的区别
+
+<ul>
+<li><code>RefCell&lt;T&gt;</code>: 只会在运行时检查借用规则, 运行时不满足借用规则会触发 panic</li>
+<li><code>Box&lt;T&gt;</code>: 在编译阶段强制代码遵守借用规则, 不满足规则会出现错误</li>
+</ul>
+</li>
+<li>借用规则在不同阶段进行检查的比较:
+
+<ol>
+<li>编译阶段:
+
+<ol>
+<li>尽早暴露问题</li>
+<li>没有任何运行时开销</li>
+<li>对大多数场景是最佳选择</li>
+<li>是 Rust 的默认行为</li>
+</ol>
+</li>
+<li>运行时:
+
+<ol>
+<li>问题暴露延后, 甚至到生产环境</li>
+<li>由于使用了借用计数, 会产生些许性能损失</li>
+<li>实现某些特定的内存安全场景 (不可变环境中修改自身数据)</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>与 <code>Rc&lt;T&gt;</code> 相似, 只能用于<strong>单线程</strong>场景
+
+<ul>
+<li>多线程场景使用需要使用 Mutex(互斥量) 和 RwLock(读写锁)</li>
+<li>例如: <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 在多线程场景下可替换为 <code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 或 <code>Arc&lt;RwLock&lt;T&gt;&gt;</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>内部可变性: 可变的借用一个不可变的值</h3>
+
+<ul>
+<li>外部可变性: 使用 <code>let mut</code>, <code>&amp;mut</code>
+
+<ul>
+<li>所有权检查: 编译时, 如果不符合规则, 产生编译错误</li>
+</ul>
+</li>
+<li>内部可变性: 使用 <code>Cell</code>, <code>RefCell</code>
+
+<ul>
+<li>所有权检查: 运行时, 如果不符合规则, panic</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// 报错, 无法可变的借用一个不可变的值</span>
+</span><span class='line'>    <span class="c1">// 有时会需要有这一种场景, 值在外部是不可变的, 但是在方法内部需要可以修改这个值</span>
+</span><span class='line'>    <span class="c1">// 可以使用 RefCell 来实现这种内部可变性</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用 <code>RefCell&lt;T&gt;</code></h3>
+
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 的方法
+
+<ul>
+<li><code>borrow</code> 方法: 返回 <code>Ref&lt;T&gt;</code>, 它实现了 Deref trait</li>
+<li><code>borrow_mut</code> 方法: 返回 <code>RefMut&lt;T&gt;</code>, 它实现了 Deref trait</li>
+</ul>
+</li>
+<li><code>RefCell&lt;T&gt;</code> 会记录当前存在多少个活跃的 <code>Ref&lt;T&gt;</code> 和 <code>RefMut&lt;T&gt;</code> 智能指针
+
+<ul>
+<li>每次调用 borrow: 不可变借用计数 +1</li>
+<li>任何一个 <code>Ref&lt;T&gt;</code> 的值离开作用域被释放时: 不可变借用计数 -1</li>
+<li>每次调用 borrow_mut: 可变借用计数 +1</li>
+<li>任何一个 <code>RefMut&lt;T&gt;</code> 的值离开作用域被释放时: 可变借用计数 -1</li>
+</ul>
+</li>
+<li>Rust 通过以上计数规则来维护借用的检查规则
+
+<ul>
+<li>任何一个给定时间里, 只允许拥有多个不可变借用活一个可变借用</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">cell</span><span class="o">::</span><span class="n">RefCell</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">data</span> <span class="o">=</span> <span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 在同一个作用域下，我们不能同时有活跃的可变借用和不可变借用</span>
+</span><span class='line'>    <span class="c1">// 通过这对花括号，我们明确地缩小了可变借用的生命周期，不至于和后续的不可变借用冲突</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 获得 RefCell 内部数据的可变借用</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="k">mut</span> <span class="n">v</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">borrow_mut</span><span class="p">();</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">v</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;data: {:?}&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">borrow</span><span class="p">());</span> <span class="c1">// data: 2</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>如何选择 <code>Box&lt;T&gt;</code>、<code>Rc&lt;T&gt;</code>、<code>RefCell&lt;T&gt;</code></h3>
+
+<table>
+<thead>
+<tr>
+<th> </th>
+<th> <code>Box&lt;T&gt;</code> </th>
+<th> <code>Rc&lt;T&gt;</code> </th>
+<th> <code>RefCell&lt;T&gt;</code> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 同一数据的所有者 </td>
+<td> 一个 </td>
+<td> 多个 </td>
+<td> 一个 </td>
+</tr>
+<tr>
+<td> 可变性、借用检查 </td>
+<td> 可变、不可变借用 (编译时检查) </td>
+<td> 不可变借用 (编译时检查) </td>
+<td> 可变、不可变借用 (运行时检查) </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>结合 <code>Rc&lt;T&gt;</code> 和 <code>RefCell&lt;T&gt;</code> 来拥有多个可变数据所有者</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">&lt;</span><span class="n">RefCell</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="n">Rc</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">cell</span><span class="o">::</span><span class="n">RefCell</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">)));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">6</span><span class="p">)),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">*</span><span class="n">value</span><span class="p">.</span><span class="n">borrow_mut</span><span class="p">()</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;a after = {:?}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;b after = {:?}&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;c after = {:?}&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他可实现内部可变性的类型</h3>
+
+<ul>
+<li><code>Cell&lt;T&gt;</code>: 通过复制来访问数据</li>
+<li><code>Mutex&lt;T&gt;</code>: 用于实现跨线程情形下的内部可变性模式</li>
+</ul>
+
 </div>
   
   
@@ -236,9 +2105,12 @@
   </header>
 
 
-  <div class="entry-content">
-</div>
+  <div class="entry-content"></div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2021/10/10/rust-closure-function-iterator/">Read on &rarr;</a>
+    </footer>
   
 
 
@@ -266,7 +2138,393 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><ul>
+<li>Rust 中一个测试就是一个函数, 需要使用 test 属性进行标注</li>
+<li>使用 <code>cargo test</code> 命令运行所有测试函数
+
+<ul>
+<li>Rust 会构建一个 Test Runner 可执行文件，它会运行标注了 test 的函数，并报告其运行是否成功</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>如何运行测试</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 并行运行所有测试函数</span>
+</span><span class='line'><span class="c"># - 测试成功时: 不显示所有输出(如 println!)，使读取与测试结果相关的输出更容易</span>
+</span><span class='line'><span class="c"># - 测试失败时会显示如 println! 这样的输出</span>
+</span><span class='line'>cargo <span class="nb">test</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 命令行参数分为以下两大类</span>
+</span><span class='line'><span class="c"># 1. 针对 cargo test 的参数: 紧跟 cargo test 之后</span>
+</span><span class='line'>cargo <span class="nb">test</span> --help <span class="c"># 输出 cargo test 的可用的参数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 2. 针对测试可执行程序: 放在 -- 之后</span>
+</span><span class='line'>cargo <span class="nb">test</span> -- --help <span class="c"># 输出 -- 之后的所有可用参数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>并行运行测试: 默认使用多个线程并行运行
+
+<ul>
+<li>速度快</li>
+<li>要考虑并发影响，需要确保测试之间不会互相依赖，并且步依赖于某个共享状态(环境、工作目录、环境变量等等)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># --test-threads 参数</span>
+</span><span class='line'><span class="c"># - 传递给二进制文件</span>
+</span><span class='line'><span class="c"># - 🙅以并行方式运行测试，或向对线程数进行细粒度控制</span>
+</span><span class='line'><span class="c"># - 可使用该参数，后面跟线程的数量</span>
+</span><span class='line'>cargo <span class="nb">test</span> -- --test-threads<span class="o">=</span><span class="m">1</span> <span class="c"># 单线程运行测试</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>显示输出
+
+<ul>
+<li>默认情况下, 测试通过，Rust 的 test 库会捕获所有打印到标准输出的内容 (如 <code>println!</code>)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 即使测试通过，也显示标准输出</span>
+</span><span class='line'>cargo <span class="nb">test</span> -- --show-output
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>选择性的运行测试</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 根据测试函数的名称指定运行的测试</span>
+</span><span class='line'>cargo <span class="nb">test </span>test_one_fn <span class="c"># 运行单个测试</span>
+</span><span class='line'><span class="c"># 可指定测试名的一部分 (模块名也可以) 来匹配并运行多个测试</span>
+</span><span class='line'>cargo <span class="nb">test </span>test_ <span class="c"># 会运行测试函数名字中带有 test_ 的测试</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>如何编写测试</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[test]</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">test_fn</span><span class="p">()</span> <span class="p">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>assert!</code> 宏，来自标准库，用来确定某个状态是否为 true
+
+<ul>
+<li>true: 测试通过</li>
+<li>false: 调用 <code>panic!</code>，测试失败</li>
+</ul>
+</li>
+<li>使用 <code>assert_eq!</code> 和 <code>assert_ne!</code> 测试相等性
+
+<ul>
+<li>判断两个参数是否相等/不等</li>
+<li>实际上，它们使用的就是 <code>==</code> 和 <code>!=</code> 运算符</li>
+<li>断言失败: 自动打印出两个参数的值 (要求参数实现了 PartialEq 和 Debug Traits)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">pub</span> <span class="k">struct</span> <span class="n">Rectangle</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">length</span><span class="o">:</span> <span class="kt">u32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">width</span><span class="o">:</span> <span class="kt">u32</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="n">Rectangle</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">pub</span> <span class="k">fn</span> <span class="n">can_hold</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">Rectangle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+</span><span class='line'>        <span class="bp">self</span><span class="p">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="n">other</span><span class="p">.</span><span class="n">length</span> <span class="o">&amp;&amp;</span> <span class="bp">self</span><span class="p">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">other</span><span class="p">.</span><span class="n">width</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#[cfg(test)]</span>
+</span><span class='line'><span class="kn">mod</span> <span class="n">tests</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kn">use</span> <span class="n">super</span><span class="o">::*</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">larger_can_hold_smaller</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">larger</span> <span class="o">=</span> <span class="n">Rectangle</span> <span class="p">{</span> <span class="n">length</span><span class="o">:</span> <span class="mi">8</span><span class="p">,</span> <span class="n">width</span><span class="o">:</span> <span class="mi">7</span> <span class="p">};</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">smaller</span> <span class="o">=</span> <span class="n">Rectangle</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">length</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">width</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">assert</span><span class="o">!</span><span class="p">(</span><span class="n">larger</span><span class="p">.</span><span class="n">can_hold</span><span class="p">(</span><span class="o">&amp;</span><span class="n">smaller</span><span class="p">));</span> <span class="c1">// 二参可传自定义信息</span>
+</span><span class='line'>        <span class="c1">// assert!(something, &quot;{} {}&quot;, formart_param1, formart_param2);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>使用 <code>should_panic</code> 属性测试是否发生了恐慌 (验证代码是否发生了 panic)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 函数 panic: 测试通过，否则失败</span>
+</span><span class='line'><span class="cp">#[cfg(test)]</span>
+</span><span class='line'><span class="kn">mod</span> <span class="n">tests</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kn">use</span> <span class="n">super</span><span class="o">::*</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// should_panic 修饰的函数 panic 了测试才会通过</span>
+</span><span class='line'>    <span class="c1">// 可 should_panic(expected = &quot;xxxx&quot;)，验证 panic 时，错误信息是否包含了 expected 注明的字符串</span>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="cp">#[should_panic]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">test_fn</span><span class="p">()</span> <span class="p">{...}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>测试中使用 <code>Result&lt;T, E&gt;</code>
+
+<ul>
+<li>无需 panic, 可使用 <code>Result&lt;T, E&gt;</code> 作为返回类型编写测试</li>
+<li>返回 Ok 测试通过，返回 Err 测试失败</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[cfg(test)]</span>
+</span><span class='line'><span class="kn">mod</span> <span class="n">tests</span> <span class="p">{</span>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">it_works</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">String</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">4</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">Ok</span><span class="p">(())</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">Err</span><span class="p">(</span><span class="n">panic</span><span class="o">!</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;two plus two does not equal four&quot;</span><span class="p">)))</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>忽略某些测试，运行剩余的测试
+
+<ul>
+<li>使用 ignore 属性进行标记</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 运行 cargo test，只会运行 fn1 这个测试</span>
+</span><span class='line'><span class="c1">// &quot;cargo test -- --ignored&quot;: 只运行被标记 ignore 的测试</span>
+</span><span class='line'><span class="cp">#[cfg(test)]</span>
+</span><span class='line'><span class="kn">mod</span> <span class="n">tests</span> <span class="p">{</span>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">fn1</span><span class="p">()</span> <span class="p">{...}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="cp">#[ignore]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">fn2</span><span class="p">()</span> <span class="p">{...}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>如何组织测试</h2>
+
+<h3>单元测试</h3>
+
+<ul>
+<li>一次对一个模块进行隔离的测试</li>
+<li>可测试 private 接口</li>
+<li>一般单元测试和被测试的代码都放在 src 目录下的同一个文件中</li>
+<li>约定每个源代码文件都建立 tests 模块来放测试函数，并使用 <code>#[cfg(test)]</code> 标注 tests 模块
+
+<ul>
+<li>使用 <code>#[cfg(test)]</code> 标注后，只有运行 <code>cargo test</code> 才编译和运行代码，而 <code>cargo build</code> 则不会</li>
+<li>cfg: Configuration, 告诉 Rust 下面的条目只有在指定的配置选项下才被包含</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 只在 cargo test 才会把以下代码拉入编译范围</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">fn1</span><span class="p">()</span> <span class="p">{...}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#[cfg(test)]</span>
+</span><span class='line'><span class="kn">mod</span> <span class="n">tests</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kn">use</span> <span class="n">super</span><span class="o">::*</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#[test]</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">it_works</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">fn1</span><span class="p">();</span> <span class="c1">// 可调用私有函数</span>
+</span><span class='line'>        <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>集成测试</h3>
+
+<ul>
+<li>在库外部，和其他外部代码一样使用你的代码</li>
+<li>只能访问 public 接口</li>
+<li>可能在每个测试中使用到多个模块</li>
+<li>集成测试和被测试文件在不同的目录，不需要 <code>#[cfg(test)]</code> 标注</li>
+<li><strong>集成测试放在 src 同级的 tests 目录下</strong>，tests 目录下的每个测试文件都是单独的一个 crate
+
+<ul>
+<li>这些文件步共享行为 (与 src 下的文件规则不同)</li>
+<li>如果需要在 tests 文件下共享逻辑，可以建立子目录，在其中编写通用逻辑 (tests 下的子目录不会被当成测试文件运行)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// adder/tests/integration_test.rs</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">adder</span><span class="p">;</span> <span class="c1">// 项目的名字</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 由于 tests 目录只会在执行 cargo test 命令的时候运行，所以不需要使用 #[cfg(test)] 标注</span>
+</span><span class='line'><span class="cp">#[test]</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">it_adds_two</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">adder</span><span class="o">::</span><span class="n">add_two</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行指定的集成测试 <code>cargo test 测试函数名</code></li>
+<li>运行某个测试文件内的所有测试: <code>cargo test --test 文件名</code></li>
+</ul>
+
+
+<h4>针对 binary crate 的集成测试</h4>
+
+<ul>
+<li>如果项目时 binary crate，只含有 <code>src/main.rs</code> 没有 <code>src/lib.rs</code>
+
+<ul>
+<li>不能在 tests 目录下创建集成测试</li>
+<li>tests 无法把 <code>main.rs</code> 的函数导入作用域</li>
+</ul>
+</li>
+<li>只有 library crate 才能暴露函数给其他 crate 用</li>
+<li>binary crate 意味着独立运行</li>
+<li>所以通常 binary crate，都会把逻辑放在 <code>lib.rs</code> 里面，方便集成测试，<code>main.rs</code> 只有少量的调用逻辑</li>
+</ul>
+
 </div>
   
   
@@ -296,7 +2554,645 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><ul>
+<li>Rust 的每个引用都有自己的生命周期</li>
+<li>生命周期: 引用保持有效的作用域</li>
+<li>大多数情况: 生命周期是隐式的、可被推断的</li>
+<li>当引用的生命周期可能以不同的方式互相关联时: 需要手动标注生命周期</li>
+</ul>
+
+
+<h2>生命周期的标注语法</h2>
+
+<ul>
+<li>生命周期的标注并不会改变引用的生命周期长度</li>
+<li>当指定了泛型的生命周期参数，函数可以接收带有任何生命周期的引用</li>
+<li>生命周期的标注: 描述了多个引用的生命周期间的关系，但不影响生命周期</li>
+<li>语法: 以 <code>'</code> 开头, 例如: <code>'a</code></li>
+<li>标注位置
+
+<ul>
+<li>在引用的 <code>&amp;</code> 符号后</li>
+<li>使用空格讲标注和引用类型分开</li>
+</ul>
+</li>
+<li>单个生命周期的标注本身并没有意义</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="o">&amp;</span><span class="kt">i32</span>        <span class="c1">// 一个引用</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">i32</span>     <span class="c1">// 带有显示生命周期的引用</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">&#39;a</span> <span class="k">mut</span> <span class="kt">i32</span> <span class="c1">// 带有显示生命周期的可变引用</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>函数签名中的生命周期标注
+
+<ul>
+<li>泛型生命周期参数声明在: 函数名和参数列表之间的 <code>&lt;&gt;</code> 里</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">test</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span> <span class="p">{...}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>生命周期 - 避免悬垂引用 (dangling reference)</h2>
+
+<ul>
+<li>生命周期的主要目标: 避免悬垂引用</li>
+<li>Rust 编译器的借用检查器: 比较作用域来判断所有的借用是否合法</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">r</span><span class="p">;</span>                                      <span class="c1">// ----------------+-- &#39;a</span>
+</span><span class='line'>        <span class="p">{</span>                                           <span class="c1">//                 /</span>
+</span><span class='line'>            <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>                              <span class="c1">// -+-- &#39;b         /</span>
+</span><span class='line'>            <span class="n">r</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>                                 <span class="c1">//  /              /</span>
+</span><span class='line'>        <span class="p">}</span>                                           <span class="c1">// -+--            /</span>
+</span><span class='line'>        <span class="c1">// 这里使用 r 时，r 所指向的 x 已经由于脱离作用域, //                /</span>
+</span><span class='line'>        <span class="c1">// 被销毁了，所以会报错                         //                /</span>
+</span><span class='line'>        <span class="c1">// 这里 Rust 编译器会使用借用检查器发现这种错误.   //                /</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;r: {}&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span>                       <span class="c1">//                 /</span>
+</span><span class='line'>    <span class="p">}</span>                                               <span class="c1">// ----------------+--</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 上例 r 的生命周期为 &#39;a，x 的生命周期为 &#39;b</span>
+</span><span class='line'><span class="c1">// 借用检查器在编译时发现 r 指向了生命周期为 &#39;b 的一块内存 x，因为 &#39;b 的生命周期比 &#39;a 短，所以会编译失败</span>
+</span><span class='line'><span class="c1">// 解决: 保证 x 的生命周期不小于 r 的生命周期 &#39;a</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 移动 x 到 r 之前</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">r</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">r</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;r: {}&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="c1">// x 的生命周期覆盖了 r 的生命周期，编译通过</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>函数中的泛型生命周期</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 编译不通过，返回值包含了借用的值，但是**函数签名**没有说明这个借用的值是来自 x 还是 y</span>
+</span><span class='line'><span class="c1">// - 编译器不晓得，返回类型的生命周期是和 x 还是和 y 一样</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">longest</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">x</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">y</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 加上泛型生命周期，编译通过</span>
+</span><span class='line'><span class="c1">// - &#39;a 的实际生命周期是: x y 两个生命周期中较小的那一个 (两个生命周期重叠的那一部分)</span>
+</span><span class='line'><span class="c1">// - &#39;a 并不会改变传入的参数的生命周期，只是向借用检查器指出了一些可用于检查非法调用的约束而已</span>
+</span><span class='line'><span class="c1">// - 所以 longest 并不需要准确的知道传入的变量 x y 的存活时长</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">longest</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">x</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">y</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 可编译通过</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">string1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abcd&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">string2</span> <span class="o">=</span> <span class="s">&quot;xyz&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">longest</span><span class="p">(</span><span class="n">string1</span><span class="p">.</span><span class="n">as_str</span><span class="p">(),</span> <span class="n">string2</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;The longest string is {}&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 可编译通过</span>
+</span><span class='line'><span class="c1">// 因为 string1 string2 在 result 被移出作用域之前都是有效的</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">string1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abcd&quot;</span><span class="p">);</span> <span class="c1">// 生命周期在 main 作用域内</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">string2</span> <span class="o">=</span> <span class="s">&quot;xyz&quot;</span><span class="p">;</span> <span class="c1">// &amp;str 类型，拥有静态生命周期，在整个出现运行期间都存活</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">longest</span><span class="p">(</span><span class="n">string1</span><span class="p">.</span><span class="n">as_str</span><span class="p">(),</span> <span class="n">string2</span><span class="p">);</span> <span class="c1">// 生命周期在当前这个内部作用域内</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;The longest string is {}&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// result 移出作用域</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 编译失败</span>
+</span><span class='line'><span class="c1">// string2 存活时间不够长，其借用给了 result，但是生命周期比 result 短</span>
+</span><span class='line'><span class="c1">// 这与 longest 函数签名注明的生命周期不一致</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">string1</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abcd&quot;</span><span class="p">);</span> <span class="c1">// 生命周期在 main 作用域内</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">result</span><span class="p">;</span> <span class="c1">// 生命周期在 main 作用域内</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">string2</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;xyz&quot;</span><span class="p">);</span> <span class="c1">// 生命周期在当前这个内部作用域内</span>
+</span><span class='line'>        <span class="n">result</span> <span class="o">=</span> <span class="n">longest</span><span class="p">(</span><span class="n">string1</span><span class="p">.</span><span class="n">as_str</span><span class="p">(),</span> <span class="n">string2</span><span class="p">.</span><span class="n">as_str</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// string2 移出作用域</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;The longest string is {}&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// pub fn strtok&lt;&#39;b, &#39;a&gt;(s: &amp;&#39;b mut &amp;&#39;a str, delimiter: char) -&gt; &amp;&#39;a str</span>
+</span><span class='line'><span class="c1">// &amp;&#39;b mut: 指向字符串引用的可变引用 &amp;mut 的生命周期</span>
+</span><span class='line'><span class="c1">// &amp;&#39;a str: 字符串引用 &amp;str 本身的生命周期</span>
+</span><span class='line'><span class="c1">// 由于返回值只和 &amp;str 有关, 所以可只需标注他的生命周期, 其他无关的生命周期可省略, 让编译器来自动添加</span>
+</span><span class='line'><span class="k">pub</span> <span class="k">fn</span> <span class="n">strtok</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span><span class="p">(</span><span class="n">s</span><span class="o">:</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">:</span> <span class="n">char</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">delimiter</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">prefix</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[..</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="c1">// 由于 delimiter 可以是 utf8，所以我们需要获得其 utf8 长度，</span>
+</span><span class='line'>        <span class="c1">// 直接使用 len 返回的是字节长度，会有问题</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">suffix</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="n">delimiter</span><span class="p">.</span><span class="n">len_utf8</span><span class="p">())..];</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">suffix</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">prefix</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// 如果没找到，返回整个字符串，把原字符串指针 s 指向空串</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">prefix</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">prefix</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;hello world&quot;</span><span class="p">.</span><span class="n">to_owned</span><span class="p">();</span> <span class="c1">// str</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">as_str</span><span class="p">();</span> <span class="c1">// &amp;str</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">hello</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="n">s1</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">);</span> <span class="c1">// 访问 s1 的可变引用 </span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;hello is: {}, s1: {}, s: {}&quot;</span><span class="p">,</span> <span class="n">hello</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span> <span class="c1">// 访问 s1 的不可变引用</span>
+</span><span class='line'>    <span class="c1">// print: &quot;hello is: hello, s1: world, s: hello world&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// 注意!, strtok 生命周期标注不能写成如下样子</span>
+</span><span class='line'><span class="c1">// 会导致 print s1(访问 s1 的不可变引用) 时报错:</span>
+</span><span class='line'><span class="c1">// - cannot borrow `s1` as immutable because it is also borrowed as mutable</span>
+</span><span class='line'><span class="c1">// 这是因为这样标注就表示可变借用 &amp;mut 和 返回值的生命周期一样了, 导致这个引用的生命周期在函数结束后还没有结束</span>
+</span><span class='line'><span class="c1">// 这样在 print s1 时, 就会发生可变引用和不可变引用同时存在的情况, 导致报错</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">    let hello = strtok(&amp;mut s1, &#39; &#39;); // 访问 s1 的可变引用</span>
+</span><span class='line'><span class="cm">    // 此时 s1 的生命周期 == hello 的生命周期</span>
+</span><span class='line'><span class="cm">    println!(&quot;hello is: {}, s1: {}, s: {}&quot;, hello, s1, s); // 访问 s1 的不可变引用</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">pub</span> <span class="k">fn</span> <span class="n">strtok</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span><span class="p">(</span><span class="n">s</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="k">mut</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">:</span> <span class="n">char</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>深入理解生命周期</h2>
+
+<ul>
+<li>指定生命周期参数的方式依赖于函数所做的事</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 由于返回值的生命周期只和 x 的生命周期有关，所以 y 不用标注生命周期</span>
+</span><span class='line'><span class="c1">// fn longest&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str {</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">longest</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">x</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>当函数返回引用时，返回类型的生命周期参数需要与其中一个参数的生命周期匹配</li>
+<li>如果返回的引用没有指向任何参数，那么它只能引用函数内创建的值
+
+<ul>
+<li>这就是悬垂引用: 该值在函数结束时就走出了作用域</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 悬垂引用 (编译不通过)</span>
+</span><span class='line'><span class="c1">// result 离开作用域了，这块内存就失效了</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">demo1</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">result</span><span class="p">.</span><span class="n">as_str</span><span class="p">()</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 将所有权返回给调用方 (可编译通过)</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">demo2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">String</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">result</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Struct 定义中的生命周期标注</h2>
+
+<ul>
+<li>Struct 里可包括
+
+<ul>
+<li>自持有的类型</li>
+<li>引用: 需要在每个引用上添加生命周期标注</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">ImportantExcerpt</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// path 这个引用必须要比 ImportantExcerpt 的实例的存活要长</span>
+</span><span class='line'>    <span class="n">part</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// first_sentence 的生命周期能够覆盖 ie 的生命周期，所以编译通过</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">novel</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Call me Ishmael. Some years ago...&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">first_sentence</span> <span class="o">=</span> <span class="n">novel</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="sc">&#39;.&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;Could not found a &#39;.&#39;&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">ie</span> <span class="o">=</span> <span class="n">ImportantExcerpt</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">part</span><span class="o">:</span> <span class="n">first_sentence</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>生命周期的省略</h2>
+
+<ul>
+<li>我们都知道
+
+<ul>
+<li>每个引用都有生命周期</li>
+<li>需要为使用生命周期的函数或 struct 指定生命周期参数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 这个函数没有指定生命周期也能编译通过</span>
+</span><span class='line'><span class="c1">// - 在 Rust 早期版本时无法编译通过的，当时要求每个引用都必须得有显式的生命周期</span>
+</span><span class='line'><span class="c1">//   那时候这个函数得这么声明: fn first_word&lt;&#39;a&gt;(s: &amp;&#39;a str) -&gt; &amp;&#39;a str</span>
+</span><span class='line'><span class="c1">// - 由于这类标注生命周期的规则都有相同的特征，所以编译器帮我们做了，不用程序员显式标注</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">first_word</span><span class="p">(</span><span class="n">s</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">as_bytes</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">item</span><span class="p">)</span> <span class="k">in</span> <span class="n">bytes</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">enumerate</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="n">b</span><span class="sc">&#39; &#39;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="mf">0.</span><span class="p">.</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="o">&amp;</span><span class="n">s</span><span class="p">[..]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>在 Rust 引用分析中所编入的模式称为<strong>生命周期省略规则</strong>
+
+<ul>
+<li>这些规则无需开发者来遵守</li>
+<li>它们是一些特殊情况，由编译器来考虑</li>
+<li>如果你的代码符合这些情况，那么就无需显式标注生命周期</li>
+</ul>
+</li>
+<li>生命周期的省略规则不会提供完整的推断:
+
+<ul>
+<li>如果应用规则后，引用的生命周期仍然模糊不清，还是会导致编译错误</li>
+<li>解决办法: 添加生命周期标注，表明引用间的相互关系</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>生命周期省略的三个规则</h3>
+
+<ul>
+<li>输入、输出生命周期
+
+<ul>
+<li>函数/方法的参数: 输入生命周期</li>
+<li>函数/方法的返回值: 输出生命周期</li>
+</ul>
+</li>
+<li>编译器使用三个规则在没有显式标注生命周期的情况下，来确定引用的生命周期
+
+<ul>
+<li>规则 1 应用于输入生命周期</li>
+<li>规则 2、3 应用于输出生命周期</li>
+<li>如果编译器应用完三个规则之后，仍然有无法确定生命周期的引用会编译报错</li>
+<li>这些规则适用于 <code>fn</code> 定义和 <code>impl</code> 块</li>
+</ul>
+</li>
+<li><strong>规则一:</strong> 每个引用类型的参数都有自己的生命周期</li>
+<li><strong>规则二:</strong> 如果只有一个输入生命周期参数，那么该生命周期被赋给所有的输出生命周期参数</li>
+<li><strong>规则三:</strong> 如果有多个输入生命周期参数，但其中一个是 <code>&amp;self</code> 或 <code>&amp;mut self</code> (是方法), 那么 <code>self</code> 的生命周期会被赋给所有的输出生命周期参数</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">test</span><span class="p">(</span><span class="n">s</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{...}</span>
+</span><span class='line'><span class="c1">// 应用第一条规则: fn test&lt;&#39;a&gt;(s: &amp;&#39;a str) -&gt; &amp;str</span>
+</span><span class='line'><span class="c1">// 应用第二条规则: fn test&lt;&#39;a&gt;(s: &amp;&#39;a str) -&gt; &amp;&#39;a str</span>
+</span><span class='line'><span class="c1">// 可以确定生命周期了，不用程序员显式标注</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">test2</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{...}</span>
+</span><span class='line'><span class="c1">// 应用第一条规则: fn test2&lt;&#39;a, &#39;b&gt;(x: &amp;&#39;a str, y: &amp;&#39;b str) -&gt; &amp;str</span>
+</span><span class='line'><span class="c1">// 由于有多个参数，无法应用第二条规则</span>
+</span><span class='line'><span class="c1">// 由于不是方法，无法应用第三条规则</span>
+</span><span class='line'><span class="c1">// 无法确定生命周期，需要程序员自己显式标注</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>方法定义中的生命周期标注</h2>
+
+<ul>
+<li>在 struct 上使用生命周期实现方法，语法和泛型参数的语法一样</li>
+<li>在哪声明和使用生命周期参数，依赖于:
+
+<ul>
+<li>生命周期参数是否和字段、方法的参数或返回值有关</li>
+</ul>
+</li>
+<li>struct 字段的生命周期名:
+
+<ul>
+<li>在 <code>impl</code> 后声明</li>
+<li>在 <code>struct</code> 名后使用</li>
+<li>这些生命周期是 struct 类型的一部分</li>
+</ul>
+</li>
+<li><code>impl</code> 块内的方法签名中
+
+<ul>
+<li><strong>引用</strong>必须绑定于 struct 字段引用的生命周期，或者<strong>引用</strong>是独立的也可以</li>
+<li>生命周期省略规则经常使得方法中的生命周期标注不是必须的</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">ImportantExcerpt</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">part</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span> <span class="n">ImportantExcerpt</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 由于第一条规则: &amp;self 可不用标注生命周期</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">level</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">i32</span> <span class="p">{</span>
+</span><span class='line'>        <span class="mi">3</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 由于第一条规则和第三条规则，可不用标注生命周期</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">announce_and_return_part</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">announcement</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="kt">str</span> <span class="p">{</span>
+</span><span class='line'>        <span class="bp">self</span><span class="p">.</span><span class="n">part</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>静态生命周期</h2>
+
+<ul>
+<li><code>'static</code> 是一个特殊的生命周期: 表示整个程序的持续时间
+
+<ul>
+<li>例如: 所有的字符串字面值都有 <code>'static</code> 生命周期 (该类型是被直接存储在二进制文件中的)
+
+<ul>
+<li><code>let s: &amp;'static str = "abc";</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>为引用指定 <code>'static</code> 生命周期前要注意
+
+<ul>
+<li>是否需要引用在程序整个生命周期内都存活</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>例子</h2>
+
+<ul>
+<li>使用了使用泛型参数类型、Trait Bound、生命周期的例子</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">longest_with_an_announcement</span><span class="o">&lt;</span><span class="nl">&#39;a</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span><span class="p">,</span> <span class="n">ann</span><span class="o">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">&#39;a</span> <span class="kt">str</span>
+</span><span class='line'><span class="n">where</span>
+</span><span class='line'>    <span class="n">T</span><span class="o">:</span> <span class="n">Display</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Announcement! {}&quot;</span><span class="p">,</span> <span class="n">ann</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">.</span><span class="n">len</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">x</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">y</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -326,9 +3222,12 @@
   </header>
 
 
-  <div class="entry-content">
-</div>
+  <div class="entry-content"></div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2021/10/07/rust-generic-trait/">Read on &rarr;</a>
+    </footer>
   
 
 

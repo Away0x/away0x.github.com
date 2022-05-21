@@ -9,8 +9,13 @@
   <meta name="author" content="TongWu">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="模式是 Rust 的一种特殊语法，用于匹配复杂和简单类型的结构
+将模式与匹配表达式和其他构造结合使用，可以更好地控制程序的控制流
+模式由以下元素 (的一些组合) 组成: 字面值
+解构的数组、enum、struct 和 tuple
+变量
+通配符
+占位符 想要使用模式，需要将其与某个值比较 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -115,7 +120,682 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><ul>
+<li>模式是 Rust 的一种特殊语法，用于匹配复杂和简单类型的结构</li>
+<li>将模式与匹配表达式和其他构造结合使用，可以更好地控制程序的控制流</li>
+<li>模式由以下元素 (的一些组合) 组成:
+
+<ul>
+<li>字面值</li>
+<li>解构的数组、enum、struct 和 tuple</li>
+<li>变量</li>
+<li>通配符</li>
+<li>占位符</li>
+</ul>
+</li>
+<li>想要使用模式，需要将其与某个值比较
+
+<ul>
+<li>如果可以模式匹配，就可以在代码中使用这个值的相应部分</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>可用用到模式匹配的地方</h2>
+
+<h3>match 的分支</h3>
+
+<ul>
+<li>要求分支需要包含所有的可能性
+
+<ul>
+<li><code>_</code>: 可以匹配任何东西，不会绑定到变量，通常用于 match 的最后一个分支，或用于忽略某些值</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">match</span> <span class="n">VALUE</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">PATTERN</span> <span class="o">=&gt;</span> <span class="n">EXPRESSION</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">enum</span> <span class="n">Coin</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Penny</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Nickel</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Dime</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Quarter</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">value_in_cents</span><span class="p">(</span><span class="n">coin</span><span class="o">:</span> <span class="n">Coin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">u8</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">match</span> <span class="n">coin</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Penny</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Nickel</span> <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Dime</span> <span class="o">=&gt;</span> <span class="mi">10</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Coin</span><span class="o">::</span><span class="n">Quarter</span> <span class="o">=&gt;</span> <span class="mi">25</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>if let</h3>
+
+<ul>
+<li>简单的控制流表达式，处理只关心一种匹配而忽略其他匹配的情况，放弃了穷举的可能性，可以理解成 match 的简化版</li>
+<li>主要是作为一种简短的方式来等价的代替只有一个匹配项的 match</li>
+<li><code>if let</code> 可选的可以拥有 <code>else</code> <code>else if</code> <code>else if let</code></li>
+<li><code>if let</code> 不会检查穷尽性</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">0</span><span class="k">u8</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">v</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 可使用 if let 改写</span>
+</span><span class='line'><span class="k">if</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;others&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>while let 条件循环</h3>
+
+<ul>
+<li>只有模式继续满足匹配的条件，那它运行 while 循环一直运行</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'><span class="k">while</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">=</span> <span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}&quot;</span><span class="p">,</span> <span class="n">top</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>for 循环</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">in</span> <span class="n">arr</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">enumerate</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{}: {}&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>let 语句</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// 这个其实也是一个模式</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>函数参数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// 参数 x 也是一个模式</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">foo2</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">:</span> <span class="o">&amp;</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">))</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">point</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="n">foo2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">point</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>模式的可辩驳性</h2>
+
+<ul>
+<li>模式有两种形式: 可辩驳的(可失败的), 无可辩驳的(不可失败的)
+
+<ul>
+<li>能匹配任何可能传递的值的模式: 无可辩驳的
+
+<ul>
+<li>例如: <code>let x = 5</code></li>
+</ul>
+</li>
+<li>对于某些可能的值，无法继续匹配的模式: 可辩驳的
+
+<ul>
+<li>例如: <code>if let Some(x) = val</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>函数参数、let 语句、for 循环只接收<strong>无可辩驳</strong>的模式</li>
+<li><code>if let</code> 和 <code>while let</code> 接收<strong>可辩驳</strong>和<strong>无可辩驳</strong>的模式</li>
+<li>match 语句，除了最后一个分支是<strong>无可辩驳</strong>的，其他分支为<strong>可辩驳</strong></li>
+</ul>
+
+
+<h2>匹配语法</h2>
+
+<h3>匹配字面值</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mi">1</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">2</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;two&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">3</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;anything&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>匹配命名变量</h3>
+
+<ul>
+<li>命名的变量是可匹配任何值的无可辩驳模式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got 50&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Matched, y = {:?}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="c1">// 作用域只在子句中</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Default case, x = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;at the end: x = {:?}, y = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// &quot;Matched, y = 5&quot;</span>
+</span><span class='line'><span class="c1">// &quot;at the end: x = Some(5), y = 10&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>多重模式</h3>
+
+<ul>
+<li>match 可使用 <code>|</code>(或运算符), 可以匹配多种模式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mi">1</span> <span class="o">|</span> <span class="mi">2</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one or two&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="mi">3</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;three&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;anything&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>匹配范围</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mf">1.</span><span class="p">.</span><span class="o">=</span><span class="mi">5</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;one through five&quot;</span><span class="p">),</span> <span class="c1">// 1,2,3,4,5</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;something else&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用模式来解构分解值</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 struct</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">7</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="n">a</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="n">b</span> <span class="p">}</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">p</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 子分支会创建 x y 变量</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = any, y = 0 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On the x axis at {}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = 0, y = any 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On the y axis at {}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="c1">// 匹配到该行</span>
+</span><span class='line'>        <span class="c1">// 匹配 x = any, y = any 的 Point</span>
+</span><span class='line'>        <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;On neither axis: ({}, {})&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 enum</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Quit</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'>    <span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">ChangeColor</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">255</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Quit</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="c1">// 会创建 x y 变量</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">Write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{...},</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构嵌套的类型</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Color</span> <span class="p">{</span>
+</span><span class='line'>   <span class="n">Rgb</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'>   <span class="n">Hsv</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Quit</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Move</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'>    <span class="n">Write</span><span class="p">(</span><span class="n">String</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Hsv</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">255</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Rgb</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">Message</span><span class="o">::</span><span class="n">ChangeColor</span><span class="p">(</span><span class="n">Color</span><span class="o">::</span><span class="n">Hsv</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{...}</span>
+</span><span class='line'>        <span class="n">_</span> <span class="o">=&gt;</span> <span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 解构 tuple</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">((</span><span class="n">feet</span><span class="p">,</span> <span class="n">inches</span><span class="p">),</span> <span class="n">Point</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">})</span> <span class="o">=</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="o">-</span><span class="mi">10</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>在模式中忽略值</h4>
+
+<ul>
+<li><code>_</code>: 可用来忽略某个值</li>
+<li>使用以 <code>_</code> 开头的名称: 标记该值不会被用到</li>
+<li><code>..</code>: 忽略值的剩余部分</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 `_` 来作为匹配但不绑定任何值的通配符</span>
+</span><span class='line'><span class="k">fn</span> <span class="n">foo</span><span class="p">(</span><span class="n">_</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;This code only uses the y parameter: {}&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// --------</span>
+</span><span class='line'><span class="kd">let</span> <span class="k">mut</span> <span class="n">setting_value</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">new_setting_value</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="k">match</span> <span class="p">(</span><span class="n">setting_value</span><span class="p">,</span> <span class="n">new_setting_value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">),</span> <span class="nb">Some</span><span class="p">(</span><span class="n">_</span><span class="p">))</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Can&#39;t overwrite an existing customized value&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">setting_value</span> <span class="o">=</span> <span class="n">new_setting_value</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;setting is {:?}&quot;</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// --------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">numbers</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span><span class='line'><span class="k">match</span> <span class="n">numbers</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">third</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">fifth</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Some numbers: {}, {}, {}&quot;</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">third</span><span class="p">,</span> <span class="n">fifth</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用以 `_` 开头的名称: 忽略被使用的变量</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">_x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// _x 没被使用也不会有警告</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// -------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;Hello!&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="c1">// s 多所有权被移入了 if let 子句了, _s 会发生绑定操作获取所有权</span>
+</span><span class='line'><span class="c1">// 如果将 Some(_s) 修改为 Some(_)，_ 不会发生绑定操作，所以 s 的所有权也不会移动了</span>
+</span><span class='line'><span class="k">if</span> <span class="kd">let</span> <span class="nb">Some</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;found a string&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 用 .. 忽略剩余值</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">Point</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">y</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">z</span><span class="o">:</span> <span class="kt">i32</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">:</span> <span class="mi">0</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">origin</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="p">..</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;x is {}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ----------</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">numbers</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">numbers</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// (.., second, ..) 这种模糊的匹配会失败</span>
+</span><span class='line'>    <span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">..,</span> <span class="n">last</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Some numbers: {}, {}&quot;</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>match guard</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 指定于 match 分支模式之后的额外 if 条件，它也必须被满足才能选择此分支</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nb">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got 50&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="c1">// 匹配 Some(n), 然后绑定 n, 如果 n == y, 匹配成功</span>
+</span><span class='line'>    <span class="c1">// 该例中, 匹配 Some(n) 成功，但是由于 n != y，所以进入 _ 分支</span>
+</span><span class='line'>    <span class="nb">Some</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">y</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Matched, n = {}&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Default case, x = {:?}&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="c1">// 最终匹配到这个分支</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">x</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 匹配 4, 5, 6; 并且 y == true</span>
+</span><span class='line'>    <span class="mi">4</span> <span class="o">|</span> <span class="mi">5</span> <span class="o">|</span> <span class="mi">6</span> <span class="k">if</span> <span class="n">y</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;yes&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">=&gt;</span> <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;no&quot;</span><span class="p">),</span> <span class="c1">// 最终匹配到这个分支</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>@ 绑定</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// @ 符号让我们可以创建一个变量，该变量可以在测试某个值是否与模式匹配的同时保存该值</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Message</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="kt">i32</span> <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="mi">5</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">match</span> <span class="n">msg</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 要求 id 的值在 3~7 范围内，同时使用 @ 将匹配到的值存储在 id_variable 变量中</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="n">id_variable</span> <span class="o">@</span> <span class="mf">3.</span><span class="p">.</span><span class="o">=</span><span class="mi">7</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found an id in range: {}&quot;</span><span class="p">,</span> <span class="n">id_variable</span><span class="p">)</span> <span class="c1">// </span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="c1">// 这里由于 id 匹配的是一个范围，其可能是 10 11 12, 没有具体的值，所以即使匹配到了也无法绑定</span>
+</span><span class='line'>    <span class="c1">// 如果匹配到该子句了，想在子句内使用具体匹配到的值，也得 { id: id_variable @ 10..=12 }</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span><span class="o">:</span> <span class="mf">10.</span><span class="p">.</span><span class="o">=</span><span class="mi">12</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found an id in another range&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="c1">// 该子句指定了一个没有范围的比例，所以如果匹配到这行，id 可以绑定具体的值</span>
+</span><span class='line'>    <span class="n">Message</span><span class="o">::</span><span class="n">Hello</span> <span class="p">{</span> <span class="n">id</span> <span class="p">}</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Found some other id: {}&quot;</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// Found an id in range: 5</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 

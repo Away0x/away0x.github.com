@@ -9,8 +9,13 @@
   <meta name="author" content="TongWu">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="指针: 一个变量在内存中包含的是一个地址 (指向其他数据)
+Rust 中最常见的指针就是 &ldquo;引用&rdquo; 使用 &amp;
+借用它指向的值
+没有其余开销
+最常见的指针类型 智能指针: 行为和指针类似
+有额外的元数据和功能 引用和智能指针的不同 引用: 只借用数据
+智能指针: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -115,7 +120,686 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><ul>
+<li>指针: 一个变量在内存中包含的是一个地址 (指向其他数据)</li>
+<li>Rust 中最常见的指针就是 &ldquo;引用&rdquo;
+
+<ul>
+<li>使用 <code>&amp;</code></li>
+<li>借用它指向的值</li>
+<li>没有其余开销</li>
+<li>最常见的指针类型</li>
+</ul>
+</li>
+<li><strong>智能指针:</strong>
+
+<ul>
+<li>行为和指针类似</li>
+<li>有额外的元数据和功能</li>
+</ul>
+</li>
+<li><strong>引用</strong>和<strong>智能指针</strong>的不同
+
+<ul>
+<li>引用: 只借用数据</li>
+<li>智能指针: 很多时候都拥有它所指向的数据</li>
+</ul>
+</li>
+<li>常用的智能指针类型:
+
+<ul>
+<li><code>Box&lt;T&gt;</code>: 在 heap 内存上分配值</li>
+<li><code>Rc&lt;T&gt;</code>: 启用多重所有权的引用计数类型</li>
+<li><code>Ref&lt;T&gt;</code>、<code>RefMut&lt;T&gt;</code>: 通过 <code>RefCell&lt;T&gt;</code> 访问，在运行时而不是编译时强制借用规则的类型</li>
+</ul>
+</li>
+<li><code>String</code> 和 <code>Vec&lt;T&gt;</code> 就是智能指针
+
+<ul>
+<li>它们都拥有一片内存区域，且运行用户对其操作</li>
+<li>拥有元数据 (例如容量等)</li>
+<li>提供额外的功能或保障 (String 保障其数据时合法的 UTF-8 编码)</li>
+</ul>
+</li>
+<li><strong>通常使用 struct 实现，并且实现了: <code>Deref</code> 和 <code>Drop</code> 两个 Trait</strong>
+
+<ul>
+<li>Deref trait: 允许智能指针 struct 的实例像引用一样使用</li>
+<li>Drop trait: 允许你自动移当智能指针实例走出作用域时的代码</li>
+</ul>
+</li>
+<li><strong>内部可变模式 (interior mutability pattern):</strong> 不可变类型暴露出可修改其内部值的 API</li>
+</ul>
+
+
+<h2><code>Box&lt;T&gt;</code> 类型</h2>
+
+<ul>
+<li>其是最简单的智能指针:
+
+<ul>
+<li>允许你在 Heap 上存储数据 (而不是 stack)</li>
+<li>stack 上是指向 Heap 数据的指针</li>
+<li>没有性能开销</li>
+<li>没有其他额外功能</li>
+<li>适用于 &ldquo;间接&rdquo; 存储的场景</li>
+<li>实现了 <code>Deref</code> 和 <code>Drop</code> 两个 Trait</li>
+</ul>
+</li>
+<li>使用场景:
+
+<ol>
+<li>在编译时，某类型的大小无法确定。但使用该类型时，上下文却需要知道它的确切大小
+
+<ul>
+<li><code>Box&lt;T&gt;</code> 是一个指针, Rust 知道它需要多少空间 (指针的大小不会基于它指向的数据的大小变化而变化)</li>
+<li><code>Box&lt;T&gt;</code></li>
+</ul>
+</li>
+<li>当有大量数据，想移交所有权，但需要确保在操作时数据不会被复制</li>
+<li>使用某个值时，你只关心它是否实现了特定的 Trait，而不关心它的具体类型</li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span> <span class="c1">// 整数 5 存储在 heap 上了</span>
+</span><span class='line'>    <span class="nb">println</span><span class="p">(</span><span class="s">&quot;a = {}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span> <span class="c1">// &quot;a = 5&quot;</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">// a 被释放了 (会释放其存储在 stack 上的指针，以及存储在 heap 上的数据)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Cons List (递归类型)</h3>
+
+<ul>
+<li>在编译时，Rust 需要知道一个类型所占的空间大小</li>
+<li>而递归类型的大小无法在编译时确定, 但 Box 类型的大小确定，在递归类型中使用 Box 就可解决上述问题</li>
+<li>这种类型 <code>Cons List</code> 是来自 Lisp 的一种数据结构
+
+<ul>
+<li>Cons List 里每个成员由两个元素组成
+
+<ol>
+<li>当前项的值</li>
+<li>下一个元素</li>
+</ol>
+</li>
+<li>Cons List 里最后一个成员只包含一个 Nil 值，没有下一个元素</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 使用 Rust 实现 Cons List</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="n">Box</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Box&lt;T&gt; 提供了 &quot;间接&quot; 存储和 heap 内存分配的方式</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">))))));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;{:?}&quot;</span><span class="p">,</span> <span class="n">list</span><span class="p">);</span> <span class="c1">// Cons(1, Cons(2, Cons(3, Nil)))</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Deref Trait</h2>
+
+<ul>
+<li>实现该 Trait 可使我们能<strong>自定义解引用运算符 <code>*</code> 的行为</strong></li>
+<li>通过实现 Deref，智能指针可<strong>像常规引用一样来处理</strong></li>
+<li>解引用运算符 <code>*</code>
+
+<ul>
+<li>常规的引用也是一种指针</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span> <span class="c1">// ok</span>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 使用 Box&lt;T&gt; 替代上面的引用</span>
+</span><span class='line'><span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">Box</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'><span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 自定义智能指针</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="o">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">MyBox</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="n">std</span><span class="o">::</span><span class="n">ops</span><span class="o">::</span><span class="n">Deref</span> <span class="k">for</span> <span class="n">MyBox</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">type</span> <span class="n">Target</span> <span class="o">=</span> <span class="n">T</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">fn</span> <span class="n">deref</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+</span><span class='line'>        <span class="o">&amp;</span><span class="bp">self</span><span class="p">.</span><span class="mi">0</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">MyBox</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert_eq</span><span class="o">!</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ok </span>
+</span><span class='line'>    <span class="c1">// *y 相当于 *(y.deref())</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Deref Coercion</h3>
+
+<ul>
+<li>Deref Coercion (函数和方法的隐式解引用转化) 是为函数和方法提供的一种便捷特性</li>
+<li>假设 <code>T</code> 实现了 Deref trait
+
+<ul>
+<li>Deref Coercion 可以把 <code>T</code> 的引用转化为 <code>T</code> 经过 Deref 操作后生成的引用</li>
+</ul>
+</li>
+<li>当把某类型的引用传递给函数或方法时，但它的类型与定义的参数类型不匹配:
+
+<ul>
+<li>Deref Coercion 就会自动发生</li>
+<li>编译器会对 deref 进行一系列调用，来把它转为所需的参数类型 (在编译时完成，没有额外的性能开销)</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">hello</span><span class="p">(</span><span class="n">name</span><span class="o">:</span> <span class="o">&amp;</span><span class="kt">str</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Hello, {}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">m</span> <span class="o">=</span> <span class="n">MyBox</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="c1">// &amp;m: &amp;MyBox&lt;String&gt;</span>
+</span><span class='line'>    <span class="c1">// - 由于 MyBox 实现了 deref trait，所以编译器可以把 &amp;MyBox&lt;String&gt; 转化为 &amp;String</span>
+</span><span class='line'>    <span class="c1">// - 由于标准库中 String 也实现了 deref trait，调用 deref 方法返回一个 &amp;str 类型</span>
+</span><span class='line'>    <span class="c1">// - 所以 &amp;m 可以作为参数传入，满足 &amp;str 的参数类型要求</span>
+</span><span class='line'>    <span class="n">hello</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 如果没有实现 deref trait，则这里得这样调用: hello(&amp;(*m)[..])</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>解引用与可变性</h3>
+
+<ul>
+<li>可使用 <code>DerefMut Trait</code> 重载可变引用 <code>*</code> 运算符</li>
+<li>在类型和 trait 在下列三种情况发生时，Rust 会执行 Deref Coercion:
+
+<ol>
+<li>当 <code>T: Deref&lt;Target=U&gt;</code>，允许 <code>&amp;T</code> 转换为 <code>&amp;U</code></li>
+<li>当 <code>T: DerefMut&lt;Target=U&gt;</code>，允许 <code>&amp;mut T</code> 转换为 <code>&amp;mut U</code></li>
+<li>当 <code>T: Deref&lt;Target=U&gt;</code>，允许 <code>&amp;mut T</code> 转换为 <code>&amp;U</code></li>
+</ol>
+</li>
+</ul>
+
+
+<h2>Drop Trait</h2>
+
+<ul>
+<li>类似实现 <code>Drop Trait</code>，可以让我们自定义<strong>当值将要离开作用域时发生的动作</strong>
+
+<ul>
+<li>例如: 文件、网络资源释放等</li>
+</ul>
+</li>
+<li>任何类型都可以实现 Drop Trait, 该 trait 在 prelude 里面</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">struct</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">data</span><span class="o">:</span> <span class="n">String</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">impl</span> <span class="nb">Drop</span> <span class="k">for</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">fn</span> <span class="nb">drop</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="bp">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;drop&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">CustomSmartPointer</span> <span class="p">{</span> <span class="n">data</span><span class="o">:</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span> <span class="p">};</span>
+</span><span class='line'><span class="p">}</span> <span class="c1">// &quot;drop&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Rust 不允许手动调用 Drop trait 的 drop 方法
+
+<ul>
+<li>但可以调用标准库的 <code>std::mem::drop</code> 函数，来提前 drop 值</li>
+</ul>
+</li>
+</ul>
+
+
+<h2><code>Rc&lt;T&gt;</code> 引用计数智能指针</h2>
+
+<ul>
+<li>有时, 一个值会有多个所有者, 为了<strong>支持这种多重所有权的情况</strong>, Rust 实现了 <code>Rc&lt;T&gt;</code>
+
+<ul>
+<li>RC: reference counting (引用计数)</li>
+<li>该类型会在实例内部维护一个用于记录值引用次数的计数器, 用于判断这个值是否被使用 (可以追踪值的所有引用)</li>
+<li>0 个引用: 该值可以被清理掉</li>
+<li><code>Rc&lt;T&gt;</code> 通过不可变引用, 使我们可以在程序不同部分共享<strong>只读</strong>数据</li>
+</ul>
+</li>
+<li>使用场景: 需要在 heap 上分配数据, 这些数据被程序的多个部分读取(只读), 但在编译时无法确定哪个部分最后使用完这些数据</li>
+<li><code>Rc&lt;T&gt;</code> 只能用于单线程场景, 多线程场景可以使用 <code>Arc&lt;T&gt;</code>
+
+<ul>
+<li>Rc 为了性能使用的不是线程安全的引用计数器</li>
+<li>Arc 内部引用计数使用了 atomic usize, 线程安全</li>
+</ul>
+</li>
+<li><code>Rc::clone(&amp;a) 函数</code>: 会增加引用计数</li>
+<li><code>Rc::strong_count(&amp;a)</code>: 获得引用计数
+
+<ul>
+<li>还有 <code>Rc::weak_count</code> 函数</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 对一个 Rc 结构进行 clone()，不会将其内部的数据复制，只会增加引用计数</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 作用域有三个 Rc(a, b, c), 它们共同指向堆上相同的数据, 即堆上的数据有 3 个共享的所有者</span>
+</span><span class='line'>    <span class="c1">// 而当一个 Rc 结构离开作用域被 drop() 时，也只会减少其引用计数，直到引用计数为零，才会真正清除对应的内存</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 两个 List 共享另一个 List 的所有权</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="kt">i32</span><span class="p">,</span> <span class="n">Rc</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">)))));</span>
+</span><span class='line'>    <span class="c1">// b, c 共享 a 的所有权</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span> <span class="c1">// 引用计数+1</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span> <span class="c1">// 引用计数+1</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// c 离开作用域了, 引用计数自动 -1</span>
+</span><span class='line'>    <span class="c1">// a.clone() 该方法会进行深度的 copy; Rc::clone 只会增加引用计数, 不会执行数据的深度 copy</span>
+</span><span class='line'>    <span class="c1">// a 在引用计数清零的时候才会被回收</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><code>RefCell&lt;T&gt;</code></h2>
+
+<ul>
+<li>内部可变性: 是 Rust 的设计模式之一, 它允许你在只持有不可变引用的前提下对数据进行修改
+
+<ul>
+<li>数据结构中使用了 unsafe 代码来绕过 Rust 正常的可变性和借用规则</li>
+</ul>
+</li>
+<li>与 <code>Rc&lt;T&gt;</code> 不同, <code>RefCell&lt;T&gt;</code> 类型代表了其持有数据的唯一所有权
+
+<ul>
+<li>Rc 是个只读的引用计数器, 无法拿到 Rc 结构内部数据的可变引用</li>
+</ul>
+</li>
+<li><code>RefCell&lt;T&gt;</code> 和 <code>Box&lt;T&gt;</code> 的区别
+
+<ul>
+<li><code>RefCell&lt;T&gt;</code>: 只会在运行时检查借用规则, 运行时不满足借用规则会触发 panic</li>
+<li><code>Box&lt;T&gt;</code>: 在编译阶段强制代码遵守借用规则, 不满足规则会出现错误</li>
+</ul>
+</li>
+<li>借用规则在不同阶段进行检查的比较:
+
+<ol>
+<li>编译阶段:
+
+<ol>
+<li>尽早暴露问题</li>
+<li>没有任何运行时开销</li>
+<li>对大多数场景是最佳选择</li>
+<li>是 Rust 的默认行为</li>
+</ol>
+</li>
+<li>运行时:
+
+<ol>
+<li>问题暴露延后, 甚至到生产环境</li>
+<li>由于使用了借用计数, 会产生些许性能损失</li>
+<li>实现某些特定的内存安全场景 (不可变环境中修改自身数据)</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>与 <code>Rc&lt;T&gt;</code> 相似, 只能用于<strong>单线程</strong>场景
+
+<ul>
+<li>多线程场景使用需要使用 Mutex(互斥量) 和 RwLock(读写锁)</li>
+<li>例如: <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 在多线程场景下可替换为 <code>Arc&lt;Mutex&lt;T&gt;&gt;</code> 或 <code>Arc&lt;RwLock&lt;T&gt;&gt;</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>内部可变性: 可变的借用一个不可变的值</h3>
+
+<ul>
+<li>外部可变性: 使用 <code>let mut</code>, <code>&amp;mut</code>
+
+<ul>
+<li>所有权检查: 编译时, 如果不符合规则, 产生编译错误</li>
+</ul>
+</li>
+<li>内部可变性: 使用 <code>Cell</code>, <code>RefCell</code>
+
+<ul>
+<li>所有权检查: 运行时, 如果不符合规则, panic</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">y</span> <span class="o">=</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// 报错, 无法可变的借用一个不可变的值</span>
+</span><span class='line'>    <span class="c1">// 有时会需要有这一种场景, 值在外部是不可变的, 但是在方法内部需要可以修改这个值</span>
+</span><span class='line'>    <span class="c1">// 可以使用 RefCell 来实现这种内部可变性</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用 <code>RefCell&lt;T&gt;</code></h3>
+
+<ul>
+<li><code>RefCell&lt;T&gt;</code> 的方法
+
+<ul>
+<li><code>borrow</code> 方法: 返回 <code>Ref&lt;T&gt;</code>, 它实现了 Deref trait</li>
+<li><code>borrow_mut</code> 方法: 返回 <code>RefMut&lt;T&gt;</code>, 它实现了 Deref trait</li>
+</ul>
+</li>
+<li><code>RefCell&lt;T&gt;</code> 会记录当前存在多少个活跃的 <code>Ref&lt;T&gt;</code> 和 <code>RefMut&lt;T&gt;</code> 智能指针
+
+<ul>
+<li>每次调用 borrow: 不可变借用计数 +1</li>
+<li>任何一个 <code>Ref&lt;T&gt;</code> 的值离开作用域被释放时: 不可变借用计数 -1</li>
+<li>每次调用 borrow_mut: 可变借用计数 +1</li>
+<li>任何一个 <code>RefMut&lt;T&gt;</code> 的值离开作用域被释放时: 可变借用计数 -1</li>
+</ul>
+</li>
+<li>Rust 通过以上计数规则来维护借用的检查规则
+
+<ul>
+<li>任何一个给定时间里, 只允许拥有多个不可变借用活一个可变借用</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">cell</span><span class="o">::</span><span class="n">RefCell</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">data</span> <span class="o">=</span> <span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 在同一个作用域下，我们不能同时有活跃的可变借用和不可变借用</span>
+</span><span class='line'>    <span class="c1">// 通过这对花括号，我们明确地缩小了可变借用的生命周期，不至于和后续的不可变借用冲突</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 获得 RefCell 内部数据的可变借用</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="k">mut</span> <span class="n">v</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">borrow_mut</span><span class="p">();</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">v</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;data: {:?}&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="n">borrow</span><span class="p">());</span> <span class="c1">// data: 2</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>如何选择 <code>Box&lt;T&gt;</code>、<code>Rc&lt;T&gt;</code>、<code>RefCell&lt;T&gt;</code></h3>
+
+<table>
+<thead>
+<tr>
+<th> </th>
+<th> <code>Box&lt;T&gt;</code> </th>
+<th> <code>Rc&lt;T&gt;</code> </th>
+<th> <code>RefCell&lt;T&gt;</code> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 同一数据的所有者 </td>
+<td> 一个 </td>
+<td> 多个 </td>
+<td> 一个 </td>
+</tr>
+<tr>
+<td> 可变性、借用检查 </td>
+<td> 可变、不可变借用 (编译时检查) </td>
+<td> 不可变借用 (编译时检查) </td>
+<td> 可变、不可变借用 (运行时检查) </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>结合 <code>Rc&lt;T&gt;</code> 和 <code>RefCell&lt;T&gt;</code> 来拥有多个可变数据所有者</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="cp">#[derive(Debug)]</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">List</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">&lt;</span><span class="n">RefCell</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="n">Rc</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="n">Nil</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">use</span> <span class="n">crate</span><span class="o">::</span><span class="n">List</span><span class="o">::</span><span class="p">{</span><span class="n">Cons</span><span class="p">,</span> <span class="n">Nil</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">rc</span><span class="o">::</span><span class="n">Rc</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">cell</span><span class="o">::</span><span class="n">RefCell</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">value</span><span class="p">),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Nil</span><span class="p">)));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">6</span><span class="p">)),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Cons</span><span class="p">(</span><span class="n">Rc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">RefCell</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">10</span><span class="p">)),</span> <span class="n">Rc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">*</span><span class="n">value</span><span class="p">.</span><span class="n">borrow_mut</span><span class="p">()</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;a after = {:?}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;b after = {:?}&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;c after = {:?}&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他可实现内部可变性的类型</h3>
+
+<ul>
+<li><code>Cell&lt;T&gt;</code>: 通过复制来访问数据</li>
+<li><code>Mutex&lt;T&gt;</code>: 用于实现跨线程情形下的内部可变性模式</li>
+</ul>
+
 </div>
 
 

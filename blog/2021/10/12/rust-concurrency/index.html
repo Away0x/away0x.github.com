@@ -9,8 +9,24 @@
   <meta name="author" content="TongWu">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="Concurrent 并发: 程序的不同部分之间可以独立的运行
+Parallel 并行: 程序的不同部分同时运行 线程 通过 thread::spawn 创建线程 参数为一个闭包, 闭包里面是在新线程中运行的代码 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -115,7 +131,520 @@
   </header>
 
 
-<div class="entry-content">
+<div class="entry-content"><ul>
+<li>Concurrent 并发: 程序的不同部分之间可以独立的运行</li>
+<li>Parallel 并行: 程序的不同部分同时运行</li>
+</ul>
+
+
+<h2>线程</h2>
+
+<ul>
+<li>通过 <code>thread::spawn</code> 创建线程
+
+<ul>
+<li>参数为一个闭包, 闭包里面是在新线程中运行的代码</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">time</span><span class="o">::</span><span class="n">Duration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">.</span><span class="mi">10</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;hi number {} from the spawned thread!&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_millis</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mf">1.</span><span class="p">.</span><span class="mi">5</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;hi number {} from the main thread!&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_millis</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// 当主线程结束时，新线程也会结束，而不管子线程是否执行完毕</span>
+</span><span class='line'>    <span class="c1">// 可以使用 join 等待子线程执行完毕 (会堵塞, 直到线程执行完毕)</span>
+</span><span class='line'>    <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>move 闭包常与 spawn 一起使用, 它允许我们在一个线程中使用另一个线程的数据</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">// 将 v 的所有权移动到了线程中, 这样线程中就可以安全的使用 v 变量了</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Here&#39;s a vector: {:?}&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>消息传递</h2>
+
+<ul>
+<li>线程 (或 Actor) 通过彼此发送消息(数据)来进行通信
+
+<ul>
+<li><strong>不用用共享内存来通信, 要用通信来共享内存</strong></li>
+</ul>
+</li>
+<li>Rust 中使用 <code>Channel</code> 来实现消息传递
+
+<ul>
+<li>Channel 包含发送端和接收端, 如果这两端中任意一端被丢弃了, 那么 Channel 就关闭了</li>
+</ul>
+</li>
+<li>使用 <code>mpsc::channel</code> 来创建 Channel
+
+<ul>
+<li>mpsc (multiple producer, single consumer): 多个生产者, 一个消费者</li>
+</ul>
+</li>
+<li>发送端:
+
+<ul>
+<li><code>send</code> 方法:
+
+<ul>
+<li>参数: 要发送的数据</li>
+<li>返回值: <code>Result&lt;T, E&gt;</code>, 如果有问题(如接收端已经被丢弃), 就会返回一个 Err</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接收端:
+
+<ul>
+<li><code>recv</code> 方法 (堵塞当前线程运行, 直到 Channel 中有值传送过来)
+
+<ul>
+<li>一但有值收到, 就会返回 <code>Result&lt;T, E&gt;</code></li>
+<li>当发送端关闭, 就会收到一个错误</li>
+</ul>
+</li>
+<li><code>try_recv</code> 方法 (不会堵塞)
+
+<ul>
+<li>立即返回 <code>Result&lt;T, E&gt;</code>, 有数据到达会返回 Ok, 否则返回 Err</li>
+<li>通常会使用循环调用来检查该函数的结果</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">mpsc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// tx: 发送端</span>
+</span><span class='line'>    <span class="c1">// rx: 接收端</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// move: 使新的线程拥有了 tx 发送端的所有权了</span>
+</span><span class='line'>    <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">val</span> <span class="o">=</span> <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// 这里 send 之后, val 的所有权会被转移给接收者</span>
+</span><span class='line'>        <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span> <span class="c1">// 发送数据</span>
+</span><span class='line'>        <span class="c1">// val 不可用了</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 接收数据 (阻塞主线程执行直到从通道中接收一个值)</span>
+</span><span class='line'>    <span class="c1">// 当通道发送端关闭，recv 会返回一个错误表明不会再有新的值到来了</span>
+</span><span class='line'>    <span class="c1">// 还有个方法 try_recv, 其不会堵塞则是立即返回 Result, Ok 表示有值, Err 表示值还没到来</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">received</span> <span class="o">=</span> <span class="n">rx</span><span class="p">.</span><span class="n">recv</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 发送多个值</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">mpsc</span><span class="p">;</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">time</span><span class="o">::</span><span class="n">Duration</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;the&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;thread&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span> <span class="c1">// 暂停 1s</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 可把接受者 rx 当作迭代器使用, 每过 1s 会接收到一个值</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">received</span> <span class="k">in</span> <span class="n">rx</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 通过克隆发送者来创建多个生产者</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="kd">let</span> <span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="o">=</span> <span class="n">mpsc</span><span class="o">::</span><span class="n">channel</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">let</span> <span class="n">tx1</span> <span class="o">=</span> <span class="n">tx</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</span><span class='line'><span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;hi&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">tx1</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;more&quot;</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="s">&quot;messages&quot;</span><span class="p">),</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">val</span> <span class="k">in</span> <span class="n">vals</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">tx</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">val</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">thread</span><span class="o">::</span><span class="n">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="o">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 会接收到 tx1 和 tx 两个发送端发送的数据</span>
+</span><span class='line'><span class="k">for</span> <span class="n">received</span> <span class="k">in</span> <span class="n">rx</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Got: {}&quot;</span><span class="p">,</span> <span class="n">received</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">// ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>共享状态</h2>
+
+<ul>
+<li>Rust 支持通过共享状态来实现并发
+
+<ul>
+<li>Channel 类似单所有权: 一旦值的所有权转移至 Channel, 就无法使用它了</li>
+<li>共享内存的并发类似多所有权: 多个线程可以同时访问同一块内存</li>
+</ul>
+</li>
+<li>使用 <code>Mutex</code> (mutual exclusion 互斥锁) 来保证每次只允许一个线程来访问数据
+
+<ul>
+<li>想要访问数据, 线程必须首先获取互斥锁 (lock)
+
+<ul>
+<li>lock: 是一种数据结构, 是 mutex 的一部分, 它能跟踪谁对数据拥有独占访问权</li>
+</ul>
+</li>
+<li>mutex 通常被描述为: 通过锁定系统来保护它所持有的数据</li>
+</ul>
+</li>
+<li><strong>Mutex 的两条规则</strong>
+
+<ol>
+<li>在使用数据之前, 必须尝试获取锁(lock)</li>
+<li>使用完 mutex 所保护的数据, 必须对数据进行解锁, 以便其他线程可以获取锁</li>
+</ol>
+</li>
+<li>Mutex 的 API:
+
+<ul>
+<li>通过 <code>Mutex::new(数据)</code> 来创建 <code>Mutex&lt;T&gt;</code>
+
+<ul>
+<li><code>Mutex&lt;T&gt;</code> 是一个智能指针</li>
+</ul>
+</li>
+<li>访问数据前, 通过 lock 方法来获取锁
+
+<ul>
+<li>会堵塞当前线程</li>
+<li>lock 可能会失败</li>
+<li>返回的是 MutexGuard (智能指针, 实现了 Deref 和 Drop)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="n">Mutex</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">m</span> <span class="o">=</span> <span class="n">Mutex</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="k">mut</span> <span class="n">num</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>        <span class="o">*</span><span class="n">num</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="c1">// mutex 使用了 Drop trait, 所以这里会自动 unlock</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;m = {:?}&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>原子引用计数 <code>Arc&lt;T&gt;</code> (A: atomic)
+
+<ul>
+<li>类似 <code>Rc&lt;T&gt;</code> (Rc 线程不安全) 并可以安全的用于并发环境的类型, 和 <code>Rc&lt;T&gt;</code> 有着相同的 API</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='rust'><span class='line'><span class="c1">// 多线程共享 mutex</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">sync</span><span class="o">::</span><span class="p">{</span><span class="n">Mutex</span><span class="p">,</span> <span class="n">Arc</span><span class="p">};</span>
+</span><span class='line'><span class="kn">use</span> <span class="n">std</span><span class="o">::</span><span class="n">thread</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">fn</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">Arc</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="n">Mutex</span><span class="o">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">let</span> <span class="k">mut</span> <span class="n">handles</span> <span class="o">=</span> <span class="n">vec</span><span class="o">!</span><span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">_</span> <span class="k">in</span> <span class="mf">0.</span><span class="p">.</span><span class="mi">10</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// 利用 Arc 实现多线程之间共享所有权</span>
+</span><span class='line'>        <span class="c1">// 不使用 Arc 的话, 在第一次循环时, counter 的所有权就会被移动到线程中, 第二次循环就会报错 (不能将 counter 锁的所有权移动到多个线程中)</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">Arc</span><span class="o">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">let</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">thread</span><span class="o">::</span><span class="nb">spawn</span><span class="p">(</span><span class="n">move</span> <span class="o">||</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 线程中获取 lock, 并修改值</span>
+</span><span class='line'>            <span class="kd">let</span> <span class="k">mut</span> <span class="n">num</span> <span class="o">=</span> <span class="n">counter</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>            <span class="o">*</span><span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>        <span class="n">handles</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 等所有线程都执行完毕后再往下执行</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">handle</span> <span class="k">in</span> <span class="n">handles</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">handle</span><span class="p">.</span><span class="n">join</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">println</span><span class="o">!</span><span class="p">(</span><span class="s">&quot;Result: {}&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">counter</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>RefCell&lt;T&gt;</code>/<code>Rc&lt;T&gt;</code> 与 <code>Mutex&lt;T&gt;</code>/<code>Arc&lt;T&gt;</code> 的相似性</h3>
+
+<ul>
+<li><code>Mutex&lt;T&gt;</code> 提供了内部可变性, 和 Cell 家族一样
+
+<ul>
+<li>使用 <code>RefCell&lt;T&gt;</code> 来改变 <code>Rc&lt;T&gt;</code> 里面的内容</li>
+<li>使用 <code>Mutex&lt;T&gt;</code> 来改变 <code>Arc&lt;T&gt;</code> 里面的内容</li>
+<li>注意: <code>Mutex&lt;T&gt;</code> 有死锁风险</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Send &amp; Sync</h2>
+
+<h3>Send Trait</h3>
+
+<ul>
+<li><code>std::marker::Send</code>: 允许线程间转移所有权</li>
+<li>实现 Send Trait 的类型就可以在线程间转移所有权
+
+<ul>
+<li>Rust 中几乎所有的类型都实现了 Send</li>
+<li><code>Rc&lt;T&gt;</code> 没有实现 Send, 它只用于单线程场景</li>
+</ul>
+</li>
+<li>任何完全由 Send 类型组成的类型也是 Send</li>
+<li>除了原始指针之外, 几乎所有的基础类型都是 Send</li>
+</ul>
+
+
+<h3>Sync Trait</h3>
+
+<ul>
+<li><code>std::marker::Sync</code>: 允许从多线程访问</li>
+<li>实现 Sync Trait 的类型可以安全的被多个线程引用
+
+<ul>
+<li>即: <strong>如果 <code>T</code> 是 Sync, 那么 <code>&amp;T</code> 就是 Send</strong>, <code>&amp;T</code> 可以被安全的送往另外一个线程</li>
+</ul>
+</li>
+<li>任何完全由 Sync 类型组成的类型也是 Sync</li>
+<li>基础类型都是 Sync</li>
+<li><code>Rc&lt;T&gt;</code>, <code>RefCell&lt;T&gt;</code>, <code>Cell&lt;T&gt;</code> 家族都不是 Sync 的</li>
+<li><code>Mutex&lt;T&gt;</code> 是 Sync 的</li>
+</ul>
+
 </div>
 
 
