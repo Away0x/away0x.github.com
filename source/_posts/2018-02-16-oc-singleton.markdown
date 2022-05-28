@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ObjectiveC - 单例"
+title: "ObjectiveC - Singleton"
 date: 2018-02-16 08:00:00 +0800
 comments: true
 categories: objectivec
